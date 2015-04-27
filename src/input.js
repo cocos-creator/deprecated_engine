@@ -28,8 +28,8 @@
      * !#zh 注册输入事件的回调方法。
      *
      * 请参考：
-     * - [获取用户输入](/zh/scripting/input)
-     * - [输入事件列表](/zh/scripting/input-events)
+     * - [获取用户输入](/manual/scripting/input)
+     * - [输入事件列表](/manual/scripting/input-events)
      *
      * @method on
      * @param {string} type - eg. "keydown", "click"
