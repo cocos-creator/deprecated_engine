@@ -59,13 +59,16 @@ var Time = (function () {
 
     /**
      * @method Fire.Time._update
+     * @param {number} timestamp
      * @param {boolean} [paused=false] if true, only realTime will be updated
+     * @param {number} [maxDeltaTime=Time.maxDeltaTime]
      * @private
      */
-    Time._update = function (timestamp, paused) {
+    Time._update = function (timestamp, paused, maxDeltaTime) {
         if (!paused) {
+            maxDeltaTime = maxDeltaTime || Time.maxDeltaTime;
             var delta = timestamp - lastUpdateTime;
-            delta = Math.min(Time.maxDeltaTime, delta);
+            delta = Math.min(maxDeltaTime, delta);
             lastUpdateTime = timestamp;
 
             ++Time.frameCount;

@@ -86,7 +86,7 @@
                 this._position.x = value;
 // @ifdef EDITOR
                 // notify change
-                this._position = this._position;
+                this.position = this._position;
 // @endif
             }
             else {
@@ -110,7 +110,7 @@
                 this._position.y = value;
 // @ifdef EDITOR
                 // notify change
-                this._position = this._position;
+                this.position = this._position;
 // @endif
             }
             else {
@@ -174,7 +174,7 @@
                 }
 // @ifdef EDITOR
                 // notify change
-                this._position = this._position;
+                this.position = this._position;
 // @endif
                 //将来优化做好了以后，上面的代码可以简化成下面这些
                 //var pos = this.worldPosition;
@@ -215,7 +215,7 @@
                 }
 // @ifdef EDITOR
                 // notify change
-                this._position = this._position;
+                this.position = this._position;
 // @endif
             }
             else {
@@ -314,7 +314,7 @@
                 this._scale.x = value;
 // @ifdef EDITOR
                 // notify change
-                this._scale = this._scale;
+                this.scale = this._scale;
 // @endif
             }
             else {
@@ -338,7 +338,7 @@
                 this._scale.y = value;
 // @ifdef EDITOR
                 // notify change
-                this._scale = this._scale;
+                this.scale = this._scale;
 // @endif
             }
             else {

@@ -302,9 +302,10 @@ var Engine = (function () {
         //}
 
         var updateLogic = !isPaused || stepOnce;
-        stepOnce = false;
         var now = Ticker.now();
-        Time._update(now, !updateLogic);
+        Time._update(now, !updateLogic, stepOnce ? 1 / 60 : 0);
+        stepOnce = false;
+
         doUpdate(updateLogic);
 
 // @ifdef DEV
