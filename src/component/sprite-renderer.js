@@ -48,7 +48,7 @@
         function (value) {
             this._color = value;
             if (this._hasRenderObj) {
-                Engine._renderContext.updateSpriteColor(this);
+                Engine._renderContext.updateColor(this);
             }
         }
     );

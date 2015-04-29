@@ -61,6 +61,25 @@ var BitmapText = (function () {
 
     BitmapText.prop('_anchor', Fire.TextAnchor.midCenter, Fire.HideInInspector);
 
+
+    /**
+     * The color of the text.
+     * @property color
+     * @type {Color}
+     * @default Fire.Color.white
+     */
+    BitmapText.getset('color',
+        function () {
+            return this._color;
+        },
+        function (value) {
+            this._color = value;
+            Engine._renderContext.updateColor(this, value);
+        }
+    );
+
+    BitmapText.prop('_color', Fire.Color.white, Fire.HideInInspector);
+
     /**
      * The anchor point of the text.
      * @property anchor
@@ -125,7 +144,7 @@ var BitmapText = (function () {
     BitmapText.prototype.onPreRender = function () {
         this.getSelfMatrix(tempMatrix);
         tempMatrix.prepend(this.transform._worldTransform);
-        RenderContext.updateBitmapTextTransform(this, tempMatrix);
+        Engine._curRenderContext.updateBitmapTextTransform(this, tempMatrix);
     };
 
     BitmapText.prototype.getSelfMatrix = function (out) {

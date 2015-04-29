@@ -149,7 +149,7 @@ Fire.JS.mixin(RenderContext.prototype, {
      */
     updateTransform: function (target, matrix) {},
 
-    updateSpriteColor: function (target) {},
+    updateColor: function (target) {},
 
     /**
      * @param target {SpriteRenderer}
