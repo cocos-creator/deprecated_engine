@@ -5,3 +5,4 @@ function callInNextTick (callback, p1, p2) {
         }, 1);
     }
 }
+

@@ -36,6 +36,7 @@ var paths = {
         'src/event/event.js',
         'src/event/event-listeners.js',
         'src/event/event-target.js',
+        'src/playable.js',
         'src/platform/h5/ticker.js',
         'src/render-context.js',
         'src/platform/h5/loaders.js',

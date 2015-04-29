@@ -2,20 +2,22 @@
 var Engine = (function () {
 
     /**
-     * !#zh 这个模块提供引擎的一些全局接口和状态状态
+     * !#zh 这个静态模块提供引擎运行时的一些全局接口和状态状态。
+     * !#en Access to engine runtime data.
+     * This class contains static methods for looking up information about and controlling the runtime data.
      *
      * @class Engine
      * @static
+     * @extends Playable
      */
     var Engine = {
 // @ifdef EDITOR
         _editorCallback: editorCallback
 // @endif
     };
+    Playable.call(Engine);
+    JS.mixin(Engine, Playable.prototype);
 
-    var isPlaying = false;
-    var isPaused = false;
-    var stepOnce = false;
     var loadingScene = '';
 
     // We should use this id to cancel ticker, otherwise if the engine stop and replay immediately,
@@ -75,28 +77,7 @@ var Engine = (function () {
     Engine._inputContext = null;
 
     /**
-     * is in player or playing in editor?
-     * @property isPlaying
-     * @type {boolean}
-     * @readOnly
      */
-    Object.defineProperty(Engine, 'isPlaying', {
-        get: function () {
-            return isPlaying;
-        }
-    });
-
-    /**
-     * is editor currently paused?
-     * @property isPaused
-     * @type {boolean}
-     * @readOnly
-     */
-    Object.defineProperty(Engine, 'isPaused', {
-        get: function () {
-            return isPaused;
-        }
-    });
 
     /**
      * is loading scene?
@@ -104,27 +85,26 @@ var Engine = (function () {
      * @type {boolean}
      * @readOnly
      */
-    Object.defineProperty(Engine, 'loadingScene', {
-        get: function () {
-            return loadingScene;
-        }
+    JS.get(Engine, 'loadingScene', function () {
+        return loadingScene;
     });
 
     var lockingScene = null;
 
     /**
-     * !#en You should check whether you can modify the scene in constructors which may called by the engine while deserializing.
+     * !#en You should check whether you can modify the scene in constructors which may called by the engine while
+     * deserializing.
      * !#zh 这个属性用来判断场景物体的构造函数执行时是否可以把物体加到场景里。
      * 这个属性和 Fire._isCloning 很类似。但这里关注的是场景是否能修改，而 Fire._isCloning 强调的是持有的对象是否需要重新创建。
      * @property _canModifyCurrentScene
      * @type {boolean}
      * @private
      */
-    Object.defineProperty(Engine, '_canModifyCurrentScene', {
-        get: function () {
+    JS.getset(Engine, '_canModifyCurrentScene',
+        function () {
             return !lockingScene;
         },
-        set: function (value) {
+        function (value) {
             if (value) {
                 // unlock
                 this._scene = lockingScene;
@@ -139,18 +119,17 @@ var Engine = (function () {
                 this._scene = null;
             }
         }
-    });
+    );
 
     var inited = false;
+
     /**
      * @property inited
      * @type {boolean}
      * @readOnly
      */
-    Object.defineProperty(Engine, 'inited', {
-        get: function () {
-            return inited;
-        }
+    JS.get(Engine, 'inited', function () {
+        return inited;
     });
 
     // Scene name to uuid
@@ -197,81 +176,51 @@ var Engine = (function () {
         return Engine._renderContext;
     };
 
-    /**
-     * Start the engine loop. This method will be called by boot.js or editor.
-     * @method play
-     */
-    Engine.play = function () {
-        if (isPlaying && !isPaused) {
-            Fire.warn('Fireball is already playing');
-            return;
-        }
-        if (isPlaying && isPaused) {
-            isPaused = false;
 // @ifdef EDITOR
-            editorCallback.onEnginePlayed(true);
-// @endif
-            return;
+    Engine.onError = function (error) {
+        switch (error) {
+            case 'already-playing':
+                Fire.warn('Fireball is already playing');
+                break;
         }
-        isPlaying = true;
+    };
+    Engine.onResume = function () {
+        editorCallback.onEnginePlayed(true);
+    };
+    Engine.onPause = function () {
+        editorCallback.onEnginePaused();
+    };
+// @endif
 
+    Engine.onPlay = function () {
         Engine._inputContext = new InputContext(Engine._renderContext);
         var now = Ticker.now();
         Time._restart(now);
-        update();
+        this.update();
 
 // @ifdef EDITOR
         editorCallback.onEnginePlayed(false);
 // @endif
     };
 
-    /**
-     * Stop the engine loop.
-     * @method stop
-     */
-    Engine.stop = function () {
-        if (isPlaying) {
-            FObject._deferredDestroy();
-            Engine._inputContext.destruct();
-            Engine._inputContext = null;
-            Input._reset();
+    Engine.onStop = function () {
+        FObject._deferredDestroy();
 
-            // reset states
-            isPlaying = false;
-            isPaused = false;
-            loadingScene = ''; // TODO: what if loading scene ?
-            if (requestId !== -1) {
-                Ticker.cancelAnimationFrame(requestId);
-                requestId = -1;
-            }
+        Engine._inputContext.destruct();
+        Engine._inputContext = null;
+
+        Input._reset();
+
+        // reset states
+        loadingScene = ''; // TODO: what if loading scene ?
+        if (requestId !== -1) {
+            Ticker.cancelAnimationFrame(requestId);
+            requestId = -1;
+        }
 
 // @ifdef EDITOR
-            editorCallback.onEngineStopped();
+        editorCallback.onEngineStopped();
 // @endif
-        }
-    };
-
-    /**
-     * Pause the engine loop.
-     * @method pause
-     */
-    Engine.pause = function () {
-        isPaused = true;
-// @ifdef EDITOR
-        editorCallback.onEnginePaused();
-// @endif
-    };
-
-    /**
-     * Perform a single frame step.
-     * @method step
-     */
-    Engine.step = function () {
-        this.pause();
-        stepOnce = true;
-        if ( !isPlaying ) {
-            Engine.play();
-        }
     };
 
     function doUpdate (updateLogic) {
@@ -291,20 +240,20 @@ var Engine = (function () {
      * @method update
      * @private
      */
-    function update (unused) {
-        if (!isPlaying) {
+    Engine.update = function (unused) {
+        if (!Engine._isPlaying) {
             return;
         }
-        requestId = Ticker.requestAnimationFrame(update);
+        requestId = Ticker.requestAnimationFrame(Engine.update);    // no bind this
 
         //if (sceneLoadingQueue) {
         //    return;
         //}
 
-        var updateLogic = !isPaused || stepOnce;
+        var updateLogic = !Engine._isPaused || Engine._stepOnce;
         var now = Ticker.now();
-        Time._update(now, !updateLogic, stepOnce ? 1 / 60 : 0);
-        stepOnce = false;
+        Time._update(now, !updateLogic, Engine._stepOnce ? 1 / 60 : 0);
+        Engine._stepOnce = false;
 
         doUpdate(updateLogic);
 
@@ -313,8 +262,7 @@ var Engine = (function () {
             __TESTONLY__.update(updateLogic);
         }
 // @endif
-    }
-    Engine.update = update;
+    };
 
     /**
      * Launch loaded scene.
@@ -437,7 +385,9 @@ var Engine = (function () {
     /**
      * Preloads the scene to reduces loading time. You can call this method at any time you want.
      *
-     * After calling this method, you still need to launch the scene by `Engine.loadScene` because the loading logic will not changed. It will be totally fine to call `Engine.loadScene` at any time even if the preloading is not yet finished, the scene will be launched after loaded automatically.
+     * After calling this method, you still need to launch the scene by `Engine.loadScene` because the loading logic
+     * will not changed. It will be totally fine to call `Engine.loadScene` at any time even if the preloading is not
+     * yet finished, the scene will be launched after loaded automatically.
      * @method preloadScene
      * @param {string} sceneName - the name of the scene to preload
      * @param {function} [onLoaded] - callback, will be called after the scene loaded
@@ -459,3 +409,34 @@ var Engine = (function () {
 })();
 
 Fire.Engine = Engine;
+
+// refine inherited api doc
+
+/**
+ * is in player or playing in editor?
+ * @property isPlaying
+ * @type {boolean}
+ * @readOnly
+ */
+/**
+ * is editor currently paused?
+ * @property isPaused
+ * @type {boolean}
+ * @readOnly
+ */
+/**
+ * Start the engine loop. This method will be called by boot.js or editor.
+ * @method play
+ */
+/**
+ * Stop the engine loop.
+ * @method stop
+ */
+/**
+ * Pause the engine loop.
+ * @method pause
+ */
+/**
+ * Perform a single frame step.
+ * @method step
+ */

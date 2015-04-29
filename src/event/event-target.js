@@ -221,6 +221,25 @@
         }
     };
 
+    /**
+     * Send an event to this object directly, this method will not propagate the event to any other objects.
+     * The event will be created from the supplied message, you can get the "detail" argument from event.detail.
+     *
+     * @method emit
+     * @param {string} message - the message to send
+     * @param {any} [detail] - whatever argument the message needs
+     */
+    EventTarget.prototype.emit = function (message, detail) {
+        if ( typeof message === 'string' ) {
+            var event = new CustomEvent(message);
+            event.detail = detail;
+            this._doSendEvent(event);
+        }
+        else {
+            Fire.error('The message must be provided');
+        }
+    };
+
     ///**
     // * Send an event to this object directly, this method will not propagate the event to any other objects.
     // *

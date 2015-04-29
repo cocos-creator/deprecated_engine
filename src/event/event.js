@@ -163,3 +163,8 @@
 })();
 
 Fire.Event = Event;
+
+function CustomEvent (type, bubbles) {
+    Event.call(this, type, bubbles);
+    this.detail = null;
+}

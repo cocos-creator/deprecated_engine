@@ -35,6 +35,19 @@ test('basic test', function () {
     cb2.once('callback2 should still be invoked after callback1 canceled');
 });
 
+test('emit', function () {
+    var target = new Fire.EventTarget();
+    var cb1 = new Callback().enable();
+    target.on('fire', cb1);
+    cb1.callbackFunction(function (event) {
+        strictEqual(event.detail.param, 123, 'should pass the argument to listener');
+    });
+    target.emit('fire', {
+        param: 123
+    });
+    cb1.once('callback1 should be invoked by fire event');
+});
+
 test('once', function () {
     var target = new Fire.EventTarget();
     var fireEvent = new Fire.Event('fire');
