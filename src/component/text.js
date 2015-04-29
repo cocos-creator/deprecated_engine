@@ -189,7 +189,7 @@ var Text = (function () {
         onPreRender: function () {
             this.getSelfMatrix(tempMatrix);
             tempMatrix.prepend(this.transform._worldTransform);
-            RenderContext.updateTextTransform(this, tempMatrix);
+            Engine._curRenderContext.updateTextTransform(this, tempMatrix);
         }
     });
 
