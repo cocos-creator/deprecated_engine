@@ -1,13 +1,6 @@
 ﻿// jshint ignore: start
 largeModule('Engine', TestEnv);
 
-var asyncEnd = function () {
-    // force stop to ensure start will only called once
-    Engine.stop();
-    TestOnly.update = null;
-    start();
-};
-
 var tolerance = 0.01;   // Ticker获取当前时间时，就算是同一帧也可能拿到不同的时间，因为每行代码都有时间开销。
 
 test('basic state transition', function() {

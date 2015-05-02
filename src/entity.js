@@ -52,6 +52,8 @@ var Entity = Fire.Class({
 // @endif
             }
         }
+        //
+        this._animator = null;
     },
 
     properties: {
@@ -115,7 +117,8 @@ var Entity = Fire.Class({
 
         /**
          * The parent of the entity.
-         * Changing the parent will keep the transform's local space position, rotation and scale the same but modify the world space position, scale and rotation.
+         * Changing the parent will keep the transform's local space position, rotation and scale the same but modify
+         * the world space position, scale and rotation.
          * @property parent
          * @type {Entity}
          * @default null
@@ -226,7 +229,13 @@ var Entity = Fire.Class({
          * @readOnly
          * @private
          */
-        _components: null
+        _components: null,
+
+        //// Editor Only
+        //_editorOptions: {
+        //    default: null,
+        //    editorOnly: true
+        //}
     },
 
     ////////////////////////////////////////////////////////////////////
@@ -272,6 +281,11 @@ var Entity = Fire.Class({
         for (var i = 0, len = children.length; i < len; ++i) {
             // destroy immediate so its _onPreDestroy can be called before
             children[i]._destroyImmediate();
+        }
+        // stop animator
+        if (this._animator) {
+            this._animator.stop();
+            this._animator.destruct();
         }
     },
 
@@ -351,7 +365,8 @@ var Entity = Fire.Class({
     },
 
     /**
-     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get component in the entity by passing in the name of the script.
+     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get
+     * component in the entity by passing in the name of the script.
      *
      * @method getComponent
      * @param {function|string} typeOrName
@@ -406,8 +421,8 @@ var Entity = Fire.Class({
     ////////////////////////////////////////////////////////////////////
 
     /**
-     * Finds an entity by name in all children of this entity. This function will still returns the entity even if it is inactive.
-     * It is recommended to not use this function every frame instead cache the result at startup.
+     * Finds an entity by name in all children of this entity. This function will still returns the entity even if it
+     * is inactive. It is recommended to not use this function every frame instead cache the result at startup.
      *
      * @method find
      * @param {string} path
@@ -577,6 +592,10 @@ var Entity = Fire.Class({
         this.setSiblingIndex(-1);
     },
 
+    ////////////////////////////////////////////////////////////////////
+    // other public methods
+    ////////////////////////////////////////////////////////////////////
+
     /**
      * Tests whether the entity intersects the specified point in world coordinates
      * This ignores the alpha of the renderer.
@@ -629,8 +648,21 @@ var Entity = Fire.Class({
         return false;
     },
 
+    /**
+     * @method animate
+     * @param {object[]} keyFrames
+     * @param {object} timingInput - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
+     * @return {AnimationNode}
+     */
+    animate: function (keyFrames, timingInput) {
+        if (! this._animator) {
+            this._animator = new EntityAnimator(this);
+        }
+        return this._animator.animate(keyFrames, timingInput);
+    },
+
     ////////////////////////////////////////////////////////////////////
-    // other methods
+    // internal methods
     ////////////////////////////////////////////////////////////////////
 
     _onActivatedInHierarchy: function (value) {
@@ -658,6 +690,15 @@ var Entity = Fire.Class({
             var entity = this._children[i];
             if (entity._active) {
                 entity._onActivatedInHierarchy(value);
+            }
+        }
+        // update animator
+        if (this._animator) {
+            if (value) {
+                this._animator.play();
+            }
+            else {
+                this._animator.pause();
             }
         }
     },

@@ -77,7 +77,12 @@ var Engine = (function () {
     Engine._inputContext = null;
 
     /**
+     * The instance of global AnimationManager.
+     * @property _animationManager
+     * @type {AnimationManager}
+     * @private
      */
+    Engine._animationManager = null;
 
     /**
      * is loading scene?
@@ -194,6 +199,8 @@ var Engine = (function () {
 
     Engine.onPlay = function () {
         Engine._inputContext = new InputContext(Engine._renderContext);
+        Engine._animationManager = new AnimationManager();
+
         var now = Ticker.now();
         Time._restart(now);
         this.update();
@@ -208,6 +215,8 @@ var Engine = (function () {
 
         Engine._inputContext.destruct();
         Engine._inputContext = null;
+        Engine._animationManager.destruct();
+        Engine._animationManager = null;
 
         Input._reset();
 
@@ -228,6 +237,7 @@ var Engine = (function () {
             if (updateLogic) {
                 Engine._scene.update();
                 FObject._deferredDestroy();
+                Engine._animationManager.update();
             }
             Runtime.render();
 

@@ -30,6 +30,7 @@ var Screen = Fire.Screen;
 var FO = Fire.FObject;
 var V2 = Fire.Vec2;
 var v2 = Fire.v2;
+var color = Fire.color;
 var M3 = Fire.Matrix23;
 
 // Test helpers
@@ -62,6 +63,13 @@ var TestEnv = {
         Engine._renderContext.checkMatchCurrentScene(true);
     }
 };
+
+// force stop to ensure start will only called once
+function asyncEnd () {
+    Engine.stop();
+    TestOnly.update = null;
+    start();
+}
 
 //// output test states
 //
