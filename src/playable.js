@@ -6,6 +6,7 @@ var Playable = (function () {
     function Playable () {
         this._isPlaying = false;
         this._isPaused = false;
+        this._isUpdating = false;   // to cache the result of _isPlaying && !_isPaused
         this._stepOnce = false;
     }
 
@@ -14,7 +15,9 @@ var Playable = (function () {
     var prototype = Playable.prototype;
 
     /**
-     * Is playing or paused in play mode?
+     * Is playing?
+     * This property ignores the paused state, so even it is currently paused, this property still true.
+     *
      * @property isPlaying
      * @type {boolean}
      * @default false
@@ -22,6 +25,19 @@ var Playable = (function () {
      */
     JS.get(prototype, 'isPlaying', function () {
         return this._isPlaying;
+    }, true);
+
+    /**
+     * Is currently updating?
+     * This property is just the result of (this.isPlaying == true && this.isPaused == false)
+     *
+     * @property isUpdating
+     * @type {boolean}
+     * @default false
+     * @readOnly
+     */
+    JS.get(prototype, 'isUpdating', function () {
+        return this._isUpdating;
     }, true);
 
     /**
@@ -74,6 +90,7 @@ var Playable = (function () {
         if (this._isPlaying) {
             if (this._isPaused) {
                 this._isPaused = false;
+                this._isUpdating = true;
                 this.onResume();
                 //this.emit('resume');
             }
@@ -84,6 +101,7 @@ var Playable = (function () {
         }
         else {
             this._isPlaying = true;
+            this._isUpdating = !this._isPaused;
             this.onPlay();
             //this.emit('play');
         }
@@ -96,6 +114,7 @@ var Playable = (function () {
         if (this._isPlaying) {
             this._isPlaying = false;
             this._isPaused = false;
+            this._isUpdating = false;
             //this.emit('stop');
             this.onStop();
         }
@@ -106,6 +125,7 @@ var Playable = (function () {
      */
     prototype.pause = function () {
         this._isPaused = true;
+        this._isUpdating = false;
         //this.emit('pause');
         this.onPause();
     };
