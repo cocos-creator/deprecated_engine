@@ -76,7 +76,9 @@ var Animator = (function () {
         var anims = this.playingAnims;
         for (var i = 0; i < anims.length; i++) {
             var anim = anims[i];
-            anim.update(deltaTime);
+            if (anim._isPlaying) {
+                anim.update(deltaTime);
+            }
         }
     };
 
@@ -128,7 +130,7 @@ var EntityAnimator = (function () {
     }
 
     prototype._doAnimate = function (keyFrames, timingInput) {
-        var anim = new AnimationNode(null, timingInput);
+        var anim = new AnimationNode(this, null, timingInput);
         var curves = anim.curves;
 
         // create curves
@@ -150,6 +152,8 @@ var EntityAnimator = (function () {
                 continue;
             }
             lastOffset = offset;
+
+            // TODO 先遍历每一帧，获得所有曲线
 
             // parse keyframe
             for (var key in frame) {

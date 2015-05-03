@@ -80,7 +80,7 @@ var DynamicAnimCurve = Fire.Class({
                 var toVal = values[index];
                 // try linear lerp
                 if (typeof fromVal === 'number') {
-                    value = fromOffset + (toOffset - fromOffset) * ratio;
+                    value = fromOffset + (toVal - fromOffset) * ratio;
                 }
                 else {
                     var lerp = fromVal.lerp;
@@ -151,6 +151,8 @@ Fire.PlaybackDirection = PlaybackDirection;
 var AnimationNode = Fire.Class({
     name: 'Fire.AnimationNode',
 
+    extends: Playable,
+
     constructor: function () {
 
         // parse arguments
@@ -188,7 +190,7 @@ var AnimationNode = Fire.Class({
         // member variables
 
         /**
-         * The local time of this animation.
+         * The active time of this animation, not include delay.
          * @property time
          * @type {number}
          * @default 0
@@ -197,7 +199,7 @@ var AnimationNode = Fire.Class({
         this.time = 0;
 
         /**
-         * just used for delay
+         * The local time, just used for delay
          * @property _timeNoScale
          * @type {number}
          * @default 0
@@ -205,6 +207,24 @@ var AnimationNode = Fire.Class({
          * @private
          */
         this._timeNoScale = 0;
+
+        this._firstFramePlayed = false;
+
+        ///**
+        // * The current iteration index beginning with zero for the first iteration.
+        // * @property currentIterations
+        // * @type {number}
+        // * @default 0
+        // * @readOnly
+        // */
+        //this.currentIterations = 0.0;
+
+        // play
+
+        if (this.delay > 0) {
+            this.pause();
+        }
+        this.play();
     },
 
     properties: {
@@ -216,8 +236,9 @@ var AnimationNode = Fire.Class({
 
         // http://www.w3.org/TR/web-animations/#idl-def-AnimationTiming
 
-        /* *
-         * !#en The start delay which represents the number of seconds from an animation's start time to the start of the active interval.
+        /**
+         * !#en The start delay which represents the number of seconds from an animation's start time to the start of
+         * the active interval.
          * !#zh 延迟多少秒播放
          *
          * @property delay
@@ -239,9 +260,9 @@ var AnimationNode = Fire.Class({
          *
          * @property iterations
          * @type {number}
-         * @default 1.0
+         * @default Infinity
          */
-        iterations: 1.0,
+        iterations: Infinity,
 
         /**
          * !#en The iteration duration of this animation in seconds. (length)
@@ -271,28 +292,98 @@ var AnimationNode = Fire.Class({
     },
 
     update: function (delta) {
-        if (this.delay > 0 && this._timeNoScale < this.delay) {
+
+        // calculate delay time
+
+        if (this._isPaused) {
             this._timeNoScale += delta;
             if (this._timeNoScale < this.delay) {
                 // still waiting
                 return;
             }
             else {
-                // start play
-                delta -= (this._timeNoScale - this.delay);
+                // play
+                this.play();
             }
+            //// start play
+            // delta -= (this._timeNoScale - this.delay);
         }
-        this.time += (delta * this.playbackRate);
 
-        // TODO: direction, iterations
+        // make first frame perfect
 
-        var time = this.time;
-        var offset = time / this.duration;
+        //var playPerfectFirstFrame = (this.time === 0);
+        if (this._firstFramePlayed) {
+            this.time += (delta * this.playbackRate);
+        }
+        else {
+            this._firstFramePlayed = true;
+        }
+
+        // calculate times
+
+        var duration = this.duration;
+
+        var stop = false;
+        var offset = 0;         // computed offset
+        var time = this.time;   // computed time
+
+        var currentIterations = time / duration;
+        if (currentIterations < this.iterations) {
+            // calculate iteration time
+            if (time > duration) {
+                time %= duration;
+            }
+            // calculate directed time
+            if (this.direction !== PlaybackDirection.normal) {
+                time = this._calculateDirectedTime(time, currentIterations);
+            }
+            offset = time / duration;
+        }
+        else {
+            stop = true;
+            offset = this.iterations - (this.iterations | 0);
+            time = offset * duration;
+        }
+
+        // sample animation
+
         var curves = this.curves;
         var animator = this.animator;
         for (var i = 0, len = curves.length; i < len; i++) {
             var curve = curves[i];
             curve.sample(time, offset, animator);
+        }
+
+        if (stop) {
+            this.stop();
+        }
+    },
+
+    _calculateDirectedTime: function (iterationTime, currentIterations) {
+        var duration = this.duration;
+        var direction = this.direction;
+        if (direction === PlaybackDirection.alternate) {
+            var isOddIteration = currentIterations & 1;
+            if (isOddIteration) {
+                return duration - iterationTime;
+            }
+            else {
+                return iterationTime;
+            }
+        }
+        else if (direction === PlaybackDirection.reverse) {
+            return duration - iterationTime;
+        }
+        else if (direction === PlaybackDirection['alternate-reverse']) {
+            if (currentIterations & 1) {
+                return iterationTime;
+            }
+            else {
+                return duration - iterationTime;
+            }
+        }
+        else {
+            return iterationTime;
         }
     }
 });
