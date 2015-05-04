@@ -54,7 +54,7 @@ var Text = (function () {
                     Engine._renderContext.setTextStyle(this);
                 },
                 watch: {
-                    '_fontType': function (obj, propEL) {
+                    _fontType: function (obj, propEL) {
                         propEL.disabled = obj._fontType !== FontType.Custom;
                     }
                 }

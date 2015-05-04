@@ -51,7 +51,7 @@ var Camera = Fire.Class({
             },
             tooltip: "The height of design resolution. Width varies depending on viewport's aspect ratio",
             watch: {
-                '_contentStrategy': function (obj, propEL) {
+                _contentStrategy: function (obj, propEL) {
                     propEL.disabled = (obj._contentStrategy === Fire.ContentStrategyType.NoScale);
                 }
             }
