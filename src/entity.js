@@ -616,8 +616,8 @@ var Entity = Fire.Class({
         var spriteMatrix = new Fire.Matrix23();
         renderer.getSelfMatrix(spriteMatrix);
         // TODO getSelfRenderMatrix
-        spriteMatrix.a = renderer.width / renderer.sprite.width;
-        spriteMatrix.d = renderer.height / renderer.sprite.height;
+        spriteMatrix.a = renderer.renderWidth / renderer.sprite.width;
+        spriteMatrix.d = renderer.renderHeight / renderer.sprite.height;
         if (renderer.sprite.rotated) {
             spriteMatrix.b = spriteMatrix.d;
             spriteMatrix.c = -spriteMatrix.a;

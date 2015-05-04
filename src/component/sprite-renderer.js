@@ -80,7 +80,22 @@ var SpriteRenderer = Fire.Class({
 
         width_: {
             default: 100,
-            displayName: 'Width',
+            visible: false
+        },
+
+        /**
+         * The custom width of this renderer.
+         *
+         * @property customWidth
+         * @type {number}
+         */
+        customWidth: {
+            get: function () {
+                return this.width_;
+            },
+            set: function (value) {
+                this.width_ = value;
+            },
             watch: {
                 _useCustomSize: function (obj, propEL) {
                     propEL.disabled = !obj._useCustomSize;
@@ -89,32 +104,43 @@ var SpriteRenderer = Fire.Class({
         },
 
         /**
-         * !#en The custom width of this renderer.
+         * !#en Get the render width of this renderer.
          * !#zh 获取该 Renderer 的渲染宽度，如果 useCustomSize 为 true，获取到的是 custom width，否则是 sprite width。
-         * 设置这个值时，只会修改 custom width，不会修改 sprite width。
          *
-         * @property width
+         * @property renderWidth
          * @type {number}
-         * @beta
+         * @readOnly
          */
-        width: {
+        renderWidth: {
             get: function () {
-                if (!this._useCustomSize) {
-                    return Fire.isValid(this._sprite) ? this._sprite.width : 0;
-                }
-                else {
+                if (this._useCustomSize) {
                     return this.width_;
                 }
-            },
-            set: function (value) {
-                this.width_ = value;
+                else {
+                    return Fire.isValid(this._sprite) ? this._sprite.width : 0;
+                }
             },
             visible: false
         },
 
         height_: {
             default: 100,
-            displayName: 'Height',
+            visible: false
+        },
+
+        /**
+         * The custom height of this renderer.
+         *
+         * @property height
+         * @type {number}
+         */
+        customHeight: {
+            get: function () {
+                return this.height_;
+            },
+            set: function (value) {
+                this.height_ = value;
+            },
             watch: {
                 _useCustomSize: function (obj, propEL) {
                     propEL.disabled = !obj._useCustomSize;
@@ -123,25 +149,21 @@ var SpriteRenderer = Fire.Class({
         },
 
         /**
-         * !#en The custom height of this renderer.
+         * !#en Get the render height of this renderer.
          * !#zh 获取该 Renderer 的渲染高度，如果 useCustomSize 为 true，获取到的是 custom height，否则是 sprite height。
-         * 设置这个值时，只会修改 custom height，不会修改 sprite height。
          *
          * @property height
          * @type {number}
-         * @beta
+         * @readOnly
          */
-        height: {
+        renderHeight: {
             get: function () {
-                if (!this._useCustomSize) {
-                    return Fire.isValid(this._sprite) ? this._sprite.height : 0;
-                }
-                else {
+                if (this._useCustomSize) {
                     return this.height_;
                 }
-            },
-            set: function (value) {
-                this.height_ = value;
+                else {
+                    return Fire.isValid(this._sprite) ? this._sprite.height : 0;
+                }
             },
             visible: false
         }
@@ -161,7 +183,7 @@ var SpriteRenderer = Fire.Class({
     },
 
     getWorldSize: function () {
-        return new Fire.Vec2(this.width, this.height);
+        return new Fire.Vec2(this.renderWidth, this.renderHeight);
     },
 
 
@@ -170,8 +192,8 @@ var SpriteRenderer = Fire.Class({
         if (this._sprite) {
             // calculate render matrix
             //   scale
-            tmpMat23.a = this.width / this._sprite.width;
-            tmpMat23.d = this.height / this._sprite.height;
+            tmpMat23.a = this.renderWidth / this._sprite.width;
+            tmpMat23.d = this.renderHeight / this._sprite.height;
             //   rotate cw
             if (this._sprite.rotated) {
                 tmpMat23.b = tmpMat23.d;
@@ -189,8 +211,8 @@ var SpriteRenderer = Fire.Class({
     },
 
     getSelfMatrix: function (out) {
-        var w = this.width;
-        var h = this.height;
+        var w = this.renderWidth;
+        var h = this.renderHeight;
 
         var pivotX = 0.5;
         var pivotY = 0.5;
@@ -235,7 +257,7 @@ Fire.SpriteRenderer = SpriteRenderer;
 Fire.addComponentMenu(SpriteRenderer, 'SpriteRenderer');
 Fire.executeInEditMode(SpriteRenderer);
 
-JS.getset(SpriteRenderer.prototype,
+JS.getset(SpriteRenderer.prototype, 'customSize_',
     function () {
         Fire.warn("'SpriteRenderer.customSize_' is deprecated, use _useCustomSize instead ; )");
         return this._useCustomSize;
@@ -245,7 +267,7 @@ JS.getset(SpriteRenderer.prototype,
         this._useCustomSize = value;
     }
 );
-JS.getset(SpriteRenderer.prototype,
+JS.getset(SpriteRenderer.prototype, 'customSize',
     function () {
         Fire.warn("'SpriteRenderer.customSize' is deprecated, use useCustomSize instead ; )");
         return this.useCustomSize;
@@ -253,5 +275,25 @@ JS.getset(SpriteRenderer.prototype,
     function (value) {
         Fire.warn("'SpriteRenderer.customSize' is deprecated, use useCustomSize instead ; )");
         this.useCustomSize = value;
+    }
+);
+JS.getset(SpriteRenderer.prototype, 'width',
+    function () {
+        Fire.warn("The getter of 'SpriteRenderer.width' is deprecated, use renderWidth instead ; )");
+        return this.renderWidth;
+    },
+    function (value) {
+        Fire.warn("The setter 'SpriteRenderer.width' is deprecated, use customWidth instead ; )");
+        this.customWidth = value;
+    }
+);
+JS.getset(SpriteRenderer.prototype, 'height',
+    function () {
+        Fire.warn("The getter of 'SpriteRenderer.height' is deprecated, use renderHeight instead ; )");
+        return this.renderHeight;
+    },
+    function (value) {
+        Fire.warn("The setter 'SpriteRenderer.height' is deprecated, use customHeight instead ; )");
+        this.customHeight = value;
     }
 );
