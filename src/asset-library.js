@@ -322,10 +322,10 @@ var AssetLibrary = (function () {
          *
          * @method unloadAsset
          * @param {Asset|string} assetOrUuid
-         * @param {boolean} [destroyImmediate=false] When destroyImmediate is true, if there are objects
-         *                                           referencing the asset, the references will become invalid.
+         * @param {boolean} [destroy=false] - When destroyImmediate is true, if there are objects referencing the asset,
+         *                                    the references will become invalid.
          */
-        unloadAsset: function (assetOrUuid, destroyImmediate) {
+        unloadAsset: function (assetOrUuid, destroy) {
             var asset;
             if (typeof assetOrUuid === 'string') {
                 asset = AssetLibrary._uuidToAsset[assetOrUuid];
@@ -334,10 +334,8 @@ var AssetLibrary = (function () {
                 asset = assetOrUuid;
             }
             if (asset) {
-                if (destroyImmediate && asset.isValid) {
+                if (destroy && asset.isValid) {
                     asset.destroy();
-                    // simulate destroy immediate
-                    FObject._deferredDestroy();
                 }
                 delete AssetLibrary._uuidToAsset[asset._uuid];
             }
@@ -392,7 +390,7 @@ var AssetLibrary = (function () {
     // @endif
     Asset.prototype._onPreDestroy = function () {
         if (AssetLibrary._uuidToAsset[this._uuid] === this) {
-            AssetLibrary.unloadAsset(this, false);
+            AssetLibrary.unloadAsset(this);
         }
     };
 

@@ -368,7 +368,10 @@
     };
 
     Transform.prototype.destroy = function () {
-        Fire.error("Not allowed to destroy the transform. Please destroy the entity instead.");
+        // @ifdef EDITOR
+        Fire.error("Can't destroy Transform component of '%s', destroying the transform component is not allowed." +
+                   "If you want to destroy the entity, please call 'destroy' on the entity instead.", this.entity.name);
+        // @endif
     };
 
     // other functions
@@ -517,7 +520,8 @@
     };
 
     /**
-     * Moves the transform in the direction and distance of translation. The movement is applied relative to the transform's local space.
+     * Moves the transform in the direction and distance of translation. The movement is applied relative to the
+     * transform's local space.
      * @method translate
      * @param {Vec2} translation
      */

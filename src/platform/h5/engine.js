@@ -190,6 +190,7 @@ var Engine = (function () {
         }
     };
     Engine.onResume = function () {
+        FObject._clearDeferredDestroyTimer();
         editorCallback.onEnginePlayed(true);
     };
     Engine.onPause = function () {
@@ -198,6 +199,12 @@ var Engine = (function () {
 // @endif
 
     Engine.onPlay = function () {
+        // @ifdef EDITOR
+        if (! Engine._isPaused) {
+            FObject._clearDeferredDestroyTimer();
+        }
+        // @endif
+
         Engine._inputContext = new InputContext(Engine._renderContext);
         Engine._animationManager = new AnimationManager();
 
