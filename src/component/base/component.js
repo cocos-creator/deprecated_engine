@@ -399,9 +399,6 @@ Fire._componentMenuItems = [];
 // @endif
 
 /**
- * @class Fire
- */
-/**
  * Register a component to the "Component" menu.
  *
  * @method addComponentMenu

@@ -1,20 +1,4 @@
-﻿///**
-// * !#en
-// *
-// * !#zh
-// * ```
-// * 本模块不含实际代码，仅仅为了声明本页面而定义。
-// * ```
-// *
-// * @module Reserved-Words
-// */
-
-///**
-// * @module Fire
-// * @class Fire
-// */
-
-var Destroying = Fire._ObjectFlags.Destroying;
+﻿var Destroying = Fire._ObjectFlags.Destroying;
 var DontDestroy = Fire._ObjectFlags.DontDestroy;
 var Hide = Fire._ObjectFlags.Hide;
 var HideInGame = Fire._ObjectFlags.HideInGame;

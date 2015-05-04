@@ -290,7 +290,6 @@ gulp.task('export-api-syntax', function (done) {
     // 默认所有 engine 模块都在 Fire 下面
     var DefaultModuleHeader = "/**\n" +
                               " * @module Fire\n" +
-                              " * @class Fire\n" +
                               " */\n";
     var dest = '../../utils/api/engine';
 

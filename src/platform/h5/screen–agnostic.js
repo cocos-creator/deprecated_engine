@@ -151,7 +151,7 @@ ContentStrategy.prototype.buildResult = function (container, content, scale) {
 
 /**
  * @method getContainerSize
- * @returns {Vec2}
+ * @return {Vec2}
  */
 ContentStrategy.prototype.getContainerSize = function () {
     var container = Fire.Scene._container;

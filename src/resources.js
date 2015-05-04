@@ -35,7 +35,7 @@ JS.mixin(AssetBundleBase.prototype, {
      *
      * @method contains
      * @param {string} path - not support wildcard
-     * @returns {boolean}
+     * @return {boolean}
      */
     contains: function (path) {
         return (path in this._pathToUuid);
@@ -44,7 +44,7 @@ JS.mixin(AssetBundleBase.prototype, {
     /**
      * Return all asset paths in the bundle.
      * @method getAllPaths
-     * @returns {string[]}
+     * @return {string[]}
      */
     getAllPaths: function () {
         return Object.keys(this._pathToUuid);
