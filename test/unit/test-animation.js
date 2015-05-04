@@ -43,7 +43,7 @@ asyncTest('EntityAnimator.animate', function () {
     var animator = new EntityAnimator(entity);
     var animation = animator.animate([
         {
-            'Fire.Transform': { position: v2(50, 100), scaleX: 1 },
+            'Fire.Transform': { position: v2(50, 100), scaleX: 10 },
             'Fire.SpriteRenderer': { color: Color.white }
         },
         {
@@ -64,7 +64,7 @@ asyncTest('EntityAnimator.animate', function () {
     strictEqual(colorCurve.prop, 'color', 'propName of colorCurve should be color');
 
     deepEqual(posCurve.values, [v2(50, 100), v2(100, 50)], 'values of posCurve should equals keyFrames');
-    deepEqual(scaleCurve.values, [1, 20], 'values of scaleCurve should equals keyFrames');
+    deepEqual(scaleCurve.values, [10, 20], 'values of scaleCurve should equals keyFrames');
     deepEqual(colorCurve.values, [Color.white, color(1,1,1,0)], 'values of colorCurve should equals keyFrames');
 
     deepEqual(posCurve.offsets, [0, 1], 'offsets of posCurve should equals keyFrames');
@@ -79,6 +79,8 @@ asyncTest('EntityAnimator.animate', function () {
         // next frame
         TestOnly.update = function (updateLogic) {
             ok(entity.transform.position.equals(v2(50, 100)) === false, 'should play animation at next frame');
+            animator.update(100);
+            strictEqual(animator.isUpdating, false, 'animator should not update if non playing animation');
             asyncEnd();
         };
     };
@@ -121,7 +123,9 @@ test('AnimationNode', function () {
     animation.update(actualDuration / 4);
     deepEqual(renderer.color, color(1, 1, 1, 0.75), 'should repeat animation');
     strictEqual(animation.isPlaying, false, 'should stop animation');
-    //
+
+    animation.update(actualDuration / 4);
+    deepEqual(renderer.color, color(1, 1, 1, 0.75), 'should not animate if stopped');
 });
 
 test('direction', function () {
@@ -129,32 +133,33 @@ test('direction', function () {
 
     var animation = entity.animate([
         {
-            'Fire.Transform': { x: 0 },
+            'Fire.Transform': { x: 10 },
         },
         {
-            'Fire.Transform': { x: 100 },
+            'Fire.Transform': { x: 110 },
         }
     ], {
         delay: 0.3,
         duration: 1.3,
         playbackRate: 0.5,
-        direction: Fire.PlaybackDirection.reverse
+        direction: Fire.PlaybackDirection.reverse,
+        iterations: Infinity
     });
 
     animation.update(0.3);
 
     var actualDuration = animation.duration / animation.playbackRate;
     animation.update(actualDuration / 4);
-    strictEqual(entity.transform.x, 75, 'should play reversed animation');
+    strictEqual(entity.transform.x, 75 + 10, 'should play reversed animation');
 
     animation.direction = Fire.PlaybackDirection.alternate;
     animation.time = 0;
     animation.update(actualDuration / 4);
-    strictEqual(entity.transform.x, 25, 'should play animation as specified in 0 iteration');
+    strictEqual(entity.transform.x, 25 + 10, 'should play animation as specified in 0 iteration');
     animation.update(actualDuration * 6);
-    close(entity.transform.x, 25, 0.000001,'should play animation as specified in even iterations');
+    close(entity.transform.x, 25 + 10, 0.000001,'should play animation as specified in even iterations');
 
     animation.time = 0;
     animation.update(actualDuration / 4 + actualDuration);
-    strictEqual(entity.transform.x, 75, 'should played in the reverse direction in odd iterations');
+    strictEqual(entity.transform.x, 75 + 10, 'should played in the reverse direction in odd iterations');
 });

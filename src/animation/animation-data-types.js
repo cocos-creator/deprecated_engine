@@ -80,7 +80,7 @@ var DynamicAnimCurve = Fire.Class({
                 var toVal = values[index];
                 // try linear lerp
                 if (typeof fromVal === 'number') {
-                    value = fromOffset + (toVal - fromOffset) * ratio;
+                    value = fromVal + (toVal - fromVal) * ratio;
                 }
                 else {
                     var lerp = fromVal.lerp;
@@ -260,9 +260,9 @@ var AnimationNode = Fire.Class({
          *
          * @property iterations
          * @type {number}
-         * @default Infinity
+         * @default 1
          */
-        iterations: Infinity,
+        iterations: 1,
 
         /**
          * !#en The iteration duration of this animation in seconds. (length)
@@ -385,7 +385,13 @@ var AnimationNode = Fire.Class({
         else {
             return iterationTime;
         }
-    }
+    },
+
+    //onPlay: function () {
+    //},
+    //
+    //onStop: function () {
+    //}
 });
 
 Fire.AnimationNode = AnimationNode;

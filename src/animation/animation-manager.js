@@ -14,8 +14,14 @@
                 var animator = animators[i];
                 if (animator._isUpdating) {
                     animator.update(deltaTime);
+                    // if removed
+                    if (! animator._isPlaying) {
+                        i--;
+                        len--;
+                    }
                 }
             }
+            // TODO: trigger events
         },
         destruct: function () {},
 

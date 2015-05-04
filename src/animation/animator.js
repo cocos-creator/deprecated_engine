@@ -3,15 +3,6 @@ var Animator = (function () {
         this.target = target;
         this.enabled = true;
         this.playingAnims = [];
-        // @ifdef EDITOR
-        if (Engine._isPlaying) {
-            Engine._animationManager.addAnimator(this);
-        }
-        // @endif
-        // @ifndef EDITOR
-        Engine._animationManager.addAnimator(this);
-        // @endif
-        this.play();
     }
 
     JS.extend(Animator, Playable);
@@ -58,7 +49,7 @@ var Animator = (function () {
      * @param {object[]} keyFrames
      * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of
      *     an Animation in bulk.
-     * @return {Animation}
+     * @return {AnimationNode}
      */
     prototype.animate = function (keyFrames, timingInput) {
         if (! keyFrames) {
@@ -68,7 +59,10 @@ var Animator = (function () {
         // compute absolute offset of each keyframe with a null offset
         computeNullOffsets(keyFrames);
 
-        return this._doAnimate(keyFrames, timingInput);
+        var anim = this._doAnimate(keyFrames, timingInput);
+
+        this.play();
+        return anim;
     };
 
     // 由 AnimationManager 调用，只有在该 animator 处于播放状态时才会被调用
@@ -78,11 +72,30 @@ var Animator = (function () {
             var anim = anims[i];
             if (anim._isPlaying) {
                 anim.update(deltaTime);
+                // if removed
+                if (! anim._isPlaying) {
+                    anims.splice(i, 1);     // TODO: 由 anim 来负责调用 splice
+                    i--;
+                }
             }
+        }
+        if (anims.length === 0) {
+            this.stop();
         }
     };
 
-    prototype.destruct = function () {
+    prototype.onPlay = function () {
+        // @ifdef EDITOR
+        if (Engine._isPlaying) {
+            Engine._animationManager.addAnimator(this);
+        }
+        // @endif
+        // @ifndef EDITOR
+        Engine._animationManager.addAnimator(this);
+        // @endif
+    };
+
+    prototype.onStop = function () {
         // @ifdef EDITOR
         if (Engine._isPlaying) {
             Engine._animationManager.removeAnimator(this);

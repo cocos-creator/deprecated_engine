@@ -285,7 +285,6 @@ var Entity = Fire.Class({
         // stop animator
         if (this._animator) {
             this._animator.stop();
-            this._animator.destruct();
         }
     },
 
@@ -384,10 +383,12 @@ var Entity = Fire.Class({
         else {
             constructor = typeOrTypename;
         }
-        for (var c = 0; c < this._components.length; ++c) {
-            var component = this._components[c];
-            if (component instanceof constructor) {
-                return component;
+        if (constructor) {
+            for (var c = 0; c < this._components.length; ++c) {
+                var component = this._components[c];
+                if (component instanceof constructor) {
+                    return component;
+                }
             }
         }
         return null;
@@ -651,7 +652,8 @@ var Entity = Fire.Class({
     /**
      * @method animate
      * @param {object[]} keyFrames
-     * @param {object} timingInput - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
+     * @param {object} timingInput - This dictionary is used as a convenience for specifying the timing properties of
+     *                               an Animation in bulk.
      * @return {AnimationNode}
      */
     animate: function (keyFrames, timingInput) {
@@ -698,7 +700,7 @@ var Entity = Fire.Class({
                 this._animator.play();
             }
             else {
-                this._animator.pause();
+                this._animator.stop();
             }
         }
     },
