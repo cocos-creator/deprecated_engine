@@ -59,9 +59,6 @@ var BitmapText = (function () {
         Fire.MultiText
     );
 
-    BitmapText.prop('_anchor', Fire.TextAnchor.midCenter, Fire.HideInInspector);
-
-
     /**
      * The color of the text.
      * @property color
@@ -80,11 +77,12 @@ var BitmapText = (function () {
 
     BitmapText.prop('_color', Fire.Color.white, Fire.HideInInspector);
 
+    BitmapText.prop('_anchor', Fire.TextAnchor.MidCenter, Fire.HideInInspector);
     /**
      * The anchor point of the text.
      * @property anchor
-     * @type {BitmapText.TextAnchor}
-     * @default BitmapText.TextAnchor.midCenter
+     * @type {Fire.TextAnchor}
+     * @default Fire.TextAnchor.midCenter
      */
     BitmapText.getset('anchor',
         function () {
@@ -98,13 +96,13 @@ var BitmapText = (function () {
         Fire.Enum(Fire.TextAnchor)
     );
 
-    BitmapText.prop('_align', Fire.TextAlign.left, Fire.HideInInspector);
+    BitmapText.prop('_align', Fire.TextAlign.Left, Fire.HideInInspector);
 
     /**
      * How lines of text are aligned (left, right, center).
      * @property align
-     * @type {BitmapText.TextAlign}
-     * @default BitmapText.TextAlign.left
+     * @type {Fire.TextAlign}
+     * @default Fire.TextAlign.left
      */
     BitmapText.getset('align',
         function () {
@@ -156,33 +154,33 @@ var BitmapText = (function () {
         var anchorOffsetY = 0;
 
         switch (this._anchor) {
-            case Fire.TextAnchor.topLeft:
+            case Fire.TextAnchor.TopLeft:
                 break;
-            case Fire.TextAnchor.topCenter:
+            case Fire.TextAnchor.TopCenter:
                 anchorOffsetX = w * -0.5;
                 break;
-            case Fire.TextAnchor.topRight:
+            case Fire.TextAnchor.TopRight:
                 anchorOffsetX = -w;
                 break;
-            case Fire.TextAnchor.midLeft:
+            case Fire.TextAnchor.MidLeft:
                 anchorOffsetY = h * 0.5;
                 break;
-            case Fire.TextAnchor.midCenter:
+            case Fire.TextAnchor.MidCenter:
                 anchorOffsetX = w * -0.5;
                 anchorOffsetY = h * 0.5;
                 break;
-            case Fire.TextAnchor.midRight:
+            case Fire.TextAnchor.MidRight:
                 anchorOffsetX = -w;
                 anchorOffsetY = h * 0.5;
                 break;
-            case Fire.TextAnchor.botLeft:
+            case Fire.TextAnchor.BotLeft:
                 anchorOffsetY = h;
                 break;
-            case Fire.TextAnchor.botCenter:
+            case Fire.TextAnchor.BotCenter:
                 anchorOffsetX = w * -0.5;
                 anchorOffsetY = h;
                 break;
-            case Fire.TextAnchor.botRight:
+            case Fire.TextAnchor.BotRight:
                 anchorOffsetX = -w;
                 anchorOffsetY = h;
                 break;

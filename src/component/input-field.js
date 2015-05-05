@@ -1,25 +1,61 @@
-var Text = (function () {
+var InputField = (function () {
+
+    /**
+     * @class FontFlagType
+     * @static
+     */
+    var FontFlagType = Fire.defineEnum({
+        /**
+         * @property Password
+         * @type {number}
+         */
+        Password: -1,
+        /**
+         * @property Text
+         * @type {number}
+         */
+        Text: -1
+    });
 
     var tempMatrix = new Fire.Matrix23();
 
-    var Text = Fire.Class({
+    /**
+     * The Input Field renderer component.
+     * @class InputField
+     * @extends Renderer
+     */
+    var InputField = Fire.Class({
         // 名字
-        name: "Fire.Text",
+        name: "Fire.InputField",
         // 继承
         extends: Renderer,
-        // 构造函数
-        constructor: function () {
-            RenderContext.initRenderer(this);
-        },
         // 属性
         properties: {
+            _background: {
+                default: null
+            },
+            /**
+             * The background of the inputField.
+             * @property background
+             * @type {SpriteRenderer}
+             * @default null
+             */
+            background: {
+                get: function () {
+                    return this._background;
+                },
+                set: function (value) {
+                    this._background = value;
+                },
+                type: Fire.SpriteRenderer
+            },
             // 字体类型
             _fontType: {
                 default: Fire.FontType.Arial,
                 type: Fire.FontType
             },
             /**
-             * The font type of the text.
+             * The font type of the input text.
              * @property fontType
              * @type {FontType}
              * @default FontType.Arial
@@ -30,13 +66,13 @@ var Text = (function () {
                 },
                 set: function (value) {
                     this._fontType = value;
-                    Engine._renderContext.setTextStyle(this);
+                    Engine._renderContext.setFontName(this);
                 },
                 type: Fire.FontType
             },
             _customFontType: "Arial",
             /**
-             * The custom font type of the text.
+             * The custom font type of the input text.
              * @property customFontType
              * @type {string}
              * @default "Arial"
@@ -47,7 +83,7 @@ var Text = (function () {
                 },
                 set: function (value) {
                     this._customFontType = value;
-                    Engine._renderContext.setTextStyle(this);
+                    Engine._renderContext.setFontName(this);
                 },
                 watch: {
                     '_fontType': function (obj, propEL) {
@@ -55,50 +91,82 @@ var Text = (function () {
                     }
                 }
             },
-            // 文字内容
-            _text: 'text',
+            _fontFlagType: {
+                default: FontFlagType.Text,
+                type: FontFlagType
+            },
             /**
-             * The text of text.
+             * The font flag Type of the input text.
+             * @property fontFlagType
+             * @type {FontFlagType}
+             * @default FontFlagType.Text
+             */
+            fontFlagType: {
+                get: function () {
+                    return this._fontFlagType;
+                },
+                set: function (value) {
+                    this._fontFlagType = value;
+                    Engine._renderContext.setInputFlag(this);
+                },
+                type: FontFlagType
+            },
+            _text: 'Enter text...',
+            /**
+             * The text of input field.
              * @property text
              * @type {string}
              * @default "Enter text..."
              */
             text: {
                 get: function () {
-                    return this._text;
+                    var contentText = Engine._renderContext.getInputText(this);
+                    return contentText ? contentText : this._text;
                 },
                 set: function (value) {
                     this._text = value;
-                    Engine._renderContext.setTextContent(this, this._text);
+                    Engine._renderContext.setInputText(this);
                 },
                 multiline: true
             },
-            // 字体大小
-            _size: 30,
+            _size: 20,
             /**
-             * The size of text.
+             * The size of input text.
              * @property size
              * @type {number}
-             * @default 30
+             * @default 20
              */
             size: {
-                get: function() {
+                get: function () {
                     return this._size;
                 },
-                set: function(value) {
-                    if (value !== this._size && value > 0) {
-                        this._size = value;
-                        Engine._renderContext.setTextStyle(this);
-                    }
+                set: function (value) {
+                    this._size = value;
+                    Engine._renderContext.setFontSize(this);
                 }
             },
-            // 字体颜色
-            _color: Fire.Color.white,
+            _maxLength: 10,
             /**
-             * The color of text.
+             * The maxLength of input text.
+             * @property maxLength
+             * @type {number}
+             * @default 10
+             */
+            maxLength:{
+                get: function () {
+                    return this._maxLength;
+                },
+                set: function (value) {
+                    this._maxLength = value;
+                    Engine._renderContext.setMaxLength(this);
+                }
+            },
+            _color: Fire.Color.black,
+            /**
+             * The color of input text.
              * @property color
              * @type {Color}
-             * @default Fire.Color.white
+             * @default Fire.Color.black
              */
             color: {
                 get: function() {
@@ -106,31 +174,13 @@ var Text = (function () {
                 },
                 set: function(value) {
                     this._color = value;
-                    Engine._renderContext.setTextStyle(this);
+                    Engine._renderContext.setTextColor(this);
                 }
             },
-            // 字体对齐方式
-            _align: Fire.TextAlign.Left,
-            /**
-             * How lines of text are aligned (left, right, center).
-             * @property align
-             * @type {Fire.TextAlign}
-             * @default Fire.TextAlign.left
-             */
-            align: {
-                get: function() {
-                    return this._align;
-                },
-                set: function(value) {
-                    this._align = value;
-                    Engine._renderContext.setTextStyle(this);
-                },
-                type: Fire.TextAlign
-            },
             // 字体锚点
-            _anchor: Fire.TextAnchor.MidCenter,
+            _anchor: Fire.TextAnchor.midCenter,
             /**
-             * The anchor point of the text.
+             * The anchor point of the input field.
              * @property anchor
              * @type {Fire.TextAnchor}
              * @default Fire.TextAnchor.midCenter
@@ -139,14 +189,19 @@ var Text = (function () {
                 get: function() {
                     return this._anchor;
                 },
-                set: function(value) {
-                    this._anchor = value;
+                set: function(value){
+                    if (value !== this._anchor) {
+                        this._anchor = value;
+                    }
                 },
                 type: Fire.TextAnchor
             }
         },
         onLoad: function () {
-            Engine._renderContext.addText(this);
+            Engine._renderContext.initInputField(this);
+        },
+        onStart: function () {
+            this._background = this.entity.parent;
         },
         onEnable: function () {
             Engine._renderContext.show(this, true);
@@ -163,7 +218,7 @@ var Text = (function () {
         onPreRender: function () {
             this.getSelfMatrix(tempMatrix);
             tempMatrix.prepend(this.transform._worldTransform);
-            Engine._curRenderContext.updateTextTransform(this, tempMatrix);
+            Engine._curRenderContext.updateInputFieldTransform(this, tempMatrix);
         },
         getSelfMatrix: function (out) {
             var textSize = Engine._renderContext.getTextSize(this);
@@ -216,11 +271,11 @@ var Text = (function () {
         }
     });
 
-    //-- 增加 Text 到 组件菜单上
-    Fire.addComponentMenu(Text, 'Text');
-    Fire.executeInEditMode(Text);
+    //-- 增加 TextInput 到 组件菜单上
+    Fire.addComponentMenu(InputField, 'InputField');
+    Fire.executeInEditMode(InputField);
 
-    return Text;
+    return InputField;
 })();
 
-Fire.Text = Text;
+Fire.InputField = InputField;
