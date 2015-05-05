@@ -1,18 +1,47 @@
-var Text = (function () {
+var InputField = (function () {
+
+    /**
+     * @class FontFlagType
+     * @static
+     */
+    var FontFlagType = Fire.defineEnum({
+        /**
+         * @property Password
+         * @type {number}
+         */
+        Password: -1,
+        /**
+         * @property Text
+         * @type {number}
+         */
+        Text: -1
+    });
 
     var tempMatrix = new Fire.Matrix23();
 
-    var Text = Fire.Class({
+    var InputField = Fire.Class({
         // 名字
-        name: "Fire.Text",
+        name: "Fire.InputField",
         // 继承
         extends: Renderer,
         // 构造函数
         constructor: function () {
-            RenderContext.initRenderer(this);
         },
         // 属性
         properties: {
+            _background: {
+                default: null,
+                type: Fire.SpriteRenderer
+            },
+            background: {
+                get: function () {
+                    return this._background;
+                },
+                set: function (value) {
+                    this._background = value;
+                },
+                type: Fire.SpriteRenderer
+            },
             // 字体类型
             _fontType: {
                 default: Fire.FontType.Arial,
@@ -24,7 +53,7 @@ var Text = (function () {
                 },
                 set: function (value) {
                     this._fontType = value;
-                    Engine._renderContext.setTextStyle(this);
+                    Engine._renderContext.setFontName(this);
                 },
                 type: Fire.FontType
             },
@@ -35,7 +64,7 @@ var Text = (function () {
                 },
                 set: function (value) {
                     this._customFontType = value;
-                    Engine._renderContext.setTextStyle(this);
+                    Engine._renderContext.setFontName(this);
                 },
                 watch: {
                     '_fontType': function (obj, propEL) {
@@ -43,54 +72,61 @@ var Text = (function () {
                     }
                 }
             },
-            // 文字内容
-            _text: 'text',
-            //
+            _fontFlagType: {
+                default: FontFlagType.Text,
+                type: FontFlagType
+            },
+            fontFlagType: {
+                get: function () {
+                    return this._fontFlagType;
+                },
+                set: function (value) {
+                    this._fontFlagType = value;
+                    Engine._renderContext.setInputFlag(this);
+                },
+                type: FontFlagType
+            },
+            _text: 'Enter text...',
             text: {
                 get: function () {
-                    return this._text;
+                    var contentText = Engine._renderContext.getInputText(this);
+                    return contentText ? contentText : this._text;
                 },
                 set: function (value) {
                     this._text = value;
-                    Engine._renderContext.setTextContent(this, this._text);
+                    Engine._renderContext.setInputText(this);
                 },
                 multiline: true
             },
-            // 字体大小
-            _size: 30,
+            _size: 20,
             size: {
-                get: function() {
+                get: function () {
                     return this._size;
                 },
-                set: function(value) {
-                    if (value !== this._size && value > 0) {
-                        this._size = value;
-                        Engine._renderContext.setTextStyle(this);
-                    }
+                set: function (value) {
+                    this._size = value;
+                    Engine._renderContext.setFontSize(this);
                 }
             },
-            // 字体颜色
-            _color: Fire.Color.white,
+            _maxLength: 10,
+            maxLength:{
+                get: function () {
+                    return this._maxLength;
+                },
+                set: function (value) {
+                    this._maxLength = value;
+                    Engine._renderContext.setMaxLength(this);
+                }
+            },
+            _color: Fire.Color.black,
             color: {
                 get: function() {
                     return this._color;
                 },
                 set: function(value) {
                     this._color = value;
-                    Engine._renderContext.setTextStyle(this);
+                    Engine._renderContext.setTextColor(this);
                 }
-            },
-            // 字体对齐方式
-            _align: Fire.TextAlign.left,
-            align: {
-                get: function() {
-                    return this._align;
-                },
-                set: function(value) {
-                    this._align = value;
-                    Engine._renderContext.setTextStyle(this);
-                },
-                type: Fire.TextAlign
             },
             // 字体锚点
             _anchor: Fire.TextAnchor.midCenter,
@@ -107,7 +143,10 @@ var Text = (function () {
             }
         },
         onLoad: function () {
-            Engine._renderContext.addText(this);
+            Engine._renderContext.initInputField(this);
+        },
+        onStart: function () {
+            this._background = this.entity.parent;
         },
         onEnable: function () {
             Engine._renderContext.show(this, true);
@@ -128,7 +167,6 @@ var Text = (function () {
 
             var anchorOffsetX = 0;
             var anchorOffsetY = 0;
-
             switch (this._anchor) {
                 case Fire.TextAnchor.topLeft:
                     break;
@@ -163,6 +201,7 @@ var Text = (function () {
                 default:
                     break;
             }
+
             out.a = 1;
             out.b = 0;
             out.c = 0;
@@ -173,15 +212,15 @@ var Text = (function () {
         onPreRender: function () {
             this.getSelfMatrix(tempMatrix);
             tempMatrix.prepend(this.transform._worldTransform);
-            Engine._curRenderContext.updateTextTransform(this, tempMatrix);
+            Engine._curRenderContext.updateInputFieldTransform(this, tempMatrix);
         }
     });
 
-    //-- 增加 Text 到 组件菜单上
-    Fire.addComponentMenu(Text, 'Text');
-    Fire.executeInEditMode(Text);
+    //-- 增加 TextInput 到 组件菜单上
+    Fire.addComponentMenu(InputField, 'InputField');
+    Fire.executeInEditMode(InputField);
 
-    return Text;
+    return InputField;
 })();
 
-Fire.Text = Text;
+Fire.InputField = InputField;
