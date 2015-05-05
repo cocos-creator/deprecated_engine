@@ -18,6 +18,12 @@ var Text = (function () {
                 default: Fire.FontType.Arial,
                 type: Fire.FontType
             },
+            /**
+             * The font type of the text.
+             * @property fontType
+             * @type {FontType}
+             * @default FontType.Arial
+             */
             fontType: {
                 get: function () {
                     return this._fontType;
@@ -29,6 +35,12 @@ var Text = (function () {
                 type: Fire.FontType
             },
             _customFontType: "Arial",
+            /**
+             * The custom font type of the text.
+             * @property customFontType
+             * @type {string}
+             * @default "Arial"
+             */
             customFontType:{
                 get: function () {
                     return this._customFontType;
@@ -45,7 +57,12 @@ var Text = (function () {
             },
             // 文字内容
             _text: 'text',
-            //
+            /**
+             * The text of text.
+             * @property text
+             * @type {string}
+             * @default "Enter text..."
+             */
             text: {
                 get: function () {
                     return this._text;
@@ -58,6 +75,12 @@ var Text = (function () {
             },
             // 字体大小
             _size: 30,
+            /**
+             * The size of text.
+             * @property size
+             * @type {number}
+             * @default 30
+             */
             size: {
                 get: function() {
                     return this._size;
@@ -71,6 +94,12 @@ var Text = (function () {
             },
             // 字体颜色
             _color: Fire.Color.white,
+            /**
+             * The color of text.
+             * @property color
+             * @type {Color}
+             * @default Fire.Color.white
+             */
             color: {
                 get: function() {
                     return this._color;
@@ -81,7 +110,13 @@ var Text = (function () {
                 }
             },
             // 字体对齐方式
-            _align: Fire.TextAlign.left,
+            _align: Fire.TextAlign.Left,
+            /**
+             * How lines of text are aligned (left, right, center).
+             * @property align
+             * @type {Fire.TextAlign}
+             * @default Fire.TextAlign.left
+             */
             align: {
                 get: function() {
                     return this._align;
@@ -93,15 +128,19 @@ var Text = (function () {
                 type: Fire.TextAlign
             },
             // 字体锚点
-            _anchor: Fire.TextAnchor.midCenter,
+            _anchor: Fire.TextAnchor.MidCenter,
+            /**
+             * The anchor point of the text.
+             * @property anchor
+             * @type {Fire.TextAnchor}
+             * @default Fire.TextAnchor.midCenter
+             */
             anchor: {
                 get: function() {
                     return this._anchor;
                 },
-                set: function(value){
-                    if (value !== this._anchor) {
-                        this._anchor = value;
-                    }
+                set: function(value) {
+                    this._anchor = value;
                 },
                 type: Fire.TextAnchor
             }
@@ -121,6 +160,11 @@ var Text = (function () {
         getWorldSize: function () {
             return Engine._renderContext.getTextSize(this);
         },
+        onPreRender: function () {
+            this.getSelfMatrix(tempMatrix);
+            tempMatrix.prepend(this.transform._worldTransform);
+            Engine._curRenderContext.updateTextTransform(this, tempMatrix);
+        },
         getSelfMatrix: function (out) {
             var textSize = Engine._renderContext.getTextSize(this);
             var w = textSize.x;
@@ -130,33 +174,33 @@ var Text = (function () {
             var anchorOffsetY = 0;
 
             switch (this._anchor) {
-                case Fire.TextAnchor.topLeft:
+                case Fire.TextAnchor.TopLeft:
                     break;
-                case Fire.TextAnchor.topCenter:
+                case Fire.TextAnchor.TopCenter:
                     anchorOffsetX = w * -0.5;
                     break;
-                case Fire.TextAnchor.topRight:
+                case Fire.TextAnchor.TopRight:
                     anchorOffsetX = -w;
                     break;
-                case Fire.TextAnchor.midLeft:
+                case Fire.TextAnchor.MidLeft:
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.midCenter:
+                case Fire.TextAnchor.MidCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.midRight:
+                case Fire.TextAnchor.MidRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.botLeft:
+                case Fire.TextAnchor.BotLeft:
                     anchorOffsetY = h;
                     break;
-                case Fire.TextAnchor.botCenter:
+                case Fire.TextAnchor.BotCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h;
                     break;
-                case Fire.TextAnchor.botRight:
+                case Fire.TextAnchor.BotRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h;
                     break;
@@ -169,11 +213,6 @@ var Text = (function () {
             out.d = 1;
             out.tx = anchorOffsetX;
             out.ty = anchorOffsetY;
-        },
-        onPreRender: function () {
-            this.getSelfMatrix(tempMatrix);
-            tempMatrix.prepend(this.transform._worldTransform);
-            Engine._curRenderContext.updateTextTransform(this, tempMatrix);
         }
     });
 

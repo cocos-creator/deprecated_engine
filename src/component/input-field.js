@@ -19,20 +19,27 @@ var InputField = (function () {
 
     var tempMatrix = new Fire.Matrix23();
 
+    /**
+     * The Input Field renderer component.
+     * @class InputField
+     * @extends Renderer
+     */
     var InputField = Fire.Class({
         // 名字
         name: "Fire.InputField",
         // 继承
         extends: Renderer,
-        // 构造函数
-        constructor: function () {
-        },
         // 属性
         properties: {
             _background: {
-                default: null,
-                type: Fire.SpriteRenderer
+                default: null
             },
+            /**
+             * The background of the inputField.
+             * @property background
+             * @type {SpriteRenderer}
+             * @default null
+             */
             background: {
                 get: function () {
                     return this._background;
@@ -47,6 +54,12 @@ var InputField = (function () {
                 default: Fire.FontType.Arial,
                 type: Fire.FontType
             },
+            /**
+             * The font type of the input text.
+             * @property fontType
+             * @type {FontType}
+             * @default FontType.Arial
+             */
             fontType: {
                 get: function () {
                     return this._fontType;
@@ -58,6 +71,12 @@ var InputField = (function () {
                 type: Fire.FontType
             },
             _customFontType: "Arial",
+            /**
+             * The custom font type of the input text.
+             * @property customFontType
+             * @type {string}
+             * @default "Arial"
+             */
             customFontType:{
                 get: function () {
                     return this._customFontType;
@@ -76,6 +95,12 @@ var InputField = (function () {
                 default: FontFlagType.Text,
                 type: FontFlagType
             },
+            /**
+             * The font flag Type of the input text.
+             * @property fontFlagType
+             * @type {FontFlagType}
+             * @default FontFlagType.Text
+             */
             fontFlagType: {
                 get: function () {
                     return this._fontFlagType;
@@ -87,6 +112,12 @@ var InputField = (function () {
                 type: FontFlagType
             },
             _text: 'Enter text...',
+            /**
+             * The text of input field.
+             * @property text
+             * @type {string}
+             * @default "Enter text..."
+             */
             text: {
                 get: function () {
                     var contentText = Engine._renderContext.getInputText(this);
@@ -99,6 +130,12 @@ var InputField = (function () {
                 multiline: true
             },
             _size: 20,
+            /**
+             * The size of input text.
+             * @property size
+             * @type {number}
+             * @default 20
+             */
             size: {
                 get: function () {
                     return this._size;
@@ -109,6 +146,12 @@ var InputField = (function () {
                 }
             },
             _maxLength: 10,
+            /**
+             * The maxLength of input text.
+             * @property maxLength
+             * @type {number}
+             * @default 10
+             */
             maxLength:{
                 get: function () {
                     return this._maxLength;
@@ -119,6 +162,12 @@ var InputField = (function () {
                 }
             },
             _color: Fire.Color.black,
+            /**
+             * The color of input text.
+             * @property color
+             * @type {Color}
+             * @default Fire.Color.black
+             */
             color: {
                 get: function() {
                     return this._color;
@@ -130,6 +179,12 @@ var InputField = (function () {
             },
             // 字体锚点
             _anchor: Fire.TextAnchor.midCenter,
+            /**
+             * The anchor point of the input field.
+             * @property anchor
+             * @type {Fire.TextAnchor}
+             * @default Fire.TextAnchor.midCenter
+             */
             anchor: {
                 get: function() {
                     return this._anchor;
@@ -160,6 +215,11 @@ var InputField = (function () {
         getWorldSize: function () {
             return Engine._renderContext.getTextSize(this);
         },
+        onPreRender: function () {
+            this.getSelfMatrix(tempMatrix);
+            tempMatrix.prepend(this.transform._worldTransform);
+            Engine._curRenderContext.updateInputFieldTransform(this, tempMatrix);
+        },
         getSelfMatrix: function (out) {
             var textSize = Engine._renderContext.getTextSize(this);
             var w = textSize.x;
@@ -167,52 +227,47 @@ var InputField = (function () {
 
             var anchorOffsetX = 0;
             var anchorOffsetY = 0;
+
             switch (this._anchor) {
-                case Fire.TextAnchor.topLeft:
+                case Fire.TextAnchor.TopLeft:
                     break;
-                case Fire.TextAnchor.topCenter:
+                case Fire.TextAnchor.TopCenter:
                     anchorOffsetX = w * -0.5;
                     break;
-                case Fire.TextAnchor.topRight:
+                case Fire.TextAnchor.TopRight:
                     anchorOffsetX = -w;
                     break;
-                case Fire.TextAnchor.midLeft:
+                case Fire.TextAnchor.MidLeft:
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.midCenter:
+                case Fire.TextAnchor.MidCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.midRight:
+                case Fire.TextAnchor.MidRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.botLeft:
+                case Fire.TextAnchor.BotLeft:
                     anchorOffsetY = h;
                     break;
-                case Fire.TextAnchor.botCenter:
+                case Fire.TextAnchor.BotCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h;
                     break;
-                case Fire.TextAnchor.botRight:
+                case Fire.TextAnchor.BotRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h;
                     break;
                 default:
                     break;
             }
-
             out.a = 1;
             out.b = 0;
             out.c = 0;
             out.d = 1;
             out.tx = anchorOffsetX;
             out.ty = anchorOffsetY;
-        },
-        onPreRender: function () {
-            this.getSelfMatrix(tempMatrix);
-            tempMatrix.prepend(this.transform._worldTransform);
-            Engine._curRenderContext.updateInputFieldTransform(this, tempMatrix);
         }
     });
 
