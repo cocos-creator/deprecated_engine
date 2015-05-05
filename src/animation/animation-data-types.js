@@ -342,6 +342,9 @@ var AnimationNode = Fire.Class({
         else {
             stop = true;
             offset = this.iterations - (this.iterations | 0);
+            if (currentIterations > 0 && offset === 0) {
+                offset = 1; // 如果播放过，动画不复位
+            }
             time = offset * duration;
         }
 
