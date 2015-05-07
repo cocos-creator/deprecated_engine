@@ -11,7 +11,6 @@ var SpriteRenderer = Fire.Class({
     extends: Renderer,
     constructor: function () {
         RenderContext.initRenderer(this);
-        this._hasRenderObj = false;
     },
 
     properties: {
@@ -29,7 +28,7 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this._sprite = value;
-                if (this._hasRenderObj) {
+                if (this.isOnLoadCalled) {
                     Engine._renderContext.updateMaterial(this);
                 }
             },
@@ -51,7 +50,7 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this._color = value;
-                if (this._hasRenderObj) {
+                if (this.isOnLoadCalled) {
                     Engine._renderContext.updateColor(this);
                 }
             }
@@ -173,7 +172,6 @@ var SpriteRenderer = Fire.Class({
 
     onLoad: function () {
         Engine._renderContext.addSprite(this);
-        this._hasRenderObj = true;
     },
     onEnable: function () {
         Engine._renderContext.show(this, true);
@@ -254,7 +252,7 @@ var SpriteRenderer = Fire.Class({
 
 Fire.SpriteRenderer = SpriteRenderer;
 
-Fire.addComponentMenu(SpriteRenderer, 'SpriteRenderer');
+Fire.addComponentMenu(SpriteRenderer, 'Sprite Renderer');
 Fire.executeInEditMode(SpriteRenderer);
 
 JS.getset(SpriteRenderer.prototype, 'customSize_',

@@ -95,7 +95,6 @@
 
     /**
      * The default scene rendering operation invoked by runtime.
-     * @method render
      * @param {_Runtime.RenderContext} renderContext
      */
     Scene.prototype.render = function (renderContext) {

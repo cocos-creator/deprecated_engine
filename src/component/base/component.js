@@ -125,6 +125,15 @@
         }
     });
 
+    /**
+     * @property isOnLoadCalled
+     * @type {boolean}
+     * @readOnly
+     */
+    JS.get(Component.prototype, 'isOnLoadCalled', function () {
+        return this._objFlags & IsOnLoadCalled;
+    });
+
     // callback functions
 
     /**
@@ -189,7 +198,8 @@
     };
 
     /**
-     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get component in the entity by passing in the name of the script.
+     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get
+     * component in the entity by passing in the name of the script.
      *
      * @method getComponent
      * @param {function|string} typeOrName

@@ -21,7 +21,11 @@
     //    return new Fire.Rect();
     //};
 
-    var tempMatrix = new Fire.Matrix23();
+    var tmpMat23 = new Matrix23();
+    var tmpVec2_0 = new Vec2();
+    var tmpVec2_1 = new Vec2();
+    var tmpVec2_2 = new Vec2();
+    var tmpVec2_3 = new Vec2();
 
     /**
      * Returns a "world" axis aligned bounding box(AABB) of the renderer.
@@ -32,13 +36,9 @@
      */
     Renderer.prototype.getWorldBounds = function (out) {
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
-        var bl = new Vec2(0, 0);
-        var tl = new Vec2(0, 0);
-        var tr = new Vec2(0, 0);
-        var br = new Vec2(0, 0);
-        _doGetOrientedBounds.call(this, worldMatrix, bl, tl, tr, br);
+        this._doGetOrientedBounds(worldMatrix, tmpVec2_0, tmpVec2_1, tmpVec2_2, tmpVec2_3);
         out = out || new Rect();
-        Math.calculateMaxRect(out, bl, tl, tr, br);
+        Math.calculateMaxRect(out, tmpVec2_0, tmpVec2_1, tmpVec2_2, tmpVec2_3);
         return out;
     };
 
@@ -59,7 +59,7 @@
         out_tr = out_tr || new Vec2(0, 0);
         out_br = out_br || new Vec2(0, 0);
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
-        _doGetOrientedBounds.call(this, worldMatrix, out_bl, out_tl, out_tr, out_br);
+        this._doGetOrientedBounds(worldMatrix, out_bl, out_tl, out_tr, out_br);
         return [out_bl, out_tl, out_tr, out_br];
     };
 
@@ -81,13 +81,20 @@
         return new Vec2(0, 0);
     };
 
-    function _doGetOrientedBounds(mat, bl, tl, tr, br) {
+    /**
+     * @method onPreRender
+     */
+    Renderer.prototype.onPreRender = function () {
+        Engine._curRenderContext.updateTransform(this, this.transform._worldTransform);
+    };
+
+    Renderer.prototype._doGetOrientedBounds = function (mat, bl, tl, tr, br) {
         var size = this.getWorldSize();
         var width = size.x;
         var height = size.y;
 
-        this.getSelfMatrix(tempMatrix);
-        mat = tempMatrix.prepend(mat);
+        this.getSelfMatrix(tmpMat23);
+        mat = tmpMat23.prepend(mat);
 
         // transform rect(0, 0, width, height) by matrix
         var tx = mat.tx;
@@ -105,7 +112,7 @@
         bl.y = yd + ty;
         br.x = xa + yc + tx;
         br.y = xb + yd + ty;
-    }
+    };
 
     return Renderer;
 })();
