@@ -33,7 +33,8 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
         },
 
         /**
-         * Scale can be specified on the JSON or binary loader which will scale the bone positions, image sizes, and animation translations.
+         * Scale can be specified on the JSON or binary loader which will scale the bone positions, image sizes, and
+         * animation translations.
          * @property scale
          * @type {number}
          */
@@ -48,14 +49,14 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
     getSkeletonData: function (quiet) {
         if (! this.atlasAsset) {
             if (! quiet) {
-                Fire.error('Atlas not set for SkeletonData asset: ' + this.name);
+                Fire.error('AtlasAsset not set for SkeletonDataAsset: "%s"', this.name);
             }
             return null;
         }
 
         if (! this.skeletonJson) {
             if (! quiet) {
-                Fire.error('Skeleton JSON file not set for SkeletonData asset: ' + this.name);
+                Fire.error('SkeletonJSON not set for SkeletonDataAsset: "%s"', this.name);
             }
             return null;
         }
@@ -72,7 +73,21 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
         atlas.dispose(skeletonJsonReader);
 
         return skeletonData;
+    },
+
+    // @ifdef EDITOR
+    createEntity: function (cb) {
+        var ent = new Fire.Entity(this.name);
+        var skeleton = ent.addComponent(Fire.Spine.Skeleton);
+        skeleton.skeletonData = this;
+        if (cb) {
+            cb(ent);
+        }
     }
+    // @endif
+
 });
 
 Fire.Spine.SkeletonDataAsset = SkeletonDataAsset;
+
+Fire.addCustomAssetMenu(SkeletonDataAsset, "New Spine SkeletonData");

@@ -1,5 +1,13 @@
+
 /**
+ * @property {object} Spine - The [Spine module](./Fire.Spine.html).
+ */
+/**
+ * The namespace of Spine, all classes, functions, properties and constants of Spine are defined in this
+ * module.
+ *
  * @module Fire.Spine
+ * @main Fire.Spine
  */
 Fire.Spine = {};
 
@@ -100,7 +108,7 @@ var AtlasAsset = (function () {
             }
 
             if (! this.atlas) {
-                this.atlas = new spine.Atlas(data, new TextureLoader(this));
+                this.atlas = new spine.Atlas(this.atlasFile.text, new TextureLoader(this));
             }
             return this.atlas;
         }
@@ -112,4 +120,4 @@ var AtlasAsset = (function () {
 
 Fire.Spine.AtlasAsset = AtlasAsset;
 
-Fire.addCustomAssetMenu(AtlasAsset, "New Sprite Atlas");
+Fire.addCustomAssetMenu(AtlasAsset, "New Spine Atlas");

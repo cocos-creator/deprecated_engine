@@ -73,6 +73,12 @@ var paths = {
         'src/audio/audio-legacy.js',
         'src/audio/audio-source.js',
         'src/audio/audio-web-audio.js',
+
+        'src/spine/atlas-asset.js',
+        'src/spine/skeleton-data-asset.js',
+        'src/spine/spine-runtime.js',
+        'src/spine/skeleton-renderer.js',
+        'src/spine/skeleton.js',
     ],
     index: 'src/index.js',
 
