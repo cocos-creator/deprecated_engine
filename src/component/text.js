@@ -2,6 +2,12 @@ var Text = (function () {
 
     var tempMatrix = new Fire.Matrix23();
 
+    /**
+     * The text renderer component.
+     * @class Text
+     * @extends Renderer
+     * @constructor
+     */
     var Text = Fire.Class({
         // 名字
         name: "Fire.Text",

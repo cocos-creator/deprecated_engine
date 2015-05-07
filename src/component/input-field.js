@@ -178,7 +178,7 @@ var InputField = (function () {
                 }
             },
             // 字体锚点
-            _anchor: Fire.TextAnchor.midCenter,
+            _anchor: Fire.TextAnchor.MidCenter,
             /**
              * The anchor point of the input field.
              * @property anchor
