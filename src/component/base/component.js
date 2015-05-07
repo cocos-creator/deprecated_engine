@@ -444,14 +444,16 @@ Fire.attr(Component, 'executeInEditMode', false);
  * By calling this function, each component will also have its callback executed in edit mode.
  *
  * @method executeInEditMode
- * @param {Component} constructor - the class you want to register, must inherit from Component
+ * @param {Component} constructor - The class you want to register, must inherit from Component.
+ * @param {boolean} [live=false] - If true, the scene view will keep updating this entity in 60 fps when it is selected,
+ *                         otherwise, it will update only if necessary.
  */
-Fire.executeInEditMode = function (constructor) {
+Fire.executeInEditMode = function (constructor, live) {
     // @ifdef EDITOR
     if ( !Fire.isChildClassOf(constructor, Component) ) {
         Fire.error('[Fire.executeInEditMode] constructor must inherit from Component');
         return;
     }
-    Fire.attr(constructor, 'executeInEditMode', true);
+    Fire.attr(constructor, 'executeInEditMode', { live: !!live });
     // @endif
 };
