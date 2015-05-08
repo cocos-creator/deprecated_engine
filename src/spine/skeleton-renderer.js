@@ -1,3 +1,5 @@
+var SkinEnums = {};
+
 /**
  * @module Fire.Spine
  */
@@ -31,9 +33,74 @@ var SkeletonRenderer = (function () {
                 },
                 set: function (value) {
                     this._skeletonData = value;
+                    this._initialSkinName = '';
                     SpineRuntime.updateSkeletonData(this);
+                    // @ifdef EDITOR
+                    this._updateInitialSkinEnum(value);
+                    // @endif
                 },
                 type: SkeletonDataAsset
+            },
+
+            _initialSkinName: '',
+
+            /**
+             * @property initialSkinName
+             * @type {string}
+             */
+            initialSkinName: {
+                get: function () {
+                    return this._initialSkinName;
+                },
+                set: function (value) {
+                    this._initialSkinName = value;
+                },
+                visible: false
+            },
+
+            /**
+             * @property initialSkinIndex
+             * @type {number}
+             */
+            initialSkinIndex: {
+                get: function () {
+                    if (this._skeletonData && this._initialSkinName) {
+                        var skinEnum = this._skeletonData.getSkinsEnum();
+                        if (skinEnum) {
+                            var skinIndex = skinEnum[this._initialSkinName];
+                            if (typeof skinIndex !== "undefined") {
+                                return skinIndex;
+                            }
+                        }
+                    }
+                    return 0;
+                },
+                set: function (value) {
+                    if (this._skeletonData) {
+                        var skinEnum = this._skeletonData.getSkinsEnum();
+                        if (skinEnum) {
+                            var skinName = skinEnum[value];
+                            if (typeof skinName !== "undefined") {
+                                this._initialSkinName = skinName;
+                                // @ifdef EDITOR
+                                if (! Engine.isPlaying) {
+                                    this.setSkin(skinName);
+                                }
+                                // @endif
+                            }
+                            else {
+                                Fire.error('Cannot set initialSkinIndex of "%s" because the index is out of range.',
+                                            this.entity.name);
+                            }
+                            return;
+                        }
+                    }
+                    Fire.error('Cannot set initialSkinIndex of "%s" because skeletonData is invalid.',
+                                this.entity.name);
+                },
+                // this enum will be changed on the fly
+                type: Spine._DefaultSkinsEnum,
+                displayName: "Initial Skin"
             },
 
             _debugSlots: {
@@ -82,6 +149,11 @@ var SkeletonRenderer = (function () {
 
         onLoad: function () {
             SpineRuntime.createSkeleton(this);
+            // @ifdef EDITOR
+            if (this._skeletonData) {
+                this._updateInitialSkinEnum(this._skeletonData);
+            }
+            // @endif
         },
 
         onEnable: function () {
@@ -180,7 +252,23 @@ var SkeletonRenderer = (function () {
          */
         setAttachment: function (slotName, attachmentName) {
             SpineRuntime.setAttachment(this, slotName, attachmentName);
+        },
+
+        // @ifdef EDITOR
+        _updateInitialSkinEnum: function (skeletonData) {
+            if (skeletonData) {
+                var skinEnum = skeletonData.getSkinsEnum();
+                if (skinEnum) {
+                    // change enum
+                    Fire.attr(this, 'initialSkinIndex', Fire.Enum(skinEnum));
+                    // refresh inspector
+                    editorCallback.onComponentAdded(this.entity, this);
+                    return;
+                }
+            }
+            Fire.attr(this, 'initialSkinIndex', Spine._DefaultSkinsEnum);
         }
+        // @endif
     });
 
     Fire.executeInEditMode(SkeletonRenderer);
@@ -188,4 +276,4 @@ var SkeletonRenderer = (function () {
     return SkeletonRenderer;
 })();
 
-Fire.Spine.SkeletonRenderer = SkeletonRenderer;
+Spine.SkeletonRenderer = SkeletonRenderer;

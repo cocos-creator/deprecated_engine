@@ -7,10 +7,15 @@
         var node = new sp.Skeleton();
         node.setAnchorPoint(0, 0);
         node.setLocalZOrder(-1);
-
         node.setSkeletonData(skeletonData, null);
-        node.setDebugSolots(target.debugSlots);
-        node.setDebugBones(target.debugBones);
+        if (target.initialSkinName) {
+            try {
+                node.setSkin(target.initialSkinName);
+            }
+            catch (e) {
+                Fire.error(e);
+            }
+        }
         node.setTimeScale(target.timeScale);
         return node;
     }
@@ -32,6 +37,8 @@
         if (rc.sceneView) {
             rc.sceneView.game.setEnvironment();
             node = createSkeleton(target, skeletonData);
+            node.setDebugSolots(target.debugSlots);
+            node.setDebugBones(target.debugBones);
             target._renderObjInScene = node;
             target.entity._ccNodeInScene.addChild(node);
         }
@@ -44,15 +51,8 @@
     };
 
     SpineRuntime.updateSkeletonDebug = function (target) {
-        var node = target._renderObj;
-        if (!node) {
-            return;
-        }
-        Engine._renderContext.game.setEnvironment();
-        node.setDebugSolots(target.debugSlots);
-        node.setDebugBones(target.debugBones);
         // @ifdef EDITOR
-        node = target._renderObjInScene;
+        var node = target._renderObjInScene;
         if (node) {
             Engine._renderContext.sceneView.game.setEnvironment();
             node.setDebugSolots(target.debugSlots);
@@ -92,7 +92,7 @@
             node = target._renderObjInScene;
             if (node) {
                 Engine._renderContext.sceneView.game.setEnvironment();
-                method.call(node);
+                method.call(node, p1, p2);
             }
             // @endif
         };

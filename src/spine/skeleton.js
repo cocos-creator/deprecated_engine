@@ -60,4 +60,4 @@ var Skeleton = (function () {
     return Skeleton;
 })();
 
-Fire.Spine.Skeleton = Skeleton;
+Spine.Skeleton = Skeleton;

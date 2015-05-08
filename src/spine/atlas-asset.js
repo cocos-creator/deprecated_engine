@@ -9,7 +9,10 @@
  * @module Fire.Spine
  * @main Fire.Spine
  */
-Fire.Spine = {};
+var Spine = {
+    _DefaultSkinsEnum: Fire.defineEnum({ default: -1 })
+};
+Fire.Spine = Spine;
 
 var AtlasAsset = (function () {
 
@@ -118,6 +121,6 @@ var AtlasAsset = (function () {
     return AtlasAsset;
 })();
 
-Fire.Spine.AtlasAsset = AtlasAsset;
+Spine.AtlasAsset = AtlasAsset;
 
 Fire.addCustomAssetMenu(AtlasAsset, "New Spine Atlas");

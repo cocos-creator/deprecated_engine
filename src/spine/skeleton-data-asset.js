@@ -9,26 +9,47 @@
 var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', extends: Fire.CustomAsset,
 
     constructor: function () {
-        this.skeletonData = null;
+        this._skeletonData = null;
+        // @ifdef EDITOR
+        this._skinEnum = null;
+        // @endif
     },
 
     properties: {
+
+        _atlasAsset: null,
 
         /**
          * @property atlasAsset
          * @type {AtlasAsset}
          */
         atlasAsset: {
-            default: null,
+            get: function () {
+                return this._atlasAsset;
+            },
+            set: function (value) {
+                this._atlasAsset = value;
+                this._skeletonData = null;
+                this._skinEnum = null;
+            },
             type: AtlasAsset
         },
+
+        _skeletonJson: null,
 
         /**
          * @property skeletonJson
          * @type {JsonAsset}
          */
         skeletonJson: {
-            default: null,
+            get: function () {
+                return this._skeletonJson;
+            },
+            set: function (value) {
+                this._skeletonJson = value;
+                this._skeletonData = null;
+                this._skinEnum = null;
+            },
             type: Fire.JsonAsset
         },
 
@@ -47,6 +68,10 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
      * @return {spine.SkeletonData}
      */
     getSkeletonData: function (quiet) {
+        if (this._skeletonData) {
+            return this._skeletonData;
+        }
+
         if (! this.atlasAsset) {
             if (! quiet) {
                 Fire.error('AtlasAsset not set for SkeletonDataAsset: "%s"', this.name);
@@ -64,21 +89,41 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
         //scale = 1 / cc.director.getContentScaleFactor();
 
         var atlas = this.atlasAsset.getAtlas();
+        if (! atlas) {
+            return null;
+        }
         var attachmentLoader = new spine.AtlasAttachmentLoader(atlas);
         var skeletonJsonReader = new spine.SkeletonJson(attachmentLoader);
         skeletonJsonReader.scale = this.scale;
 
         var json = this.skeletonJson.json;
-        var skeletonData = skeletonJsonReader.readSkeletonData(json);
+        this._skeletonData = skeletonJsonReader.readSkeletonData(json);
         atlas.dispose(skeletonJsonReader);
 
-        return skeletonData;
+        return this._skeletonData;
     },
 
     // @ifdef EDITOR
+    getSkinsEnum: function () {
+        if (this._skinEnum) {
+            return this._skinEnum;
+        }
+        var sa = this.getSkeletonData(true);
+        if (sa) {
+            var skins = sa.skins;
+            var enumDef = {};
+            for (var i = 0; i < skins.length; i++) {
+                var name = skins[i].name;
+                enumDef[name] = i;
+            }
+            this._skinEnum = Fire.defineEnum(enumDef);
+            return this._skinEnum;
+        }
+        return null;
+    },
     createEntity: function (cb) {
         var ent = new Fire.Entity(this.name);
-        var skeleton = ent.addComponent(Fire.Spine.Skeleton);
+        var skeleton = ent.addComponent(Spine.Skeleton);
         skeleton.skeletonData = this;
         if (cb) {
             cb(ent);
@@ -88,6 +133,6 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
 
 });
 
-Fire.Spine.SkeletonDataAsset = SkeletonDataAsset;
+Spine.SkeletonDataAsset = SkeletonDataAsset;
 
 Fire.addCustomAssetMenu(SkeletonDataAsset, "New Spine SkeletonData");
