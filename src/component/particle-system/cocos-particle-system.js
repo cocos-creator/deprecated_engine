@@ -11,7 +11,7 @@
         setGravityMode: "updateRadiusMode",
         setRadiusMode: "updateGravityMode",
         setMain: "updateMain"
-    }
+    };
 
     for (var key in MethodNames) {
         (function (key) {
@@ -78,7 +78,7 @@
         // 粒子位置类型
         emitter.setPositionType(target.positionType);
         // 发射器位置的变化范围（横向和纵向）
-        emitter.setPosVar(cc.p(target.positionVar.x, target.positionVar.y))
+        emitter.setPosVar(cc.p(target.positionVar.x, target.positionVar.y));
     };
     // 更新半径模式属性
     CocosParticleSystem.updateRadiusMode = function (target, emitter) {
@@ -162,7 +162,7 @@
         // 粒子位置类型
         emitter.setPositionType(target.positionType);
         // 发射器位置的变化范围（横向和纵向）
-        emitter.setPosVar(cc.p(target.positionVar.x, target.positionVar.y))
+        emitter.setPosVar(cc.p(target.positionVar.x, target.positionVar.y));
         // 粒子开始自旋角度
         emitter.setStartSpin(target.startSpin);
         // 粒子开始自旋角度变化范围
