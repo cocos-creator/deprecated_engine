@@ -36,63 +36,45 @@ var SkeletonRenderer = (function () {
                 type: SkeletonDataAsset
             },
 
-            //_debugSlots: {
-            //    default: false,
-            //    editorOnly: true
-            //},
-            //
-            ///**
-            // * Indicates whether open debug slots.
-            // * @property debugSlots
-            // * @type {boolean}
-            // * @default false
-            // */
-            //debugSlots: {
-            //    get: function () {
-            //        return this._debugSlots;
-            //    },
-            //    set: function (value) {
-            //        this._debugSlots = value;
-            //        SpineRuntime.updateSkeletonDebug(this);
-            //    }
-            //},
-            //
-            //_debugBones: {
-            //    default: false,
-            //    editorOnly: true
-            //},
-            //
-            ///**
-            // * Indicates whether open debug bones.
-            // * @property debugBones
-            // * @type {boolean}
-            // * @default false
-            // */
-            //debugBones: {
-            //    get: function () {
-            //        return this._debugBones;
-            //    },
-            //    set: function (value) {
-            //        this._debugBones = value;
-            //        SpineRuntime.updateSkeletonDebug(this);
-            //    }
-            //},
-
-            _timeScale: 1,
+            _debugSlots: {
+                default: false,
+                editorOnly: true
+            },
 
             /**
-             * The time scale of this skeleton.
-             * @property timeScale
-             * @type {number}
-             * @default 1
-             */
-            timeScale: {
+            * Indicates whether open debug slots.
+            * @property debugSlots
+            * @type {boolean}
+            * @default false
+            */
+            debugSlots: {
                 get: function () {
-                    return this._timeScale;
+                    return this._debugSlots;
                 },
                 set: function (value) {
-                    this._timeScale = value;
-                    SpineRuntime.updateSkeletonTimeScale(this);
+                    this._debugSlots = value;
+                    SpineRuntime.updateSkeletonDebug(this);
+                }
+            },
+
+            _debugBones: {
+                default: false,
+                editorOnly: true
+            },
+
+            /**
+            * Indicates whether open debug bones.
+            * @property debugBones
+            * @type {boolean}
+            * @default false
+            */
+            debugBones: {
+                get: function () {
+                    return this._debugBones;
+                },
+                set: function (value) {
+                    this._debugBones = value;
+                    SpineRuntime.updateSkeletonDebug(this);
                 }
             }
         },

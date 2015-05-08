@@ -43,24 +43,23 @@
         this.createSkeleton(target);
     };
 
-    // 先禁用，因为依赖于 cc.DrawingPrimitive
-    //SpineRuntime.updateSkeletonDebug = function (target) {
-    //    var node = target._renderObj;
-    //    if (!node) {
-    //        return;
-    //    }
-    //    Engine._renderContext.game.setEnvironment();
-    //    node.setDebugSolots(target.debugSlots);
-    //    node.setDebugBones(target.debugBones);
-    //    // @ifdef EDITOR
-    //    node = target._renderObjInScene;
-    //    if (node) {
-    //        Engine._renderContext.sceneView.game.setEnvironment();
-    //        node.setDebugSolots(target.debugSlots);
-    //        node.setDebugBones(target.debugBones);
-    //    }
-    //    // @endif
-    //};
+    SpineRuntime.updateSkeletonDebug = function (target) {
+        var node = target._renderObj;
+        if (!node) {
+            return;
+        }
+        Engine._renderContext.game.setEnvironment();
+        node.setDebugSolots(target.debugSlots);
+        node.setDebugBones(target.debugBones);
+        // @ifdef EDITOR
+        node = target._renderObjInScene;
+        if (node) {
+            Engine._renderContext.sceneView.game.setEnvironment();
+            node.setDebugSolots(target.debugSlots);
+            node.setDebugBones(target.debugBones);
+        }
+        // @endif
+    };
 
     SpineRuntime.updateSkeletonTimeScale = function (target) {
         var node = target._renderObj;
