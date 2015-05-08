@@ -53,6 +53,8 @@ var paths = {
         'src/component/bitmap-text.js',
         'src/component/text.js',
         'src/component/input-field.js',
+        'src/component/particle-system/particle-system.js',
+        'src/component/particle-system/cocos-particle-system.js',
         'src/component/camera.js',
         'src/component/missing.js',
         'src/interaction-context.js',
