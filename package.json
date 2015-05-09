@@ -13,7 +13,7 @@
     "gulp": "",
     "gulp-concat": "2.4.3",
     "gulp-fb": "",
-    "gulp-header": "^1.2.2",
+    "gulp-header": "",
     "gulp-jshint": "1.9.2",
     "gulp-preprocess": "1.2.0",
     "gulp-qunit": "1.2.1",
