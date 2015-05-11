@@ -157,4 +157,4 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
 
 Spine.SkeletonDataAsset = SkeletonDataAsset;
 
-Fire.addCustomAssetMenu(SkeletonDataAsset, "New Spine SkeletonData");
+//Fire.addCustomAssetMenu(SkeletonDataAsset, "New Spine SkeletonData");

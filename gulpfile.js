@@ -81,6 +81,7 @@ var paths = {
         'src/spine/spine-runtime.js',
         'src/spine/skeleton-renderer.js',
         'src/spine/skeleton.js',
+        'src/spine/import-assets.js',
     ],
     index: 'src/index.js',
 

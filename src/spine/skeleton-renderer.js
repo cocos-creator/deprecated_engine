@@ -265,7 +265,7 @@ var SkeletonRenderer = (function () {
         },
         _refreshInspector: function () {
             //Fire.log("[_refreshInspector] this.currentAnimation: %s", this.currentAnimation);
-            //editorCallback.onComponentAdded(this.entity, this);
+            editorCallback.onComponentAdded(this.entity, this);
         }
         // @endif
     });

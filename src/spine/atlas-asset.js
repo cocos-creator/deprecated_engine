@@ -20,7 +20,7 @@ var AtlasAsset = (function () {
     // implements a simple texture loader
     var TextureLoader = Fire.Class({
         /**
-         * @param {SpineAtlasAsset} atlas
+         * @param {Spine.AtlasAsset} atlas
          */
         constructor: function () {
             var atlas = arguments[0];
@@ -124,4 +124,4 @@ var AtlasAsset = (function () {
 
 Spine.AtlasAsset = AtlasAsset;
 
-Fire.addCustomAssetMenu(AtlasAsset, "New Spine Atlas");
+//Fire.addCustomAssetMenu(AtlasAsset, "New Spine Atlas");
