@@ -1,7 +1,7 @@
 // particle-system
 var ParticleSystem = (function () {
 
-    var ParticleRuntime = Fire._Runtime.CocosParticleSystem
+    var ParticleRuntime = Fire._Runtime.CocosParticleSystem;
 
     /**
      * @class EmitterMode
@@ -43,7 +43,7 @@ var ParticleSystem = (function () {
     });
 
     /**
-     * The Particle System renderer component.
+     * The Particle System component.
      * @class ParticleSystem
      * @extends Renderer
      * @constructor
@@ -126,7 +126,7 @@ var ParticleSystem = (function () {
              * @type {number}
              * @default 10
              */
-            emissionRate:{
+            emissionRate: {
                 get: function () {
                     return this._emissionRate;
                 },
@@ -208,10 +208,10 @@ var ParticleSystem = (function () {
                     ParticleRuntime.setOther(this);
                 }
             },
-            // 粒子结束时的大小，-1表示和初始大小一致
             _endSize: -1,
             /**
-             * End size in pixels of each particle.
+             * !#en End size in pixels of each particle.
+             * !#zh 粒子结束时的大小，-1表示和初始大小一致
              * @property endSize
              * @type {number}
              * @default -1
@@ -262,12 +262,12 @@ var ParticleSystem = (function () {
                 }
             },
             // 粒子角度变化范围
-            _angleVar: 0,
+            _angleVar: 20,
             /**
              * Variation of angle of each particle setter.
              * @property angleVar
              * @type {number}
-             * @default 0
+             * @default 20
              */
             angleVar: {
                 get: function() {
@@ -281,12 +281,11 @@ var ParticleSystem = (function () {
             //==========================================
             //================ 颜色属性 =================
             // 粒子初始颜色
-            _startColor: new Fire.Color(0.5, 0.5, 0.5, 1),
+            _startColor: new Fire.Color(1, 1, 1, 1),
             /**
              * Start color of each particle.
              * @property startColor
              * @type {color}
-             * @default Fire.Color(0.5, 0.5, 0.5, 1)
              */
             startColor: {
                 get: function() {
@@ -304,7 +303,7 @@ var ParticleSystem = (function () {
              * Variation of the start color.
              * @property startColorVar
              * @type {color}
-             * @default Fire.Color(0.5, 0.5, 0.5, 1)
+             * @default new Fire.Color(0, 0, 0, 0)
              */
             startColorVar: {
                 get: function() {
@@ -317,30 +316,29 @@ var ParticleSystem = (function () {
                 type: Fire.Color
             },
             // 粒子结束颜色
-            _endColor: new Fire.Color(0, 0, 0, 0.5),
+            _endColor: new Fire.Color(1, 1, 1, 0),
             /**
              * Ending color of each particle.
              * @property endColor
              * @type {color}
-             * @default Fire.Color(0, 0, 0, 0.5)
              */
             endColor: {
                 get: function() {
                     return this._endColor;
                 },
                 set: function (value) {
-                    this._endColor= value;
+                    this._endColor = value;
                     ParticleRuntime.setColor(this);
                 },
                 type: Fire.Color
             },
             // 粒子结束颜色变化范围
-            _endColorVar: new Fire.Color(0, 0, 0, 0.5),
+            _endColorVar: new Fire.Color(0, 0, 0, 0),
             /**
              * Variation of the end color.
              * @property endColorVar
              * @type {color}
-             * @default Fire.Color(0, 0, 0, 0.5)
+             * @default new Fire.Color(0, 0, 0, 0)
              */
             endColorVar: {
                 get: function() {
@@ -848,11 +846,10 @@ var ParticleSystem = (function () {
     ParticleSystem.PositionType = PositionType;
 
     //-- 增加 Particle System 到 组件菜单上
-    Fire.addComponentMenu(ParticleSystem, 'ParticleSystem');
+    Fire.addComponentMenu(ParticleSystem, 'Particle System');
     Fire.executeInEditMode(ParticleSystem, true);
 
     return ParticleSystem;
 })();
 
 Fire.ParticleSystem = ParticleSystem;
-
