@@ -1,7 +1,7 @@
 // particle-system
 var ParticleSystem = (function () {
 
-    var tempMatrix = new Fire.Matrix23();
+    var ParticleRuntime = Fire._Runtime.CocosParticleSystem
 
     /**
      * @class EmitterMode
@@ -74,7 +74,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._baseSprite = value;
-                    Fire._Runtime.CocosParticleSystem.setMain(this);
+                    ParticleRuntime.setMain(this);
                 },
                 type: Fire.Sprite
             },
@@ -92,8 +92,9 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._totalParticles = value;
-                    Fire._Runtime.CocosParticleSystem.setMain(this);
-                }
+                    ParticleRuntime.setMain(this);
+                },
+                type: Fire.Integer
             },
             /*发射器生存时间，即它可以发射粒子的时间，注意这个时间和粒子生存时间不同。
              *单位秒，-1表示永远；粒子发射结束后可点击工具栏的播放按钮再次发射
@@ -110,8 +111,11 @@ var ParticleSystem = (function () {
                     return this._duration;
                 },
                 set: function (value) {
+                    if (value === 0 && this._duration === value){
+                        return;
+                    }
                     this._duration = value;
-                    Fire._Runtime.CocosParticleSystem.setMain(this);
+                    ParticleRuntime.updateDuration(this);
                 }
             },
             // 每秒喷发的粒子数目
@@ -128,8 +132,9 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._emissionRate = value;
-                    Fire._Runtime.CocosParticleSystem.setMain(this);
-                }
+                    ParticleRuntime.setMain(this);
+                },
+                type: Fire.Integer
             },
             //==========================================
             //================ 生命属性 =================
@@ -147,7 +152,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._life = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子生命变化范围
@@ -164,7 +169,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._lifeVar = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             //==========================================
@@ -183,7 +188,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startSize = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子初始大小的变化范围
@@ -200,7 +205,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startSizeVar = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子结束时的大小，-1表示和初始大小一致
@@ -217,7 +222,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endSize = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子结束大小的变化范围
@@ -234,7 +239,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endSizeVar = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             //==========================================
@@ -253,7 +258,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._angle = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子角度变化范围
@@ -270,7 +275,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._angleVar = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             //==========================================
@@ -289,7 +294,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startColor = value;
-                    Fire._Runtime.CocosParticleSystem.setColor(this);
+                    ParticleRuntime.setColor(this);
                 },
                 type: Fire.Color
             },
@@ -307,7 +312,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startColorVar = value;
-                    Fire._Runtime.CocosParticleSystem.setColor(this);
+                    ParticleRuntime.setColor(this);
                 },
                 type: Fire.Color
             },
@@ -325,7 +330,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endColor= value;
-                    Fire._Runtime.CocosParticleSystem.setColor(this);
+                    ParticleRuntime.setColor(this);
                 },
                 type: Fire.Color
             },
@@ -343,7 +348,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endColorVar = value;
-                    Fire._Runtime.CocosParticleSystem.setColor(this);
+                    ParticleRuntime.setColor(this);
                 },
                 type: Fire.Color
             },
@@ -362,7 +367,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._positionType = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 },
                 type: PositionType
             },
@@ -379,7 +384,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._positionVar = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 },
                 type: Fire.Vec2
             },
@@ -399,7 +404,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startSpin = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子开始自旋角度变化范围
@@ -416,7 +421,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startSpin = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子结束自旋角度
@@ -433,7 +438,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endSpin = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             // 粒子结束自旋角度变化范围
@@ -450,7 +455,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endSpinVar = value;
-                    Fire._Runtime.CocosParticleSystem.setOther(this);
+                    ParticleRuntime.setOther(this);
                 }
             },
             //==========================================
@@ -470,7 +475,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._emitterMode = value;
-                    Fire._Runtime.CocosParticleSystem.setMain(this);
+                    ParticleRuntime.setMain(this);
                 },
                 type: EmitterMode
             },
@@ -489,13 +494,14 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._duration = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
                         propEL.disabled = obj._emitterMode !== EmitterMode.Gravity;
                     }
-                }
+                },
+                type: Fire.Integer
             },
             // 速度
             _speed: 180,
@@ -511,7 +517,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._speed = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -533,7 +539,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._speedVar = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -555,7 +561,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._radialAccel = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -577,7 +583,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._radialAccelVar = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -599,7 +605,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._tangentialAccel = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -621,7 +627,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._tangentialAccelVar = value;
-                    Fire._Runtime.CocosParticleSystem.setGravityMode(this);
+                    ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -645,7 +651,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startRadius = value;
-                    Fire._Runtime.CocosParticleSystem.setRadiusMode(this);
+                    ParticleRuntime.setRadiusMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -667,7 +673,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._startRadiusVar = value;
-                    Fire._Runtime.CocosParticleSystem.setRadiusMode(this);
+                    ParticleRuntime.setRadiusMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -690,7 +696,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._rotatePerSecond = value;
-                    Fire._Runtime.CocosParticleSystem.setRadiusMode(this);
+                    ParticleRuntime.setRadiusMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -712,7 +718,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._rotatePerSecondVar = value;
-                    Fire._Runtime.CocosParticleSystem.setRadiusMode(this);
+                    ParticleRuntime.setRadiusMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -734,7 +740,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endRadius = value;
-                    Fire._Runtime.CocosParticleSystem.setRadiusMode(this);
+                    ParticleRuntime.setRadiusMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -759,7 +765,7 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._endRadiusVar = value;
-                    Fire._Runtime.CocosParticleSystem.setRadiusMode(this);
+                    ParticleRuntime.setRadiusMode(this);
                 },
                 watch: {
                     _emitterMode: function (obj, propEL) {
@@ -782,12 +788,29 @@ var ParticleSystem = (function () {
                 },
                 set: function (value) {
                     this._isAutoRemoveOnFinish = value;
-                    Fire._Runtime.CocosParticleSystem.setMain(this);
+                    ParticleRuntime.setMain(this);
                 }
             }
         },
+
+        /**
+         * reset the particle system
+         * @method reset
+         */
+        reset: function () {
+            ParticleRuntime.reset(this);
+        },
+
+        /**
+         * stop the particle system
+         * @method stop
+         */
+        stop: function () {
+            ParticleRuntime.stop(this);
+        },
+
         onLoad: function () {
-            Fire._Runtime.CocosParticleSystem.initParticleSystem(this);
+            ParticleRuntime.initParticleSystem(this);
         },
         onEnable: function () {
             Engine._renderContext.show(this, true);
@@ -799,15 +822,13 @@ var ParticleSystem = (function () {
             Engine._renderContext.remove(this);
         },
         getWorldSize: function () {
-            return Fire._Runtime.CocosParticleSystem.getParticleSystemSize(this);
+            return ParticleRuntime.getParticleSystemSize(this);
         },
         onPreRender: function () {
-            //this.getSelfMatrix(tempMatrix);
-            //tempMatrix.prepend(this.transform._worldTransform);
             Engine._curRenderContext.updateTransform(this, this.transform._worldTransform);
         },
         getSelfMatrix: function (out) {
-            var textSize = Fire._Runtime.CocosParticleSystem.getParticleSystemSize(this);
+            var textSize = ParticleRuntime.getParticleSystemSize(this);
             var w = textSize.x;
             var h = textSize.y;
 
