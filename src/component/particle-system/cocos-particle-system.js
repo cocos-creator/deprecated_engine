@@ -3,6 +3,32 @@
     var CocosParticleSystem = {};
     Fire._Runtime.CocosParticleSystem = CocosParticleSystem;
 
+    CocosParticleSystem.reset = function (target) {
+        var node = target._renderObj;
+        Engine._renderContext.game.setEnvironment();
+        node.resetSystem();
+        // @ifdef EDITOR
+        node = target._renderObjInScene;
+        if (node) {
+            Engine._renderContext.sceneView.game.setEnvironment();
+            node.resetSystem();
+        }
+        // @endif
+    };
+
+    CocosParticleSystem.stop = function (target) {
+        var node = target._renderObj;
+        Engine._renderContext.game.setEnvironment();
+        node.stopSystem();
+        // @ifdef EDITOR
+        node = target._renderObjInScene;
+        if (node) {
+            Engine._renderContext.sceneView.game.setEnvironment();
+            node.stopSystem();
+        }
+        // @endif
+    };
+
     CocosParticleSystem.emptyTexture = null;
 
     var MethodNames = {
@@ -31,6 +57,7 @@
         })(key);
     }
 
+    // 设置图片
     CocosParticleSystem.getTexture = function (sprite) {
         if (! sprite) {
             return null;
@@ -118,8 +145,6 @@
         emitter.setTotalParticles(target.totalParticles);
         // 纹理
         emitter.texture = this.getTexture(target.baseSprite);
-        // 发射器生存时间
-        emitter.setDuration(target.duration);
         // 每秒喷发的粒子数目
         emitter.setEmissionRate(target.emissionRate);
         // 发射器模式
@@ -127,6 +152,27 @@
         // 粒子结束时是否自动删除
         emitter.setAutoRemoveOnFinish(target.isAutoRemoveOnFinish);
     };
+
+    // 更新存活时间
+    CocosParticleSystem.updateDuration = function (target) {
+        var node = target._renderObj;
+        Engine._renderContext.game.setEnvironment();
+        node.setDuration(target.duration);
+        //  @ifdef EDITOR
+        if (! Fire.Engine.isPlaying) {
+            node.resetSystem();
+        }
+        node = target._renderObjInScene;
+        if (node) {
+            Engine._renderContext.sceneView.game.setEnvironment();
+            node.setDuration(target.duration);
+            if (! Fire.Engine.isPlaying) {
+                node.resetSystem();
+            }
+        }
+        // @endif
+    };
+
     // 设置属性
     CocosParticleSystem.setParticleSystem = function (target, emitter) {
         // 纹理
