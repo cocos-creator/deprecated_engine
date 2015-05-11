@@ -2,12 +2,64 @@
     var SpineRuntime = {};
     Fire._Runtime.Spine = SpineRuntime;
 
+    var AnimEvents = [];
+    /**
+     * @class Skeleton
+     */
+    /*
+     * @event animation-start
+     * @param event
+     */
+    // TODO 等挪到 builtin 后，把 0 改成 sp.ANIMATION_EVENT_TYPE.START
+    AnimEvents[0] = 'animation-start';
+    /*
+     * @event animation-end
+     * @param event
+     */
+    AnimEvents[/*sp.ANIMATION_EVENT_TYPE.END*/1] = 'animation-end';
+    /*
+     * @event animation-complete
+     * @param event
+     */
+    AnimEvents[/*sp.ANIMATION_EVENT_TYPE.COMPLETE*/2] = 'animation-complete';
+    /*
+     * @event animation-event
+     * @param event
+     */
+    AnimEvents[/*sp.ANIMATION_EVENT_TYPE.EVENT*/3] = 'animation-event';
+
+    function animationCallback (ccObj, trackIndex, type, event, loopCount) {
+        var eventType = AnimEvents[type];
+        var detail = {
+            trackIndex: trackIndex
+        };
+        if (type === sp.ANIMATION_EVENT_TYPE.COMPLETE) {
+            detail.loopCount = loopCount;
+        }
+        else if (type === sp.ANIMATION_EVENT_TYPE.EVENT) {
+            detail.event = event;
+        }
+        //Fire.log("[animationCallback] eventType: %s, time: '%s'", eventType, Fire.Time.time);
+        this.entity.emit(eventType, detail);
+    }
+
     // skeletonData 必须不为空，否则 cocos update 时会报错
-    function createSkeleton (target, skeletonData) {
-        var node = new sp.Skeleton();
+    function createSkeleton (target, skeletonData, isGame) {
+        var node;
+        var useAnim = target instanceof Skeleton;
+        if (useAnim) {
+            node = new sp.SkeletonAnimation(skeletonData, null);
+            node.setTimeScale(target.timeScale);
+            if (isGame) {
+                node.setAnimationListener(target, animationCallback);
+            }
+        }
+        else {
+            node = new sp.Skeleton(skeletonData, null);
+        }
+
         node.setAnchorPoint(0, 0);
         node.setLocalZOrder(-1);
-        node.setSkeletonData(skeletonData, null);
         if (target.initialSkinName) {
             try {
                 node.setSkin(target.initialSkinName);
@@ -16,7 +68,10 @@
                 Fire.error(e);
             }
         }
-        node.setTimeScale(target.timeScale);
+        if (!isGame) {
+            node.setDebugSolots(target.debugSlots);
+            node.setDebugBones(target.debugBones);
+        }
         return node;
     }
 
@@ -29,16 +84,14 @@
         //var atlas = rc.skeletonData.atlasAsset.getAtlas();
         var node;
         rc.game.setEnvironment();
-        node = createSkeleton(target, skeletonData);
+        node = createSkeleton(target, skeletonData, true);
         target._renderObj = node;
         target.entity._ccNode.addChild(node);
 
         // @ifdef EDITOR
         if (rc.sceneView) {
             rc.sceneView.game.setEnvironment();
-            node = createSkeleton(target, skeletonData);
-            node.setDebugSolots(target.debugSlots);
-            node.setDebugBones(target.debugBones);
+            node = createSkeleton(target, skeletonData, false);
             target._renderObjInScene = node;
             target.entity._ccNodeInScene.addChild(node);
         }
@@ -78,28 +131,30 @@
     };
 
     // create proxy set methods
-    var MethodNames = ['setBonesToSetupPose', 'setSlotsToSetupPose', 'setSkin', 'setAttachment'];
+    var MethodNames = ['setBonesToSetupPose', 'setSlotsToSetupPose', 'setSkin', 'setAttachment',
+                       'setMix', 'setAnimation', 'addAnimation', 'clearTracks', 'clearTrack'];
     MethodNames.forEach(function (methodName) {
-        SpineRuntime[methodName] = function (target, p1, p2) {
+        SpineRuntime[methodName] = function (target, p1, p2, p3, p4) {
             var node = target._renderObj;
             if (!node) {
                 return;
             }
             var method = node[methodName];
             Engine._renderContext.game.setEnvironment();
-            method.call(node, p1, p2);
+            method.call(node, p1, p2, p3, p4);
             // @ifdef EDITOR
             node = target._renderObjInScene;
             if (node) {
                 Engine._renderContext.sceneView.game.setEnvironment();
-                method.call(node, p1, p2);
+                method.call(node, p1, p2, p3, p4);
             }
             // @endif
         };
     });
 
     // create proxy get methods
-    MethodNames = ['findBone', 'findSlot', 'getAttachment'];
+    MethodNames = ['findBone', 'findSlot', 'getAttachment',
+                   'getCurrent', ];
     MethodNames.forEach(function (methodName) {
         SpineRuntime[methodName] = function (target, p1, p2) {
             var node = target._renderObj;
@@ -118,5 +173,16 @@
         }
         var rect = node.getBoundingBox();
         return new Fire.Vec2(rect.width, rect.height);
+    };
+
+    SpineRuntime.sampleAnimation = function (target) {
+        var node = target._renderObj;
+        if (node) {
+            node.update(0);
+        }
+        node = target._renderObjInScene;
+        if (node) {
+            node.update(0);
+        }
     };
 })();

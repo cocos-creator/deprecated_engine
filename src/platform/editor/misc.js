@@ -5,5 +5,5 @@
  * @private
  */
 Fire._throw = function (error) {
-    Fire.error(error.stack);
+    Fire.error(error.stack || error);
 };

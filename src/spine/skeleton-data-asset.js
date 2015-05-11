@@ -9,9 +9,14 @@
 var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', extends: Fire.CustomAsset,
 
     constructor: function () {
+        this.reset();
+    },
+
+    reset: function () {
         this._skeletonData = null;
         // @ifdef EDITOR
         this._skinEnum = null;
+        this._animsEnum = null;
         // @endif
     },
 
@@ -29,8 +34,7 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
             },
             set: function (value) {
                 this._atlasAsset = value;
-                this._skeletonData = null;
-                this._skinEnum = null;
+                this.reset();
             },
             type: AtlasAsset
         },
@@ -47,8 +51,7 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
             },
             set: function (value) {
                 this._skeletonJson = value;
-                this._skeletonData = null;
-                this._skinEnum = null;
+                this.reset();
             },
             type: Fire.JsonAsset
         },
@@ -108,9 +111,9 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
         if (this._skinEnum) {
             return this._skinEnum;
         }
-        var sa = this.getSkeletonData(true);
-        if (sa) {
-            var skins = sa.skins;
+        var sd = this.getSkeletonData(true);
+        if (sd) {
+            var skins = sd.skins;
             var enumDef = {};
             for (var i = 0; i < skins.length; i++) {
                 var name = skins[i].name;
@@ -118,6 +121,25 @@ var SkeletonDataAsset = Fire.Class({ name: 'Fire.Spine.SkeletonDataAsset', exten
             }
             this._skinEnum = Fire.defineEnum(enumDef);
             return this._skinEnum;
+        }
+        return null;
+    },
+    getAnimsEnum: function () {
+        if (this._animsEnum) {
+            return this._animsEnum;
+        }
+        var sd = this.getSkeletonData(true);
+        if (sd) {
+            var enumDef = {};
+            // 0 is None
+            enumDef[Spine._DefaultAnimsEnum[0]] = 0;
+            var anims = sd.animations;
+            for (var i = 0; i < anims.length; i++) {
+                var name = anims[i].name;
+                enumDef[name] = i + 1;
+            }
+            this._animsEnum = Fire.defineEnum(enumDef);
+            return this._animsEnum;
         }
         return null;
     },

@@ -198,7 +198,7 @@ var SpriteRenderer = Fire.Class({
                 tmpMat23.c = -tmpMat23.a;
                 tmpMat23.a = 0;
                 tmpMat23.d = 0;
-                tmpMat23.ty -= this.height;
+                tmpMat23.ty -= this.renderHeight;
             }
         }
         tmpMat23.prepend(this.transform._worldTransform);

@@ -10,7 +10,8 @@
  * @main Fire.Spine
  */
 var Spine = {
-    _DefaultSkinsEnum: Fire.defineEnum({ default: -1 })
+    _DefaultSkinsEnum: Fire.defineEnum({ default: -1 }),
+    _DefaultAnimsEnum: Fire.defineEnum({ '<None>': 0 })
 };
 Fire.Spine = Spine;
 

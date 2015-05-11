@@ -12,7 +12,7 @@ var BitmapText = (function () {
     });
 
     //-- 增加 Bitmap Text 到 组件菜单上
-    Fire.addComponentMenu(BitmapText, 'BitmapText');
+    Fire.addComponentMenu(BitmapText, 'Bitmap Text');
     Fire.executeInEditMode(BitmapText);
 
     BitmapText.prop('_bitmapFont', null, Fire.HideInInspector);
