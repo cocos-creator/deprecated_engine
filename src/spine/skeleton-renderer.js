@@ -171,10 +171,26 @@ var SkeletonRenderer = (function () {
         },
 
         getWorldSize: function () {
-            return SpineRuntime.getWorldSize(this);
+            var rect = SpineRuntime.getLocalBounds(this);
+            return rect.size;
         },
         getSelfMatrix: function (out) {
-            return out.identity();
+            var localBounds = SpineRuntime.getLocalBounds(this);
+            out.a = 1;
+            out.b = 0;
+            out.c = 0;
+            out.d = 1;
+            out.tx = localBounds.x;
+            out.ty = localBounds.y + localBounds.height;
+        },
+
+        /**
+         * Sets the bones and slots to the setup pose.
+         * @method setToSetupPose
+         * @beta
+         */
+        setToSetupPose: function () {
+            SpineRuntime.setToSetupPose(this);
         },
 
         /**

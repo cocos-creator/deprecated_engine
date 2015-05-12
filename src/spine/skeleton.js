@@ -61,6 +61,7 @@ var Skeleton = (function () {
                     }
                     else {
                         this.clearTrack(0);
+                        this.setToSetupPose();
                     }
                 },
                 visible: false
@@ -176,6 +177,7 @@ var Skeleton = (function () {
          * @param {string} fromAnimation
          * @param {string} toAnimation
          * @param {number} duration
+         * @beta
          */
         setMix: function (fromAnimation, toAnimation, duration) {
             SpineRuntime.setMix(this, fromAnimation, toAnimation, duration);
@@ -188,6 +190,7 @@ var Skeleton = (function () {
          * @param {string} name
          * @param {boolean} loop
          * @return {spine.TrackEntry|null}
+         * @beta
          */
         setAnimation: function (trackIndex, name, loop) {
             SpineRuntime.setAnimation(this, trackIndex, name, loop);
@@ -207,6 +210,7 @@ var Skeleton = (function () {
          * @param {boolean} loop
          * @param {number} delay
          * @return {spine.TrackEntry|null}
+         * @beta
          */
         addAnimation: function (trackIndex, name, loop, delay) {
             return SpineRuntime.addAnimation(this, trackIndex, name, loop, delay);
@@ -217,6 +221,7 @@ var Skeleton = (function () {
          * @method getCurrent
          * @param trackIndex
          * @return {spine.TrackEntry|null}
+         * @beta
          */
         getCurrent: function (trackIndex) {
             return SpineRuntime.getCurrent(this, trackIndex);
@@ -225,6 +230,7 @@ var Skeleton = (function () {
         /**
          * Clears all tracks of animation state.
          * @method clearTracks
+         * @beta
          */
         clearTracks: function () {
             SpineRuntime.clearTracks(this);
@@ -234,6 +240,7 @@ var Skeleton = (function () {
          * Clears track of animation state by trackIndex.
          * @method clearTrack
          * @param {number} trackIndex
+         * @beta
          */
         clearTrack: function (trackIndex) {
             SpineRuntime.clearTrack(this, trackIndex);

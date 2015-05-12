@@ -98,12 +98,12 @@ JS.mixin(AssetBundleBase.prototype, {
      * @param {function} [callback]
      * @param {string} callback.param error - null or the error info
      * @param {object} callback.param data - the loaded object or null
-     * @param {boolean} [silence=false] - If true, the callback will not invoked even if asset is not found.
+     * @param {boolean} [quiet=false] - If true, the callback will not invoked even if asset is not found.
      * @return {boolean} start loading
      */
-    load: function (path, callback, silence) {
+    load: function (path, callback, quiet) {
         if (! path) {
-            if (! silence) {
+            if (! quiet) {
                 callInNextTick(callback, 'Argument must be non-nil', null);
             }
             return false;
@@ -116,12 +116,12 @@ JS.mixin(AssetBundleBase.prototype, {
         }
         else if (AssetBundleBase._hasWildcard(path)) {
             var loading = this._loadByWildcard(path, callback);
-            if ( !loading && !silence ) {
+            if ( !loading && !quiet ) {
                 callInNextTick(callback, null, []);
             }
             return loading;
         }
-        else if (! silence) {
+        else if (! quiet) {
             callInNextTick(callback, 'Path not exists', null);
             return false;
         }

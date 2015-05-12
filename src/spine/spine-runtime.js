@@ -131,7 +131,7 @@
     };
 
     // create proxy set methods
-    var MethodNames = ['setBonesToSetupPose', 'setSlotsToSetupPose', 'setSkin', 'setAttachment',
+    var MethodNames = ['setToSetupPose', 'setBonesToSetupPose', 'setSlotsToSetupPose', 'setSkin', 'setAttachment',
                        'setMix', 'setAnimation', 'addAnimation', 'clearTracks', 'clearTrack'];
     MethodNames.forEach(function (methodName) {
         SpineRuntime[methodName] = function (target, p1, p2, p3, p4) {
@@ -166,13 +166,28 @@
         };
     });
 
-    SpineRuntime.getWorldSize = function (target) {
+    SpineRuntime.getLocalBounds = function (target) {
         var node = target._renderObj;
         if (!node) {
-            return Fire.Vec2.zero;
+            return new Fire.Rect();
         }
-        var rect = node.getBoundingBox();
-        return new Fire.Vec2(rect.width, rect.height);
+        var minX = cc.FLT_MAX, minY = cc.FLT_MAX, maxX = cc.FLT_MIN, maxY = cc.FLT_MIN;
+        var vertices = [];
+        vertices.length = 8;
+        var slots = node._skeleton.slots, VERTEX = sp.VERTEX_INDEX;
+        for (var i = 0, slotCount = slots.length; i < slotCount; ++i) {
+            var slot = slots[i];
+            var attachment = slot.attachment;
+            if ( !attachment || attachment.type !== sp.ATTACHMENT_TYPE.REGION ) {
+                continue;
+            }
+            sp._regionAttachment_computeWorldVertices(attachment, slot.skeleton.x, slot.skeleton.y, slot.bone, vertices);
+            minX = Math.min(minX, vertices[VERTEX.X1], vertices[VERTEX.X4], vertices[VERTEX.X2], vertices[VERTEX.X3]);
+            minY = Math.min(minY, vertices[VERTEX.Y1], vertices[VERTEX.Y4], vertices[VERTEX.Y2], vertices[VERTEX.Y3]);
+            maxX = Math.max(maxX, vertices[VERTEX.X1], vertices[VERTEX.X4], vertices[VERTEX.X2], vertices[VERTEX.X3]);
+            maxY = Math.max(maxY, vertices[VERTEX.Y1], vertices[VERTEX.Y4], vertices[VERTEX.Y2], vertices[VERTEX.Y3]);
+        }
+        return new Fire.Rect(minX, minY, maxX - minX, maxY - minY);
     };
 
     SpineRuntime.sampleAnimation = function (target) {
