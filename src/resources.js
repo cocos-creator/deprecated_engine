@@ -286,12 +286,15 @@ var Resources = {
                 }
             }
         }
+
         // not found
-        if (AssetBundleBase._hasWildcard(path)) {
-            return callback(null, []);
-        }
-        else {
-            return callback('Path not exists', null);
+        if (callback) {
+            if (AssetBundleBase._hasWildcard(path)) {
+                return callback(null, []);
+            }
+            else {
+                return callback('Path:' + path + ' not exists', null);
+            }
         }
     }
 };
