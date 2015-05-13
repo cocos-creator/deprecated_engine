@@ -279,3 +279,7 @@ Fire.executeInEditMode(Camera);
 //});
 
 Fire.Camera = Camera;
+
+JS.get(Camera, 'main', function () {
+    return Engine._scene && Engine._scene.camera;
+});
