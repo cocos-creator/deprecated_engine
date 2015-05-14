@@ -13,10 +13,6 @@ var Text = (function () {
         name: "Fire.Text",
         // 继承
         extends: Renderer,
-        // 构造函数
-        constructor: function () {
-            RenderContext.initRenderer(this);
-        },
         // 属性
         properties: {
             // 字体类型
@@ -154,15 +150,6 @@ var Text = (function () {
         onLoad: function () {
             Engine._renderContext.addText(this);
         },
-        onEnable: function () {
-            Engine._renderContext.show(this, true);
-        },
-        onDisable: function () {
-            Engine._renderContext.show(this, false);
-        },
-        onDestroy: function () {
-            Engine._renderContext.remove(this);
-        },
         getWorldSize: function () {
             return Engine._renderContext.getTextSize(this);
         },
@@ -224,7 +211,6 @@ var Text = (function () {
 
     //-- 增加 Text 到 组件菜单上
     Fire.addComponentMenu(Text, 'Text');
-    Fire.executeInEditMode(Text);
 
     return Text;
 })();

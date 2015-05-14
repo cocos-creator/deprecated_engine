@@ -16,10 +16,6 @@ var SkeletonRenderer = (function () {
     var SkeletonRenderer = Fire.Class({
         name: 'Fire.Spine.SkeletonRenderer', extends: Renderer,
 
-        constructor: function () {
-            RenderContext.initRenderer(this);
-        },
-
         properties: {
 
             _skeletonData: null,
@@ -160,15 +156,6 @@ var SkeletonRenderer = (function () {
             }
             // @endif
         },
-        onEnable: function () {
-            Engine._renderContext.show(this, true);
-        },
-        onDisable: function () {
-            Engine._renderContext.show(this, false);
-        },
-        onDestroy: function () {
-            Engine._renderContext.remove(this);
-        },
 
         getWorldSize: function () {
             var rect = SpineRuntime.getLocalBounds(this);
@@ -286,7 +273,6 @@ var SkeletonRenderer = (function () {
         // @endif
     });
 
-    Fire.executeInEditMode(SkeletonRenderer);
     //Fire.addComponentMenu(SkeletonRenderer, 'Spine Skeleton Renderer');
 
     return SkeletonRenderer;
