@@ -7,13 +7,10 @@ var BitmapText = (function () {
      * @extends Renderer
      * @constructor
      */
-    var BitmapText = Fire.extend("Fire.BitmapText", Renderer, function () {
-        RenderContext.initRenderer(this);
-    });
+    var BitmapText = Fire.extend("Fire.BitmapText", Renderer);
 
     //-- 增加 Bitmap Text 到 组件菜单上
     Fire.addComponentMenu(BitmapText, 'Bitmap Text');
-    Fire.executeInEditMode(BitmapText);
 
     BitmapText.prop('_bitmapFont', null, Fire.HideInInspector);
     /**
@@ -119,18 +116,6 @@ var BitmapText = (function () {
 
     BitmapText.prototype.onLoad = function () {
         Engine._renderContext.addBitmapText(this);
-    };
-
-    BitmapText.prototype.onEnable = function () {
-        Engine._renderContext.show(this, true);
-    };
-
-    BitmapText.prototype.onDisable = function () {
-        Engine._renderContext.show(this, false);
-    };
-
-    BitmapText.prototype.onDestroy = function () {
-        Engine._renderContext.remove(this);
     };
 
     BitmapText.prototype.getWorldSize = function () {

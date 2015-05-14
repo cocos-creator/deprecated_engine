@@ -9,9 +9,6 @@
 var SpriteRenderer = Fire.Class({
     name: 'Fire.SpriteRenderer',
     extends: Renderer,
-    constructor: function () {
-        RenderContext.initRenderer(this);
-    },
 
     properties: {
         _sprite: null,
@@ -173,12 +170,6 @@ var SpriteRenderer = Fire.Class({
     onLoad: function () {
         Engine._renderContext.addSprite(this);
     },
-    onEnable: function () {
-        Engine._renderContext.show(this, true);
-    },
-    onDisable: function () {
-        Engine._renderContext.show(this, false);
-    },
 
     getWorldSize: function () {
         return new Fire.Vec2(this.renderWidth, this.renderHeight);
@@ -203,9 +194,6 @@ var SpriteRenderer = Fire.Class({
         }
         tmpMat23.prepend(this.transform._worldTransform);
         Engine._curRenderContext.updateTransform(this, tmpMat23);
-    },
-    onDestroy: function () {
-        Engine._renderContext.remove(this);
     },
 
     getSelfMatrix: function (out) {
@@ -253,7 +241,6 @@ var SpriteRenderer = Fire.Class({
 Fire.SpriteRenderer = SpriteRenderer;
 
 Fire.addComponentMenu(SpriteRenderer, 'Sprite Renderer');
-Fire.executeInEditMode(SpriteRenderer);
 
 JS.getset(SpriteRenderer.prototype, 'customSize_',
     function () {

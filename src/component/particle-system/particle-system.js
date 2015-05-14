@@ -54,10 +54,6 @@ var ParticleSystem = (function () {
         name: "Fire.ParticleSystem",
         // 继承
         extends: Renderer,
-        // 构造函数
-        constructor: function () {
-            RenderContext.initRenderer(this);
-        },
         // 属性
         properties: {
             //================= 主要属性 ================
@@ -811,20 +807,8 @@ var ParticleSystem = (function () {
         onLoad: function () {
             ParticleRuntime.initParticleSystem(this);
         },
-        onEnable: function () {
-            Engine._renderContext.show(this, true);
-        },
-        onDisable: function () {
-            Engine._renderContext.show(this, false);
-        },
-        onDestroy: function () {
-            Engine._renderContext.remove(this);
-        },
         getWorldSize: function () {
             return ParticleRuntime.getParticleSystemSize(this);
-        },
-        onPreRender: function () {
-            Engine._curRenderContext.updateTransform(this, this.transform._worldTransform);
         },
         getSelfMatrix: function (out) {
             var textSize = ParticleRuntime.getParticleSystemSize(this);

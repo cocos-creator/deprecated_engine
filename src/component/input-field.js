@@ -203,15 +203,6 @@ var InputField = (function () {
         onStart: function () {
             this._background = this.entity.parent;
         },
-        onEnable: function () {
-            Engine._renderContext.show(this, true);
-        },
-        onDisable: function () {
-            Engine._renderContext.show(this, false);
-        },
-        onDestroy: function () {
-            Engine._renderContext.remove(this);
-        },
         getWorldSize: function () {
             return Engine._renderContext.getTextSize(this);
         },
@@ -273,7 +264,6 @@ var InputField = (function () {
 
     //-- 增加 TextInput 到 组件菜单上
     Fire.addComponentMenu(InputField, 'InputField');
-    Fire.executeInEditMode(InputField);
 
     return InputField;
 })();
