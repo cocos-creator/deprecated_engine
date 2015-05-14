@@ -1,40 +1,83 @@
 ﻿// jshint ignore: start
 
-//largeModule('Component', TestEnv);
+largeModule('Component', TestEnv);
 
-/*
-test('onHierarchyChanged invoked by setting parent', function () {
-    var MyComp = Fire.define('', Component);
-    var onHierarchyChanged = MyComp.prototype.onHierarchyChanged = new callback();
+asyncTest('invoke', function () {
+    var cb = new Callback().setDisabledMessage('method should not invokes in this frame');
+    var cb2 = new Callback().disable('method should not being called after destroyed');
 
-    var parent1 = new Entity();
-    var parent2 = new Entity();
-    parent2.parent = parent1;
+    var MyComp = Fire.Class({
+        extends: Component,
+        onLoad: function () {
+            this.invoke('myCallback', 0.001);
+        },
+        myCallback: cb,
+        callback2: cb2
+    });
+    Fire.executeInEditMode(MyComp);
 
     var ent = new Entity();
-    ent.active = false;
     var comp = ent.addComponent(MyComp);
-    ent.parent = parent1;
-    onHierarchyChanged.setDisabledMessage('should not invoked before onLoad');
 
-    ent.parent = null;
-    ent.active = true;
+    cb.enable();
+    setTimeout(function () {
+        cb.once('method should being invoked');
 
-    onHierarchyChanged.enable();
-    ent.parent = parent1;
-    onHierarchyChanged.once('should invoke if set parent');
+        comp.invoke('callback2', 0);
+        comp.destroy();
+        FO._deferredDestroy();
 
-    ent.parent = null;
-    onHierarchyChanged.once('should invoke if no parent');
-
-    ent.parent = parent2;
-    onHierarchyChanged.calledCount = 0;
-
-    parent2.parent = null;
-    onHierarchyChanged.once('should invoke if parent\'s hierarchy changed');
-
-    onHierarchyChanged.disable();
-    comp.destroy();
+        setTimeout(function () {
+            start();
+        }, 1);
+    }, 0.001 * 1000);
 });
-*/
+
+asyncTest('cancel invoke', 0, function () {
+    var cb1 = new Callback().disable('method 1 should not invoked if canceled');
+
+    var MyComp = Fire.Class({
+        extends: Component,
+        myCallback1: cb1,
+    });
+    Fire.executeInEditMode(MyComp);
+    var ent = new Entity();
+    var comp = ent.addComponent(MyComp);
+
+    comp.invoke('myCallback1', 0.001);
+    comp.invoke('myCallback1', 0.001);
+
+    comp.cancelInvoke('myCallback1');
+
+    setTimeout(start, 0.001 * 1000);
+});
+
+asyncTest('repeat', function () {
+    var cb = new Callback(function () {
+        if (cb.calledCount > 1) {
+            ok(true, 'method should being invoked repeatedly');
+            cb.disable();
+            comp.cancelInvoke('myCallback');
+            clearTimeout(stopId);
+            start();
+        }
+    }).enable();
+
+    var MyComp = Fire.Class({
+        extends: Component,
+        myCallback: cb,
+    });
+    Fire.executeInEditMode(MyComp);
+
+    var ent = new Entity();
+    var comp = ent.addComponent(MyComp);
+
+    comp.repeat('myCallback', 0);
+
+    var stopId = setTimeout(function () {
+        ok(false, 'Timeout: method should being invoked repeatedly');
+        start();
+    }, 100);
+});
+
 // jshint ignore: end

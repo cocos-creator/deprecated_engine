@@ -63,6 +63,7 @@ var paths = {
         'src/asset-library.js',
         'src/resources.js',
         'src/platform/h5/engine.js',
+        'src/platform/h5/timer.js',
         'src/platform/h5/input-events.js',
         'src/platform/h5/input-context.js',
         'src/platform/h5/browser.js',

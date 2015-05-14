@@ -265,7 +265,8 @@
 
 
         /**
-         * Adds a component class to the entity. You can also add component to entity by passing in the name of the script.
+         * Adds a component class to the entity. You can also add component to entity by passing in the name of the
+         * script.
          *
          * @method addComponent
          * @param {function|string} typeOrName - the constructor or the class name of the component to add
@@ -297,6 +298,69 @@
         // * @return {boolean} return whether stop propagation to this component's child components.
         // */
         //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
+
+        /**
+         * Invokes the method methodName on this component after a specified delay.
+         * The method will be invoked even if this component is disabled, but will not invoked if this component is destroyed.
+         *
+         * @method invoke
+         * @param {string} methodName
+         * @param {number} [time=0] - The number of seconds that the function call should be delayed by.
+         *                            If omitted, it defaults to 0. The actual delay may be longer.
+         */
+        invoke: function (methodName, time) {
+            var method = this[methodName];
+            if (typeof method === 'function') {
+                var self = this;
+                var ms = (time || 0) * 1000;
+                var key = this.id + '.' + methodName;
+                Timer.setTimeoutWithKey(function () {
+                    if (self.isValid) {
+                        method.call(self);
+                    }
+                }, ms, key);
+            }
+            else {
+                Fire.error('Can not invoke %s.%s because it is not a valid function.', JS.getClassName(this), methodName);
+            }
+        },
+
+        /**
+         * Invokes the method methodName on this component repeatedly, with a fixed time delay between each call.
+         * The method will be invoked even if this component is disabled, but will not invoked if this component is destroyed.
+         *
+         * @method repeat
+         * @param {string} methodName
+         * @param {number} [time=0] - The number of seconds that the function call should wait before each call to the method.
+         *                            If omitted, it defaults to 0. The actual delay may be longer.
+         */
+        repeat: function (methodName, time) {
+            var method = this[methodName];
+            if (typeof method === 'function') {
+                var self = this;
+                var ms = (time || 0) * 1000;
+                var key = this.id + '.' + methodName;
+                Timer.setIntervalWithKey(function () {
+                    if (self.isValid) {
+                        method.call(self);
+                    }
+                }, ms, key);
+            }
+            else {
+                Fire.error('Can not repeat %s.%s because it is not a valid function.', JS.getClassName(this), methodName);
+            }
+        },
+
+        /**
+         * Cancels all `invoke` and `repeat` calls with name methodName on this component.
+         * @method cancelInvoke
+         * @param {string} methodName
+         */
+        cancelInvoke: function (methodName) {
+            var key = this.id + '.' + methodName;
+            Timer.clearTimeoutByKey(key);
+            Timer.clearIntervalByKey(key);
+        },
 
         // overrides
 

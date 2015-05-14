@@ -280,6 +280,10 @@ Fire.executeInEditMode(Camera);
 
 Fire.Camera = Camera;
 
+/**
+ * @property {Camera} main - The current active camera in scene
+ * @static
+ */
 JS.get(Camera, 'main', function () {
     return Engine._scene && Engine._scene.camera;
 });
