@@ -102,8 +102,8 @@ var DynamicAnimCurve = Fire.Class({
 });
 
 /**
- * @class PlaybackDirection
- * @static
+ * Animate play direction
+ * @enum PlaybackDirection
  */
 var PlaybackDirection = Fire.defineEnum({
 

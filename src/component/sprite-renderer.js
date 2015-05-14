@@ -148,7 +148,7 @@ var SpriteRenderer = Fire.Class({
          * !#en Get the render height of this renderer.
          * !#zh 获取该 Renderer 的渲染高度，如果 useCustomSize 为 true，获取到的是 custom height，否则是 sprite height。
          *
-         * @property height
+         * @property renderHeight
          * @type {number}
          * @readOnly
          */
