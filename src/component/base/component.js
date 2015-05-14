@@ -13,223 +13,6 @@
     var IsOnLoadCalled = Fire._ObjectFlags.IsOnLoadCalled;
     var IsOnStartCalled = Fire._ObjectFlags.IsOnStartCalled;
 
-    var compCtor;
-// @ifdef EDITOR
-    compCtor = function () {
-        Editor._AssetsWatcher.initComponent(this);
-    };
-// @endif
-
-    /**
-     * Base class for everything attached to Entity.
-     *
-     * NOTE: Not allowed to use construction parameters for Component's subclasses,
-     *         because Component is created by the engine.
-     *
-     * @class Component
-     * @extends HashObject
-     * @constructor
-     */
-    var Component = Fire.extend('Fire.Component', HashObject, compCtor);
-
-    /**
-     * The entity this component is attached to. A component is always attached to an entity.
-     * @property entity
-     * @type {Entity}
-     */
-    Component.prop('entity', null, Fire.HideInInspector);
-
-    // @ifdef EDITOR
-
-    // 如果不带有 uuid，则返回空字符串
-    Component.getset('_scriptUuid',
-        function () {
-            return this._cacheUuid || '';
-        },
-        function (value) {
-            if (this._cacheUuid !== value) {
-                if (value && Editor.isUuid(value)) {
-                    var classId = Editor.compressUuid(value);
-                    var newComp = Fire.JS._getClassById(classId);
-                    if (newComp) {
-                        Fire.warn('Sorry, replacing component script is not yet implemented.');
-                        //Editor.sendToWindows('reload:window-scripts', Editor._Sandbox.compiled);
-                    }
-                    else {
-                        Fire.error('Can not find a component in the script which uuid is "%s".', value);
-                    }
-                }
-                else {
-                    Fire.error('invalid script');
-                }
-            }
-        },
-        Fire.DisplayName("Script"),
-        Fire._ScriptUuid
-    );
-
-    // @endif
-
-    /**
-     * @property _enabled
-     * @type boolean
-     * @private
-     */
-    Component.prop('_enabled', true, Fire.HideInInspector);
-
-    // properties
-
-    /**
-     * indicates whether this component is enabled or not.
-     * @property enabled
-     * @type boolean
-     * @default true
-     */
-    Object.defineProperty(Component.prototype, 'enabled', {
-        get: function () {
-            return this._enabled;
-        },
-        set: function (value) {
-            // jshint eqeqeq: false
-            if (this._enabled != value) {
-                // jshint eqeqeq: true
-                this._enabled = value;
-                if (this.entity._activeInHierarchy) {
-                    _callOnEnable(this, value);
-                }
-            }
-        }
-    });
-
-    /**
-     * indicates whether this component is enabled and its entity is also active in the hierarchy.
-     * @property enabledInHierarchy
-     * @type {boolean}
-     * @readOnly
-     */
-    Object.defineProperty(Component.prototype, 'enabledInHierarchy', {
-        get: function () {
-            return this._enabled && this.entity._activeInHierarchy;
-        }
-    });
-
-    /**
-     * Returns the {% crosslink Fire.Transform Transform %} attached to the entity.
-     * @property transform
-     * @type {Transform}
-     * @readOnly
-     */
-    Object.defineProperty(Component.prototype, 'transform', {
-        get: function () {
-            return this.entity.transform;
-        }
-    });
-
-    /**
-     * @property isOnLoadCalled
-     * @type {boolean}
-     * @readOnly
-     */
-    JS.get(Component.prototype, 'isOnLoadCalled', function () {
-        return this._objFlags & IsOnLoadCalled;
-    });
-
-    // callback functions
-
-    /**
-     * Update is called every frame, if the Component is enabled.
-     * @event update
-     */
-    Component.prototype.update = null;
-
-    /**
-     * LateUpdate is called every frame, if the Component is enabled.
-     * @event lateUpdate
-     */
-    Component.prototype.lateUpdate = null;
-    //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
-
-    /**
-     * When attaching to an active entity or its entity first activated
-     * @event onLoad
-     */
-    Component.prototype.onLoad = null;
-
-    /**
-     * Called before all scripts' update if the Component is enabled
-     * @event start
-     */
-    Component.prototype.start = null;
-
-    /**
-     * Called when this component becomes enabled and its entity becomes active
-     * @event onEnable
-     */
-    Component.prototype.onEnable = null;
-
-    /**
-     * Called when this component becomes disabled or its entity becomes inactive
-     * @event onDisable
-     */
-    Component.prototype.onDisable = null;
-
-    /**
-     * Called when this component will be destroyed.
-     * @event onDestroy
-     */
-    Component.prototype.onDestroy = null;
-
-    /**
-     * Called when the engine starts rendering the scene.
-     * @event onPreRender
-     */
-    Component.prototype.onPreRender = null;
-
-
-    /**
-     * Adds a component class to the entity. You can also add component to entity by passing in the name of the script.
-     *
-     * @method addComponent
-     * @param {function|string} typeOrName - the constructor or the class name of the component to add
-     * @return {Component} - the newly added component
-     */
-    Component.prototype.addComponent = function (typeOrTypename) {
-        return this.entity.addComponent(typeOrTypename);
-    };
-
-    /**
-     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get
-     * component in the entity by passing in the name of the script.
-     *
-     * @method getComponent
-     * @param {function|string} typeOrName
-     * @return {Component}
-     */
-    Component.prototype.getComponent = function (typeOrTypename) {
-        return this.entity.getComponent(typeOrTypename);
-    };
-
-    ///**
-    // * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
-    // * or one of its ancestor's parent changed, or one of their sibling index changed.
-    // * NOTE: This callback only available after onLoad.
-    // *
-    // * @param {Transform} transform - the transform which is changed, can be any of this transform's ancestor.
-    // * @param {Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
-    // * @return {boolean} return whether stop propagation to this component's child components.
-    // */
-    //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
-
-    // overrides
-
-    Component.prototype.destroy = function () {
-        if (FObject.prototype.destroy.call(this)) {
-            if (this._enabled && this.entity._activeInHierarchy) {
-                _callOnEnable(this, false);
-            }
-        }
-    };
-
 // @ifdef EDITOR
     function call_FUNC_InTryCatch (c) {
         try {
@@ -264,7 +47,7 @@
                 editorCallback.onComponentDisabled(self);
             }
         }
-        if ( !(Fire.Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
+        if ( !(Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
             return;
         }
 // @endif
@@ -297,102 +80,333 @@
         }
     }
 
-    Component.prototype._onEntityActivated = function (active) {
+    var compCtor;
 // @ifdef EDITOR
-        if ( !(this._objFlags & IsOnLoadCalled) && (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) ) {
-            this._objFlags |= IsOnLoadCalled;
-            if (this.onLoad) {
-                callOnLoadInTryCatch(this);
-            }
-            Editor._AssetsWatcher.start(this);
-            //if (this.onHierarchyChanged) {
-            //    this.entity.transform._addListener(this);
-            //}
-        }
-// @endif
-// @ifndef EDITOR
-        if ( !(this._objFlags & IsOnLoadCalled) ) {
-            this._objFlags |= IsOnLoadCalled;
-            if (this.onLoad) {
-                this.onLoad();
-            }
-            //if (this.onHierarchyChanged) {
-            //    this.entity.transform._addListener(this);
-            //}
-        }
-// @endif
-        if (this._enabled) {
-            _callOnEnable(this, active);
-        }
+    compCtor = function () {
+        Editor._AssetsWatcher.initComponent(this);
     };
+// @endif
 
     /**
-     * invoke starts on entities
-     * @param {Entity} entity
+     * Base class for everything attached to Entity.
+     *
+     * NOTE: Not allowed to use construction parameters for Component's subclasses,
+     *         because Component is created by the engine.
+     *
+     * @class Component
+     * @extends HashObject
+     * @constructor
      */
-    Component._invokeStarts = function (entity) {
-        var countBefore = entity._components.length;
-        var c = 0, comp = null;
-        // @ifdef EDITOR
-        if (Fire.Engine.isPlaying) {
-        // @endif
-            for (; c < countBefore; ++c) {
-                comp = entity._components[c];
-                if ( !(comp._objFlags & IsOnStartCalled) ) {
-                    comp._objFlags |= IsOnStartCalled;
-                    if (comp.start) {
-                        // @ifdef EDITOR
-                        callOnStartInTryCatch(comp);
-                        // @endif
-                        // @ifndef EDITOR
-                        comp.start();
-                        // @endif
-                    }
-                }
-            }
-        // @ifdef EDITOR
-        }
-        else {
-            for (; c < countBefore; ++c) {
-                comp = entity._components[c];
-                if ( !(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
-                    comp._objFlags |= IsOnStartCalled;
-                    if (comp.start) {
-                        callOnStartInTryCatch(comp);
-                    }
-                }
-            }
-        }
-        // @endif
-        // activate its children recursively
-        for (var i = 0, children = entity._children, len = children.length; i < len; ++i) {
-            var child = children[i];
-            if (child._active) {
-                Component._invokeStarts(child);
-            }
-        }
-    };
+    var Component = Fire.Class({
 
-    Component.prototype._onPreDestroy = function () {
-        // ensure onDisable called
-        _callOnEnable(this, false);
-        // onDestroy
-// @ifdef EDITOR
-        Editor._AssetsWatcher.stop(this);
-        if (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) {
-            if (this.onDestroy) {
-                callOnDestroyInTryCatch(this);
+        name: 'Fire.Component',
+        extends: HashObject,
+        constructor: compCtor,
+
+        properties: {
+            /**
+             * The entity this component is attached to. A component is always attached to an entity.
+             * @property entity
+             * @type {Entity}
+             */
+            entity: {
+                default: null,
+                visible: false
+            },
+
+            // @ifdef EDITOR
+            _scriptUuid: {
+                get: function () {
+                    // 如果不带有 uuid，则返回空字符串
+                    return this._cacheUuid || '';
+                },
+                set: function (value) {
+                    if (this._cacheUuid !== value) {
+                        if (value && Editor.isUuid(value)) {
+                            var classId = Editor.compressUuid(value);
+                            var newComp = Fire.JS._getClassById(classId);
+                            if (newComp) {
+                                Fire.warn('Sorry, replacing component script is not yet implemented.');
+                                //Editor.sendToWindows('reload:window-scripts', Editor._Sandbox.compiled);
+                            }
+                            else {
+                                Fire.error('Can not find a component in the script which uuid is "%s".', value);
+                            }
+                        }
+                        else {
+                            Fire.error('invalid script');
+                        }
+                    }
+                },
+                displayName: 'Script',
+                type: Fire._ScriptUuid
+            },
+            // @endif
+
+            /**
+             * @property _enabled
+             * @type boolean
+             * @private
+             */
+            _enabled: true,
+
+            /**
+             * indicates whether this component is enabled or not.
+             * @property enabled
+             * @type boolean
+             * @default true
+             */
+            enabled: {
+                get: function () {
+                    return this._enabled;
+                },
+                set: function (value) {
+                    // jshint eqeqeq: false
+                    if (this._enabled != value) {
+                        // jshint eqeqeq: true
+                        this._enabled = value;
+                        if (this.entity._activeInHierarchy) {
+                            _callOnEnable(this, value);
+                        }
+                    }
+                },
+                visible: false
+            },
+
+            /**
+             * indicates whether this component is enabled and its entity is also active in the hierarchy.
+             * @property enabledInHierarchy
+             * @type {boolean}
+             * @readOnly
+             */
+            enabledInHierarchy: {
+                get: function () {
+                    return this._enabled && this.entity._activeInHierarchy;
+                },
+                visible: false
+            },
+
+            /**
+             * Returns the {% crosslink Fire.Transform Transform %} attached to the entity.
+             * @property transform
+             * @type {Transform}
+             * @readOnly
+             */
+            transform: {
+                get: function () {
+                    return this.entity.transform;
+                },
+                visible: false
+            },
+
+            /**
+             * @property isOnLoadCalled
+             * @type {boolean}
+             * @readOnly
+             */
+            isOnLoadCalled: {
+                get: function () {
+                    return this._objFlags & IsOnLoadCalled;
+                },
+                visible: false
             }
+        },
+
+        // callback functions
+
+        /**
+         * Update is called every frame, if the Component is enabled.
+         * @event update
+         */
+        update: null,
+
+        /**
+         * LateUpdate is called every frame, if the Component is enabled.
+         * @event lateUpdate
+         */
+        lateUpdate: null,
+        //(NYI) onCreate = null;  // customized constructor for template
+
+        /**
+         * When attaching to an active entity or its entity first activated
+         * @event onLoad
+         */
+        onLoad: null,
+
+        /**
+         * Called before all scripts' update if the Component is enabled
+         * @event start
+         */
+        start: null,
+
+        /**
+         * Called when this component becomes enabled and its entity becomes active
+         * @event onEnable
+         */
+        onEnable: null,
+
+        /**
+         * Called when this component becomes disabled or its entity becomes inactive
+         * @event onDisable
+         */
+        onDisable: null,
+
+        /**
+         * Called when this component will be destroyed.
+         * @event onDestroy
+         */
+        onDestroy: null,
+
+        /**
+         * Called when the engine starts rendering the scene.
+         * @event onPreRender
+         */
+        onPreRender: null,
+
+
+        /**
+         * Adds a component class to the entity. You can also add component to entity by passing in the name of the script.
+         *
+         * @method addComponent
+         * @param {function|string} typeOrName - the constructor or the class name of the component to add
+         * @return {Component} - the newly added component
+         */
+        addComponent: function (typeOrTypename) {
+            return this.entity.addComponent(typeOrTypename);
+        },
+
+        /**
+         * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get
+         * component in the entity by passing in the name of the script.
+         *
+         * @method getComponent
+         * @param {function|string} typeOrName
+         * @return {Component}
+         */
+        getComponent: function (typeOrTypename) {
+            return this.entity.getComponent(typeOrTypename);
+        },
+
+        ///**
+        // * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
+        // * or one of its ancestor's parent changed, or one of their sibling index changed.
+        // * NOTE: This callback only available after onLoad.
+        // *
+        // * @param {Transform} transform - the transform which is changed, can be any of this transform's ancestor.
+        // * @param {Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
+        // * @return {boolean} return whether stop propagation to this component's child components.
+        // */
+        //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
+
+        // overrides
+
+        destroy: function () {
+            if (FObject.prototype.destroy.call(this)) {
+                if (this._enabled && this.entity._activeInHierarchy) {
+                    _callOnEnable(this, false);
+                }
+            }
+        },
+
+        _onEntityActivated: function (active) {
+            // @ifdef EDITOR
+            if (!(this._objFlags & IsOnLoadCalled) && (Engine.isPlaying || Fire.attr(this, 'executeInEditMode'))) {
+                this._objFlags |= IsOnLoadCalled;
+                if (this.onLoad) {
+                    callOnLoadInTryCatch(this);
+                }
+                Editor._AssetsWatcher.start(this);
+                //if (this.onHierarchyChanged) {
+                //    this.entity.transform._addListener(this);
+                //}
+            }
+            // @endif
+            // @ifndef EDITOR
+            if (!(this._objFlags & IsOnLoadCalled)) {
+                this._objFlags |= IsOnLoadCalled;
+                if (this.onLoad) {
+                    this.onLoad();
+                }
+                //if (this.onHierarchyChanged) {
+                //    this.entity.transform._addListener(this);
+                //}
+            }
+            // @endif
+            if (this._enabled) {
+                _callOnEnable(this, active);
+            }
+        },
+
+        statics: {
+            /**
+             * invoke starts on entities
+             * @param {Entity} entity
+             */
+            _invokeStarts: function (entity) {
+                var countBefore = entity._components.length;
+                var c = 0, comp = null;
+                // @ifdef EDITOR
+                if (Engine.isPlaying) {
+                    // @endif
+                    for (; c < countBefore; ++c) {
+                        comp = entity._components[c];
+                        if (!(comp._objFlags & IsOnStartCalled)) {
+                            comp._objFlags |= IsOnStartCalled;
+                            if (comp.start) {
+                                // @ifdef EDITOR
+                                callOnStartInTryCatch(comp);
+                                // @endif
+                                // @ifndef EDITOR
+                                comp.start();
+                                // @endif
+                            }
+                        }
+                    }
+                    // @ifdef EDITOR
+                }
+                else {
+                    for (; c < countBefore; ++c) {
+                        comp = entity._components[c];
+                        if (!(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
+                            comp._objFlags |= IsOnStartCalled;
+                            if (comp.start) {
+                                callOnStartInTryCatch(comp);
+                            }
+                        }
+                    }
+                }
+                // @endif
+                // activate its children recursively
+                for (var i = 0, children = entity._children, len = children.length; i < len; ++i) {
+                    var child = children[i];
+                    if (child._active) {
+                        Component._invokeStarts(child);
+                    }
+                }
+            }
+        },
+
+        _onPreDestroy: function () {
+            // ensure onDisable called
+            _callOnEnable(this, false);
+            // onDestroy
+            // @ifdef EDITOR
+            Editor._AssetsWatcher.stop(this);
+            if (Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) {
+                if (this.onDestroy) {
+                    callOnDestroyInTryCatch(this);
+                }
+            }
+            // @endif
+            // @ifndef EDITOR
+            if (this.onDestroy) {
+                this.onDestroy();
+            }
+            // @endif
+            // remove component
+            this.entity._removeComponent(this);
         }
-// @endif
-// @ifndef EDITOR
-        if (this.onDestroy) {
-            this.onDestroy();
-        }
-// @endif
-        // remove component
-        this.entity._removeComponent(this);
-    };
+    });
 
     return Component;
 })();
