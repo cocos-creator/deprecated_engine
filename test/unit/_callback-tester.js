@@ -59,6 +59,12 @@ CallbackTester.prototype.notExpect = function (notExpect, message) {
  * stop reporting errors
  */
 CallbackTester.prototype.stopTest = function () {
+    if (this._expects && this._expects.length > 0) {
+        var last = this._expects.splice(0, 1)[0];
+        var expect = last.expect;
+        var message = last.message;
+        ok(false, 'The last expected ' + expect + ' not called yet: ' + message);
+    }
     this._stopped = true;
     this._expects = null;
     this._messages = null;

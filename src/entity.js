@@ -163,15 +163,20 @@ var Entity = Fire.Class({
                     this._parent = value || null;
                     this.transform._parent = this._parent && this._parent.transform;
 
-                    if (oldParent && !(oldParent._objFlags & Destroying)) {
-                        oldParent._children.splice(oldParent._children.indexOf(this), 1);
-                        this._onHierarchyChanged(oldParent);
+                    if (oldParent) {
+                        if (!(oldParent._objFlags & Destroying)) {
+                            oldParent._children.splice(oldParent._children.indexOf(this), 1);
+                            this._onHierarchyChanged(oldParent);
+                        }
                     }
+                    else {
+                        this._onHierarchyChanged(this, null);
+                    }
+
                     Engine._renderContext.onEntityParentChanged(this, oldParent);
 // @ifdef EDITOR
                     editorCallback.onEntityParentChanged(this);
 // @endif
-                    //this._onHierarchyChanged(this, oldParent);
                 }
             }
         },

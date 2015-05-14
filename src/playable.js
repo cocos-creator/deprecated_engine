@@ -10,7 +10,7 @@ var Playable = (function () {
         this._stepOnce = false;
     }
 
-    //JS.extend(Playable, EventTarget);
+    JS.extend(Playable, EventTarget);
 
     var prototype = Playable.prototype;
 
@@ -92,7 +92,7 @@ var Playable = (function () {
                 this._isPaused = false;
                 this._isUpdating = true;
                 this.onResume();
-                //this.emit('resume');
+                this.emit('resume');
             }
             else {
                 this.onError('already-playing');
@@ -103,7 +103,7 @@ var Playable = (function () {
             this._isPlaying = true;
             this._isUpdating = !this._isPaused;
             this.onPlay();
-            //this.emit('play');
+            this.emit('play');
         }
     };
 
@@ -115,7 +115,7 @@ var Playable = (function () {
             this._isPlaying = false;
             this._isPaused = false;
             this._isUpdating = false;
-            //this.emit('stop');
+            this.emit('stop');
             this.onStop();
         }
     };
@@ -126,7 +126,7 @@ var Playable = (function () {
     prototype.pause = function () {
         this._isPaused = true;
         this._isUpdating = false;
-        //this.emit('pause');
+        this.emit('pause');
         this.onPause();
     };
 

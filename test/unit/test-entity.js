@@ -127,7 +127,7 @@ test('component', function () {
     Fire.JS.unregisterClass(MyComponent, MyComponentBase);
 });
 
-test('component in hierarchy', 4, function () {
+test('component in hierarchy', function () {
     // 这里主要测试entity，不是测试component
     var parent = new Entity();
     var child = new Entity();
@@ -150,6 +150,10 @@ test('component in hierarchy', 4, function () {
 
     comp.expect(CallbackTester.OnEnable, 'should enable when entity detached from its parent');
     child.parent = null;
+
+    comp.expect(CallbackTester.OnDisable, 'should disable when add to inactive parent');
+    parent.active = false;
+    child.parent = parent;
 
     comp.stopTest();
 });
