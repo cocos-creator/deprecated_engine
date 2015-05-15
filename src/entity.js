@@ -657,8 +657,9 @@ var Entity = Fire.Class({
     /**
      * @method animate
      * @param {object[]} keyFrames
-     * @param {object} timingInput - This dictionary is used as a convenience for specifying the timing properties of
-     *                               an Animation in bulk.
+     * @param {object} timingInput - This dictionary is used as a convenience
+     * for specifying the timing properties of an Animation in bulk.
+     * @example {@link example1.js }
      * @return {AnimationNode}
      */
     animate: function (keyFrames, timingInput) {
