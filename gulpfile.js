@@ -59,6 +59,7 @@ var paths = {
         'src/component/particle-system/particle-system.js',
         'src/component/camera.js',
         'src/component/missing.js',
+        'src/component/animation.js',
         'src/interaction-context.js',
         'src/scene.js',
         'src/load-manager.js',
