@@ -37,10 +37,19 @@ var Timer = (function () {
     var Timer = {
 
         // https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers
-        setTimeout: setTimeout,
-        clearTimeout: clearTimeout,
-        setInterval: setInterval,
-        clearInterval: clearInterval,
+        setTimeout: function (func, delay) {
+            // just wrap functions to fix the "this" problem
+            return window.setTimeout(func, delay);
+        },
+        clearTimeout: function (timeoutId) {
+            window.clearTimeout(timeoutId);
+        },
+        setInterval: function (func, delay) {
+            return window.setInterval(func, delay);
+        },
+        clearInterval: function (intervalId) {
+            window.clearInterval(intervalId);
+        },
 
         setTimeoutWithKey: null,
         setIntervalWithKey: null,
@@ -48,8 +57,8 @@ var Timer = (function () {
         clearIntervalByKey: null,
 
         clearAll: function () {
-            doClearAll(this.timeoutIds, clearTimeout);
-            doClearAll(this.intervalIds, clearInterval);
+            doClearAll(this.timeoutIds, Timer.clearTimeout);
+            doClearAll(this.intervalIds, Timer.clearInterval);
         },
 
         // key to (array of) id
@@ -109,8 +118,8 @@ var Timer = (function () {
         }
     };
 
-    Timer.clearTimeoutByKey = createClearMethod(Timer.timeoutIds, clearTimeout);
-    Timer.clearIntervalByKey = createClearMethod(Timer.intervalIds, clearInterval);
+    Timer.clearTimeoutByKey = createClearMethod(Timer.timeoutIds, Timer.clearTimeout);
+    Timer.clearIntervalByKey = createClearMethod(Timer.intervalIds, Timer.clearInterval);
 
     Engine.on('stop', function () {
         Timer.clearAll();

@@ -134,7 +134,7 @@
         //};
     });
 
-    Fire.executeInEditMode(Renderer)
+    Fire.executeInEditMode(Renderer);
 
     return Renderer;
 })();

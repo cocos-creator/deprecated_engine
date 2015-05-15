@@ -80,6 +80,34 @@
         }
     }
 
+    var createInvoker = function (timerFunc, timerWithKeyFunc, errorInfo) {
+        return function (functionOrMethodName, time) {
+            var ms = (time || 0) * 1000;
+            var self = this;
+            if (typeof functionOrMethodName === "function") {
+                return timerFunc(function () {
+                    if (self.isValid) {
+                        functionOrMethodName.call(self);
+                    }
+                }, ms);
+            }
+            else {
+                var method = this[functionOrMethodName];
+                if (typeof method === 'function') {
+                    var key = this.id + '.' + functionOrMethodName;
+                    timerWithKeyFunc(function () {
+                        if (self.isValid) {
+                            method.call(self);
+                        }
+                    }, ms, key);
+                }
+                else {
+                    Fire.error('Can not %s %s.%s because it is not a valid function.', errorInfo, JS.getClassName(this), functionOrMethodName);
+                }
+            }
+        };
+    };
+
     var compCtor;
 // @ifdef EDITOR
     compCtor = function () {
@@ -300,66 +328,67 @@
         //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
 
         /**
-         * Invokes the method methodName on this component after a specified delay.
-         * The method will be invoked even if this component is disabled, but will not invoked if this component is destroyed.
+         * Invokes the method on this component after a specified delay.
+         * The method will be invoked even if this component is disabled, but will not invoked if this component is
+         * destroyed.
          *
          * @method invoke
-         * @param {string} methodName
+         * @param {function|string} functionOrMethodName
          * @param {number} [time=0] - The number of seconds that the function call should be delayed by.
          *                            If omitted, it defaults to 0. The actual delay may be longer.
+         * @return {number} - Will returns a new InvokeID if the functionOrMethodName is type function.
+         *                    InvokeID is the numerical ID of the invoke, which can be used later with cancelInvoke().
          */
-        invoke: function (methodName, time) {
-            var method = this[methodName];
-            if (typeof method === 'function') {
-                var self = this;
-                var ms = (time || 0) * 1000;
-                var key = this.id + '.' + methodName;
-                Timer.setTimeoutWithKey(function () {
-                    if (self.isValid) {
-                        method.call(self);
-                    }
-                }, ms, key);
-            }
-            else {
-                Fire.error('Can not invoke %s.%s because it is not a valid function.', JS.getClassName(this), methodName);
-            }
-        },
+        invoke: createInvoker(Timer.setTimeout, Timer.setTimeoutWithKey, 'invoke'),
 
         /**
-         * Invokes the method methodName on this component repeatedly, with a fixed time delay between each call.
-         * The method will be invoked even if this component is disabled, but will not invoked if this component is destroyed.
+         * Invokes the method on this component repeatedly, with a fixed time delay between each call.
+         * The method will be invoked even if this component is disabled, but will not invoked if this component is
+         * destroyed.
          *
          * @method repeat
-         * @param {string} methodName
-         * @param {number} [time=0] - The number of seconds that the function call should wait before each call to the method.
-         *                            If omitted, it defaults to 0. The actual delay may be longer.
+         * @param {function|string} functionOrMethodName
+         * @param {number} [time=0] - The number of seconds that the function call should wait before each call to the
+         *                            method. If omitted, it defaults to 0. The actual delay may be longer.
+         * @return {number} - Will returns a new RepeatID if the method is type function.
+         *                    RepeatID is the numerical ID of the repeat, which can be used later with cancelRepeat().
          */
-        repeat: function (methodName, time) {
-            var method = this[methodName];
-            if (typeof method === 'function') {
-                var self = this;
-                var ms = (time || 0) * 1000;
-                var key = this.id + '.' + methodName;
-                Timer.setIntervalWithKey(function () {
-                    if (self.isValid) {
-                        method.call(self);
-                    }
-                }, ms, key);
+        repeat: createInvoker(Timer.setInterval, Timer.setIntervalWithKey, 'repeat'),
+
+        /**
+         * Cancels previous invoke calls with methodName or InvokeID on this component.
+         * When using methodName, all calls with the same methodName will be canceled.
+         * InvokeID is the identifier of the invoke action you want to cancel, as returned by invoke().
+         *
+         * @method cancelInvoke
+         * @param {string|number} methodNameOrInvokeId
+         */
+        cancelInvoke: function (methodNameOrInvokeId) {
+            if (typeof methodNameOrInvokeId === 'string') {
+                var key = this.id + '.' + methodNameOrInvokeId;
+                Timer.clearTimeoutByKey(key);
             }
             else {
-                Fire.error('Can not repeat %s.%s because it is not a valid function.', JS.getClassName(this), methodName);
+                Timer.clearTimeout(methodNameOrInvokeId);
             }
         },
 
         /**
-         * Cancels all `invoke` and `repeat` calls with name methodName on this component.
-         * @method cancelInvoke
-         * @param {string} methodName
+         * Cancels previous repeat calls with methodName or RepeatID on this component.
+         * When using methodName, all calls with the same methodName will be canceled.
+         * RepeatID is the identifier of the repeat action you want to cancel, as returned by repeat().
+         *
+         * @method cancelRepeat
+         * @param {string|number} methodNameOrRepeatId
          */
-        cancelInvoke: function (methodName) {
-            var key = this.id + '.' + methodName;
-            Timer.clearTimeoutByKey(key);
-            Timer.clearIntervalByKey(key);
+        cancelRepeat: function (methodNameOrRepeatId) {
+            if (typeof methodNameOrRepeatId === 'string') {
+                var key = this.id + '.' + methodNameOrRepeatId;
+                Timer.clearIntervalByKey(key);
+            }
+            else {
+                Timer.clearInterval(methodNameOrRepeatId);
+            }
         },
 
         // overrides
