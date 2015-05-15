@@ -116,7 +116,7 @@
         target._audio.play();
 
         target._audio.onended = function () {
-            target._onPlayEnd().bind(target);
+            target._onPlayEnd.bind(target);
         }.bind(target);
 
         // 播放结束后的回调
