@@ -335,10 +335,9 @@
          *
          * @method invoke
          * @param {function|string} functionOrMethodName
-         * @param {number} [time=0] - The number of seconds that the function call should be delayed by.
-         *                            If omitted, it defaults to 0. The actual delay may be longer.
-         * @return {number} - Will returns a new InvokeID if the functionOrMethodName is type function.
-         *                    InvokeID is the numerical ID of the invoke, which can be used later with cancelInvoke().
+         * @param {number} [delay=0] - The number of seconds that the function call should be delayed by. If omitted, it defaults to 0. The actual delay may be longer.
+         * @return {number} - Will returns a new InvokeID if the functionOrMethodName is type function. InvokeID is the numerical ID of the invoke, which can be used later with cancelInvoke().
+         * @example {@link examples/Fire/Component/invoke.js }
          */
         invoke: createInvoker(Timer.setTimeout, Timer.setTimeoutWithKey, 'invoke'),
 
@@ -349,10 +348,9 @@
          *
          * @method repeat
          * @param {function|string} functionOrMethodName
-         * @param {number} [time=0] - The number of seconds that the function call should wait before each call to the
-         *                            method. If omitted, it defaults to 0. The actual delay may be longer.
-         * @return {number} - Will returns a new RepeatID if the method is type function.
-         *                    RepeatID is the numerical ID of the repeat, which can be used later with cancelRepeat().
+         * @param {number} [delay=0] - The number of seconds that the function call should wait before each call to the method. If omitted, it defaults to 0. The actual delay may be longer.
+         * @return {number} - Will returns a new RepeatID if the method is type function. RepeatID is the numerical ID of the repeat, which can be used later with cancelRepeat().
+         * @example {@link examples/Fire/Component/repeat.js}
          */
         repeat: createInvoker(Timer.setInterval, Timer.setIntervalWithKey, 'repeat'),
 
@@ -363,6 +361,7 @@
          *
          * @method cancelInvoke
          * @param {string|number} methodNameOrInvokeId
+         * @example {@link examples/Fire/Component/cancelInvoke.js}
          */
         cancelInvoke: function (methodNameOrInvokeId) {
             if (typeof methodNameOrInvokeId === 'string') {
@@ -381,6 +380,7 @@
          *
          * @method cancelRepeat
          * @param {string|number} methodNameOrRepeatId
+         * @example {@link examples/Fire/Component/cancelRepeat.js}
          */
         cancelRepeat: function (methodNameOrRepeatId) {
             if (typeof methodNameOrRepeatId === 'string') {

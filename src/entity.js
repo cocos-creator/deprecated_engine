@@ -664,7 +664,7 @@ var Entity = Fire.Class({
      * @param {number} [timingInput.playbackRate=1] the play speed of animation
      * @param {Fire.PlaybackDirection} [timingInput.direction] animation should play towards which Fire.PlaybackDirection
      * @return {AnimationNode}
-     * @example {@link examples/example1.js}
+     * @example {@link examples/Fire/Entity/animate.js}
      */
     animate: function (keyFrames, timingInput) {
         if (! this._animator) {
