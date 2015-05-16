@@ -92,7 +92,9 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this.width_ = value;
-                Engine._renderContext.updateSpriteSize(this);
+                if (useCustomSize) {
+                    Engine._renderContext.updateSpriteSize(this);
+                }
             },
             watch: {
                 _useCustomSize: function (obj, propEL) {
@@ -138,7 +140,9 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this.height_ = value;
-                Engine._renderContext.updateSpriteSize(this);
+                if (useCustomSize) {
+                    Engine._renderContext.updateSpriteSize(this);
+                }
             },
             watch: {
                 _useCustomSize: function (obj, propEL) {
@@ -167,10 +171,7 @@ var SpriteRenderer = Fire.Class({
             visible: false
         },
 
-        _imageType: {
-            default: Fire.ImageType.Simple,
-            type: Fire.ImageType
-        },
+        _imageType: Fire.ImageType.Simple,
         /**
          * !#en The image type of this renderer .
          * !#zh 图片渲染类型
@@ -184,14 +185,9 @@ var SpriteRenderer = Fire.Class({
                 return this._imageType;
             },
             set: function (value) {
-                if (this._imageType != value) {
+                if (this._imageType !== value) {
                     this._imageType = value;
-                    Engine._renderContext.addSprite(this);
-                }
-            },
-            watch: {
-                _sprite: function (obj, propEL) {
-                    propEL.disabled = !obj._sprite;
+                    Engine._renderContext.updateImageType(this);
                 }
             },
             type: Fire.ImageType
