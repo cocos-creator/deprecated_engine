@@ -145,8 +145,7 @@ Fire.PlaybackDirection = PlaybackDirection;
  * @constructor
  * @param {Animator} animator
  * @param {AnimCurve[]} [curves]
- * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an
- *                                 Animation in bulk.
+ * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
  */
 var AnimationNode = Fire.Class({
     name: 'Fire.AnimationNode',

@@ -659,8 +659,12 @@ var Entity = Fire.Class({
      * @param {object[]} keyFrames
      * @param {object} timingInput - This dictionary is used as a convenience
      * for specifying the timing properties of an Animation in bulk.
-     * @example {@link example1.js }
+     * @param {number} [timingInput.delay] delay in seconds before start the animation
+     * @param {number} [timingInput.iterations] how many times should the animation goes
+     * @param {number} [timingInput.playbackRate=1] the play speed of animation
+     * @param {Fire.PlaybackDirection} [timingInput.direction] animation should play towards which Fire.PlaybackDirection
      * @return {AnimationNode}
+     * @example {@link examples/example1.js}
      */
     animate: function (keyFrames, timingInput) {
         if (! this._animator) {

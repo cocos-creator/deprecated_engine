@@ -92,6 +92,7 @@ Fire.JS.mixin(RenderContext.prototype, {
     onSceneLaunched: function (scene) { },
 
     /**
+     * @method onEntityIndexChanged
      * @param {Entity} entity
      * @param {number} oldIndex
      * @param {number} newIndex
@@ -99,6 +100,7 @@ Fire.JS.mixin(RenderContext.prototype, {
     onEntityIndexChanged: function (entity, oldIndex, newIndex) { },
 
     /**
+     * @method onEntityParentChanged
      * @param {Entity} entity
      * @param {Entity} oldParent
      */
@@ -106,34 +108,40 @@ Fire.JS.mixin(RenderContext.prototype, {
 
     /**
      * removes a entity and all its children from scene
+     * @method onEntityRemoved
      * @param {Entity} entity
      */
     onEntityRemoved: function (entity) { },
 
     /**
+     * @method onRootEntityCreated
      * @param {Entity} entity
      */
     onRootEntityCreated: function (entity) { },
 
     /**
      * create pixi nodes recursively
+     * @method onEntityCreated
      * @param {Entity} entity
      * @param {boolean} addToScene - add to pixi stage now if entity is root
      */
     onEntityCreated: function (entity, addToScene) {},
 
     /**
+     * @method addSprite
      * @param {SpriteRenderer} target
      */
     addSprite: function (target) {},
 
     /**
+     * @method show
      * @param {SpriteRenderer} target
      * @param {boolean} show
      */
     show: function (target, show) {},
 
     /**
+     * @method remove
      * @param target {SpriteRenderer}
      * @param show {boolean}
      */
@@ -144,6 +152,7 @@ Fire.JS.mixin(RenderContext.prototype, {
 
     /**
      * Set the final transform to render
+     * @method updateTransform
      * @param {SpriteRenderer} target
      * @param {Matrix23} matrix - the matrix to render (Read Only)
      */
@@ -152,12 +161,14 @@ Fire.JS.mixin(RenderContext.prototype, {
     updateColor: function (target) {},
 
     /**
+     * @method updateMaterial
      * @param target {SpriteRenderer}
      */
     updateMaterial: function (target) {},
 
     /**
      * The debugging method that checks whether the render context matches the current scene or not.
+     * @method checkMatchCurrentScene
      * @throws {string} error info
      */
     checkMatchCurrentScene: function () {}

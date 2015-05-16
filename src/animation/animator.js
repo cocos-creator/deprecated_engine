@@ -45,9 +45,9 @@ var Animator = (function () {
 // @endif
 
     /**
+     * @method animate
      * @param {object[]} keyFrames
-     * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of
-     *     an Animation in bulk.
+     * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
      * @return {AnimationNode}
      */
     prototype.animate = function (keyFrames, timingInput) {

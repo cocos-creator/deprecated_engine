@@ -1,5 +1,6 @@
 /**
  * The InteractionContext contains all the entities which can be interact with.
+ * @class InteractionContext
  * @private
  */
 var InteractionContext = (function () {
@@ -17,6 +18,7 @@ var InteractionContext = (function () {
 
     /**
      * Pick the top most entity, using their oriented bounding boxes.
+     * @method pick
      * @param {Vec2} worldPosition
      * @return {Entity}
      */

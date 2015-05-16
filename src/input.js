@@ -13,6 +13,8 @@
 
     /**
      * Returns whether the current device supports touch input
+     * @property hasTouch
+     * @type {boolean}
      */
     Object.defineProperty(Input, 'hasTouch', {
         get: function () {

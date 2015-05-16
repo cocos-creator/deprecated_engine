@@ -236,6 +236,7 @@ Fire.Screen.ContentStrategy = ContentStrategy;
      */
     /**
      * Get the content strategy instance by type
+     * @method fromType
      * @param {ContentStrategyType} type
      * @return {Screen.ContentStrategy}
      * @static

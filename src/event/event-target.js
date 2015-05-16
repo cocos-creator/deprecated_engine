@@ -261,21 +261,21 @@
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      *
      * Subclasses can override this method to make event propagable.
-     *
+     * @method _getCapturingTargets
      * @param {string} type - the event type
      * @param {array} array - the array to receive targets
+     * @example
+     * Subclasses can override this method to make event propagable
+     * ```js
+     * for (var target = this._parent; target; target = target._parent) {
+     *     if (target._capturingListeners && target._capturingListeners.has(type)) {
+     *         array.push(target);
+     *     }
+     * }
+     * ```
      */
     EventTarget.prototype._getCapturingTargets = function (type, array) {
-        /**
-         * Subclasses can override this method to make event propagable, E.g.
-         * ```
-         * for (var target = this._parent; target; target = target._parent) {
-         *     if (target._capturingListeners && target._capturingListeners.has(type)) {
-         *         array.push(target);
-         *     }
-         * }
-         * ```
-         */
+
     };
 
     /**
@@ -284,7 +284,7 @@
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      *
      * Subclasses can override this method to make event propagable.
-     *
+     * @method _getBubblingTargets
      * @param {string} type - the event type
      * @param {array} array - the array to receive targets
      */

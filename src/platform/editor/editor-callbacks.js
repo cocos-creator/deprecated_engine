@@ -17,6 +17,7 @@ var editorCallback = {
 
     /**
      * removes an entity and all its children from scene, this method will NOT be called if it is removed by hierarchy.
+     * @method onEntityRemoved
      * @param {Entity} entity - the entity to remove
      * @param {boolean} isTopMost - indicates whether it is the most top one among the entities who will be deleted in one operation
      */
@@ -25,6 +26,7 @@ var editorCallback = {
     onEntityParentChanged: function () {},
 
     /**
+     * @method onEntityIndexChanged
      * @param {Entity} entity
      * @param {number} oldIndex
      * @param {number} newIndex
@@ -34,16 +36,19 @@ var editorCallback = {
     onEntityRenamed: function () {},
 
     /**
+     * @method onStartUnloadScene
      * @param {Scene} scene
      */
     onStartUnloadScene: function () {},
 
     /**
+     * @method onSceneLaunched
      * @param {Scene} scene
      */
     onSceneLaunched: function () {},
 
     /**
+     * @method onBeforeActivateScene
      * @param {Scene} scene
      */
     onBeforeActivateScene: function () {},
@@ -57,12 +62,14 @@ var editorCallback = {
     onComponentDisabled: function () {},
 
     /**
+     * @method onComponentAdded
      * @param {Entity} entity
      * @param {Component} component
      */
     onComponentAdded: function () {},
 
     /**
+     * @method onComponentRemoved
      * @param {Entity} entity
      * @param {Component} component
      */

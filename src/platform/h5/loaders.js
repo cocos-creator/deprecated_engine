@@ -2,9 +2,6 @@
 var FireUrl = Fire.isNode ? require('fire-url') : null;
 // @endif
 
-/**
- *
- */
 function ImageLoader(url, callback, onProgress) {
 // @ifdef EDITOR
     if (FireUrl) {
@@ -43,6 +40,7 @@ function ImageLoader(url, callback, onProgress) {
 }
 
 /**
+ * @method _LoadFromXHR
  * @param {string} [responseType="text"] - the XMLHttpRequestResponseType
  */
 function _LoadFromXHR(url, callback, onProgress, responseType) {

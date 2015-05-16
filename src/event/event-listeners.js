@@ -1,7 +1,11 @@
 ﻿var EventListeners = (function () {
+    /**
+     * @module JS
+     */
 
     /**
      * Extends Fire._CallbacksHandler to handle and invoke event callbacks.
+     * @method EventListeners
      */
     function EventListeners () {
         Fire._CallbacksHandler.call(this);
@@ -9,6 +13,7 @@
     JS.extend(EventListeners, Fire._CallbacksHandler);
 
     /**
+     * @method invoke
      * @param {Event} event
      */
     EventListeners.prototype.invoke = function (event) {

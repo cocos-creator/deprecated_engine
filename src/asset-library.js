@@ -60,7 +60,7 @@ var AssetLibrary = (function () {
         /**
          * @method loadAsset
          * @param {string} uuid
-         * @param {loadCallback} callback
+         * @param {loadCallback} callback - the callback function once load finished
          * @param {boolean} [readMainCache=true] - If false, the asset and all its depends assets will reload and create new instances from library.
          * @param {boolean} [writeMainCache=true] - If true, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
@@ -85,7 +85,7 @@ var AssetLibrary = (function () {
          *
          * @method _loadAssetByUuid
          * @param {string} uuid
-         * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset, can be null
+         * @param {loadCallback} callback - the callback to receive the asset, can be null
          * @param {LoadingHandle} handle - the loading context which reserves all relevant parameters
          * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
          * @private
@@ -151,9 +151,7 @@ var AssetLibrary = (function () {
         /**
          * @method loadJson
          * @param {string|object} json
-         * @param {function} callback
-         * @param {string} callback.param error - null or the error info
-         * @param {object} callback.param data - the loaded object or null
+         * @param {loadCallback} callback
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * @private
          */
@@ -166,9 +164,7 @@ var AssetLibrary = (function () {
          * @method _deserializeWithDepends
          * @param {string|object} json
          * @param {string} url
-         * @param {function} callback
-         * @param {string} callback.param error - null or the error info
-         * @param {object} callback.param data - the loaded object or null
+         * @param {loadCallback} callback
          * @param {object} handle - the loading context which reserves all relevant parameters
          * @param {Asset} [existingAsset] - existing asset to reload
          * @private
@@ -310,12 +306,6 @@ var AssetLibrary = (function () {
         },
 
         /**
-         * @callback AssetLibrary~loadCallback
-         * @param {Asset} asset - if failed, asset will be null
-         * @param {string} [error] - error info, if succeed, error will be empty or nil
-         */
-
-        /**
          * !#en Kill references to the asset so it can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
          * You rarely use this function in scripts, since it will be called automatically when the Asset is destroyed.
@@ -325,8 +315,7 @@ var AssetLibrary = (function () {
          *
          * @method unloadAsset
          * @param {Asset|string} assetOrUuid
-         * @param {boolean} [destroy=false] - When destroyImmediate is true, if there are objects referencing the asset,
-         *                                    the references will become invalid.
+         * @param {boolean} [destroy=false] - When destroyImmediate is true, if there are objects referencing the asset, the references will become invalid.
          */
         unloadAsset: function (assetOrUuid, destroy) {
             var asset;

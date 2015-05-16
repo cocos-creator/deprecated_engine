@@ -28,12 +28,14 @@
         // for animator
 
         /**
+         * @method addAnimator
          * @param {Animator} animator
          */
         addAnimator: function (animator) {
             this.animators.push(animator);
         },
         /**
+         * @method removeAnimator
          * @param {Animator} animator
          */
         removeAnimator: function (animator) {

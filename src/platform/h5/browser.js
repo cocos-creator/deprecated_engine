@@ -1,3 +1,7 @@
+/**
+ * @module Browser
+ * @main
+ */
 
 var Browser = (function () {
     var win = window, nav = win.navigator, doc = document, docEle = doc.documentElement;
@@ -48,8 +52,7 @@ var Browser = (function () {
     }
 
     /**
-     * Indicate the running browser type
-     * @type {string}
+     * @property {string} type - Indicate the running browser type
      */
     Browser.type = browserType;
 

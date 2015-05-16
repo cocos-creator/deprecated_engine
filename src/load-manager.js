@@ -1,4 +1,4 @@
-﻿
+
 /**
  * The manager scheduling resources loading
  * - It will:
@@ -32,13 +32,12 @@ var LoadManager = (function () {
 
     var urlToCallbacks = new Fire.CallbacksInvoker();
 
-    /**
-     * list of elements to load, the element type is {
-     *     url: url,
-     *     loader: loader,
-     *     callback: callback,
-     * }
-     */
+
+     // list of elements to load, the element type is {
+     //     url: url,
+     //     loader: loader,
+     //     callback: callback,
+     // }
     var loadQueue = [];
 
     var loadNext = function () {
@@ -179,7 +178,7 @@ var LoadManager = (function () {
         reset: function () {
             this._rawTypes = getBuiltinRawTypes();
         },
-        
+
         isLoading: function (url, alsoCheckRaw) {
             if (this._curConcurrent === 0) {
                 return false;
