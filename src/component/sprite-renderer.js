@@ -71,6 +71,7 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this._useCustomSize = value;
+                Engine._renderContext.updateSpriteSize(this);
             }
         },
 
@@ -91,6 +92,9 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this.width_ = value;
+                if (useCustomSize) {
+                    Engine._renderContext.updateSpriteSize(this);
+                }
             },
             watch: {
                 _useCustomSize: function (obj, propEL) {
@@ -136,6 +140,9 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this.height_ = value;
+                if (useCustomSize) {
+                    Engine._renderContext.updateSpriteSize(this);
+                }
             },
             watch: {
                 _useCustomSize: function (obj, propEL) {
@@ -162,6 +169,28 @@ var SpriteRenderer = Fire.Class({
                 }
             },
             visible: false
+        },
+
+        _imageType: Fire.ImageType.Simple,
+        /**
+         * !#en The image type of this renderer .
+         * !#zh 图片渲染类型
+         *
+         * @property height
+         * @type {number}
+         * @readOnly
+         */
+        imageType: {
+            get: function () {
+                return this._imageType;
+            },
+            set: function (value) {
+                if (this._imageType !== value) {
+                    this._imageType = value;
+                    Engine._renderContext.updateImageType(this);
+                }
+            },
+            type: Fire.ImageType
         }
     },
 
@@ -181,8 +210,10 @@ var SpriteRenderer = Fire.Class({
         if (this._sprite) {
             // calculate render matrix
             //   scale
-            tmpMat23.a = this.renderWidth / this._sprite.width;
-            tmpMat23.d = this.renderHeight / this._sprite.height;
+            if (this._imageType === Fire.ImageType.Simple) {
+                tmpMat23.a = this.renderWidth / this._sprite.width;
+                tmpMat23.d = this.renderHeight / this._sprite.height;
+            }
             //   rotate cw
             if (this._sprite.rotated) {
                 tmpMat23.b = tmpMat23.d;
