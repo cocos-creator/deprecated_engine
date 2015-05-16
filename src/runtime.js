@@ -4,6 +4,8 @@ var Runtime = {
     },
     render: function (renderContext) {
         Engine._scene.render(renderContext || Engine._renderContext);
+    },
+    animate: function () {
     }
 };
 

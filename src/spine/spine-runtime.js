@@ -44,7 +44,7 @@
     }
 
     // skeletonData 必须不为空，否则 cocos update 时会报错
-    function createSkeleton (target, skeletonData, isGame) {
+    function createSkeleton (target, skeletonData, parentNode, isGame) {
         var node;
         var useAnim = target instanceof Skeleton;
         if (useAnim) {
@@ -72,6 +72,15 @@
             node.setDebugSolots(target.debugSlots);
             node.setDebugBones(target.debugBones);
         }
+
+        parentNode.addChild(node);
+
+        //cc.game.director._runningScene._renderCmd._curLevel = 0;
+        //cc.game.director._runningScene.visit();
+        //cc.renderer.resetFlag();
+        //cc.renderer.rendering(cc.game._renderContext);
+        //node._renderCmd._updateChild();
+
         return node;
     }
 
@@ -84,16 +93,14 @@
         //var atlas = rc.skeletonData.atlasAsset.getAtlas();
         var node;
         rc.game.setEnvironment();
-        node = createSkeleton(target, skeletonData, true);
+        node = createSkeleton(target, skeletonData, target.entity._ccNode, true);
         target._renderObj = node;
-        target.entity._ccNode.addChild(node);
 
         // @ifdef EDITOR
         if (rc.sceneView) {
             rc.sceneView.game.setEnvironment();
-            node = createSkeleton(target, skeletonData, false);
+            node = createSkeleton(target, skeletonData, target.entity._ccNodeInScene, false);
             target._renderObjInScene = node;
-            target.entity._ccNodeInScene.addChild(node);
         }
         // @endif
     };
@@ -199,5 +206,19 @@
         if (node) {
             node.update(0);
         }
+    };
+
+    SpineRuntime.update = function () {
+        // @ifdef EDITOR
+        Engine._renderContext.game.setEnvironment();
+        // @endif
+        var dt = Time.deltaTime;
+        this._renderObj.update(dt);
+        // @ifdef EDITOR
+        if (this._renderObjInScene) {
+            Engine._renderContext.sceneView.game.setEnvironment();
+            this._renderObjInScene.update(dt);
+        }
+        // @endif
     };
 })();

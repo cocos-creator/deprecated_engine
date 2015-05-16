@@ -1,9 +1,9 @@
 // cocos-particle-system
 (function () {
-    var CocosParticleSystem = {};
-    Fire._Runtime.CocosParticleSystem = CocosParticleSystem;
+    var ParticleRuntime = {};
+    Fire._Runtime.CocosParticleSystem = ParticleRuntime;
 
-    CocosParticleSystem.reset = function (target) {
+    ParticleRuntime.reset = function (target) {
         var node = target._renderObj;
         Engine._renderContext.game.setEnvironment();
         node.resetSystem();
@@ -16,7 +16,7 @@
         // @endif
     };
 
-    CocosParticleSystem.stop = function (target) {
+    ParticleRuntime.stop = function (target) {
         var node = target._renderObj;
         Engine._renderContext.game.setEnvironment();
         node.stopSystem();
@@ -29,7 +29,7 @@
         // @endif
     };
 
-    CocosParticleSystem.emptyTexture = null;
+    ParticleRuntime.emptyTexture = null;
 
     var MethodNames = {
         setColor: "updateColor",
@@ -41,16 +41,16 @@
 
     for (var key in MethodNames) {
         (function (key) {
-            CocosParticleSystem[key] = function (target) {
+            ParticleRuntime[key] = function (target) {
                 var node = target._renderObj;
                 var method = MethodNames[key];
                 Engine._renderContext.game.setEnvironment();
-                CocosParticleSystem[method].call(CocosParticleSystem, target, node);
+                ParticleRuntime[method].call(ParticleRuntime, target, node);
                 // @ifdef EDITOR
                 node = target._renderObjInScene;
                 if (node) {
                     Engine._renderContext.sceneView.game.setEnvironment();
-                    CocosParticleSystem[method].call(CocosParticleSystem, target, node);
+                    ParticleRuntime[method].call(ParticleRuntime, target, node);
                 }
                 // @endif
             };
@@ -58,7 +58,7 @@
     }
 
     // 设置图片
-    CocosParticleSystem.getTexture = function (sprite) {
+    ParticleRuntime.getTexture = function (sprite) {
         if (! sprite) {
             return null;
         }
@@ -66,7 +66,7 @@
     };
 
     // 颜色属性
-    CocosParticleSystem.updateColor = function (target, emitter) {
+    ParticleRuntime.updateColor = function (target, emitter) {
         // 粒子初始颜色
         emitter.setStartColor(target.startColor.toCCColor());
         // 粒子初始颜色变化范围
@@ -77,7 +77,7 @@
         emitter.setEndColorVar(target.endColorVar.toCCColor());
     };
     // 其他属性
-    CocosParticleSystem.updateOther = function (target, emitter) {
+    ParticleRuntime.updateOther = function (target, emitter) {
         // 粒子的生存时间
         emitter.setLife(target.life);
         // 粒子生命变化范围
@@ -108,7 +108,7 @@
         emitter.setPosVar(cc.p(target.positionVar.x, target.positionVar.y));
     };
     // 更新半径模式属性
-    CocosParticleSystem.updateRadiusMode = function (target, emitter) {
+    ParticleRuntime.updateRadiusMode = function (target, emitter) {
         // 初始半径
         emitter.setStartRadius(target.startRadius);
         // 初始半径变化范围
@@ -123,7 +123,7 @@
         emitter.setEndRadiusVar(target.endRadiusVar);
     };
     // 更新重力模式属性
-    CocosParticleSystem.updateGravityMode = function (target, emitter) {
+    ParticleRuntime.updateGravityMode = function (target, emitter) {
         // 重力
         emitter.setGravity(new cc.Point(target.gravity.x, target.gravity.y));
         // 速度
@@ -140,7 +140,7 @@
         emitter.setTangentialAccelVar(target.tangentialAccelVar);
     };
     // 更新主要属性
-    CocosParticleSystem.updateMain = function (target, emitter) {
+    ParticleRuntime.updateMain = function (target, emitter) {
         // 总粒子
         emitter.setTotalParticles(target.totalParticles);
         // 纹理
@@ -154,7 +154,7 @@
     };
 
     // 更新存活时间
-    CocosParticleSystem.updateDuration = function (target) {
+    ParticleRuntime.updateDuration = function (target) {
         var node = target._renderObj;
         Engine._renderContext.game.setEnvironment();
         node.setDuration(target.duration);
@@ -174,7 +174,7 @@
     };
 
     // 设置属性
-    CocosParticleSystem.setParticleSystem = function (target, emitter) {
+    ParticleRuntime.setParticleSystem = function (target, emitter) {
         // 纹理
         emitter.setTexture(this.getTexture(target.baseSprite));
         // 发射器生存时间
@@ -253,7 +253,7 @@
         emitter.setAutoRemoveOnFinish(target.isAutoRemoveOnFinish);
     };
     // 初始化
-    CocosParticleSystem.initParticleSystem = function (target) {
+    ParticleRuntime.initParticleSystem = function (target) {
         var rc = Engine._renderContext;
         rc.game.setEnvironment();
         var emitter = new cc.ParticleSystem(target.totalParticles);
@@ -270,7 +270,7 @@
         }
         // @endif
     };
-    CocosParticleSystem.getParticleSystemSize = function (target) {
+    ParticleRuntime.getParticleSystemSize = function (target) {
         var inGame = !(target.entity._objFlags & HideInGame);
         var size = null;
         if (inGame && target._renderObj) {

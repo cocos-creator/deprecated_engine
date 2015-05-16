@@ -273,6 +273,7 @@ Fire.SpriteRenderer = SpriteRenderer;
 
 Fire.addComponentMenu(SpriteRenderer, 'Sprite Renderer');
 
+// @ifdef EDITOR
 JS.getset(SpriteRenderer.prototype, 'customSize_',
     function () {
         Fire.warn("'SpriteRenderer.customSize_' is deprecated, use _useCustomSize instead ; )");
@@ -313,3 +314,4 @@ JS.getset(SpriteRenderer.prototype, 'height',
         this.customHeight = value;
     }
 );
+// @endif

@@ -245,53 +245,63 @@
 
         /**
          * Update is called every frame, if the Component is enabled.
-         * @event update
+         * @method update
          */
         update: null,
 
         /**
          * LateUpdate is called every frame, if the Component is enabled.
-         * @event lateUpdate
+         * @method lateUpdate
          */
         lateUpdate: null,
         //(NYI) onCreate = null;  // customized constructor for template
 
         /**
          * When attaching to an active entity or its entity first activated
-         * @event onLoad
+         * @method onLoad
          */
         onLoad: null,
 
         /**
          * Called before all scripts' update if the Component is enabled
-         * @event start
+         * @method start
          */
         start: null,
 
         /**
          * Called when this component becomes enabled and its entity becomes active
-         * @event onEnable
+         * @method onEnable
          */
         onEnable: null,
 
         /**
          * Called when this component becomes disabled or its entity becomes inactive
-         * @event onDisable
+         * @method onDisable
          */
         onDisable: null,
 
         /**
          * Called when this component will be destroyed.
-         * @event onDestroy
+         * @method onDestroy
          */
         onDestroy: null,
 
         /**
          * Called when the engine starts rendering the scene.
-         * @event onPreRender
+         * @method onPreRender
          */
         onPreRender: null,
 
+        // @ifdef EDITOR
+        /**
+         * @method onFocusInEditMode
+         */
+        onFocusInEditMode: null,
+        /**
+         * @method onLostFocusInEditMode
+         */
+        onLostFocusInEditMode: null,
+        // @endif
 
         /**
          * Adds a component class to the entity. You can also add component to entity by passing in the name of the

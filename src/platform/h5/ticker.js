@@ -55,6 +55,8 @@
     return Ticker;
 })();
 
+Fire._Ticker = Ticker;
+
 // @ifdef DEV
 __TESTONLY__.Ticker = Ticker;
 // @endif

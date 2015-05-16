@@ -806,6 +806,11 @@ var ParticleSystem = (function () {
 
         onLoad: function () {
             ParticleRuntime.initParticleSystem(this);
+            // @ifdef EDITOR
+            if (!Engine.isPlaying) {
+                this.stop();
+            }
+            // @endif
         },
         getWorldSize: function () {
             return ParticleRuntime.getParticleSystemSize(this);
@@ -824,7 +829,16 @@ var ParticleSystem = (function () {
             out.d = 1;
             out.tx = anchorOffsetX;
             out.ty = anchorOffsetY;
+        },
+        // @ifdef EDITOR
+        onFocusInEditMode: function () {
+            this.reset();
+        },
+        onLostFocusInEditMode: function () {
+            this.reset();
+            this.stop();
         }
+        // @endif
     });
 
     ParticleSystem.EmitterMode = EmitterMode;

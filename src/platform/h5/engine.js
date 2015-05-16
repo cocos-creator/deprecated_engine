@@ -242,9 +242,18 @@ var Engine = (function () {
     function doUpdate (updateLogic) {
         if (Engine._scene) {
             if (updateLogic) {
+                // update logic
                 Engine._scene.update();
+                // @ifdef DEV
+                if (__TESTONLY__.update) {
+                    __TESTONLY__.update(updateLogic);
+                }
+                // @endif
                 FObject._deferredDestroy();
+
+                // update animation
                 Engine._animationManager.update();
+                Runtime.animate();
             }
             Runtime.render();
 
@@ -273,12 +282,6 @@ var Engine = (function () {
         Engine._stepOnce = false;
 
         doUpdate(updateLogic);
-
-// @ifdef DEV
-        if (__TESTONLY__.update) {
-            __TESTONLY__.update(updateLogic);
-        }
-// @endif
     };
 
     /**
