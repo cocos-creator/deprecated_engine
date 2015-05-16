@@ -240,6 +240,7 @@ Fire.Screen.ContentStrategy = ContentStrategy;
      * @param {ContentStrategyType} type
      * @return {Screen.ContentStrategy}
      * @static
+     * @private
      */
     ContentStrategy.fromType = function (type) {
         var res = contentStrategies[type];

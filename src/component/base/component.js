@@ -444,7 +444,6 @@
         statics: {
             /**
              * invoke starts on entities
-             * @method _invokeStarts
              * @param {Entity} entity
              */
             _invokeStarts: function (entity) {

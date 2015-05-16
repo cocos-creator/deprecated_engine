@@ -18,9 +18,6 @@
 
     /**
      * http://www.quirksmode.org/dom/events/index.html
-     * @class InputContext
-     * @constructor
-     * @param {object} renderContext
      */
     var InputContext = function (renderContext) {
         var canvas = renderContext.canvas;

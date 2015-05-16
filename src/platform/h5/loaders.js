@@ -40,7 +40,6 @@ function ImageLoader(url, callback, onProgress) {
 }
 
 /**
- * @method _LoadFromXHR
  * @param {string} [responseType="text"] - the XMLHttpRequestResponseType
  */
 function _LoadFromXHR(url, callback, onProgress, responseType) {

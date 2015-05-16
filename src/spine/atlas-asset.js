@@ -20,8 +20,6 @@ var AtlasAsset = (function () {
     // implements a simple texture loader
     var TextureLoader = Fire.Class({
         /**
-         * @class TextureLoader
-         * @constructor
          * @param {Spine.AtlasAsset} atlas
          */
         constructor: function () {

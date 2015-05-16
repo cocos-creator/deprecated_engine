@@ -13,8 +13,6 @@
     // implements a fake texture loader to load texture asset
     var TextureLoader = Fire.Class({
         /**
-         * @class TextureLoader
-         * @constructor
          * @param {string} atlasUrl
          */
         constructor: function () {
