@@ -39,6 +39,7 @@ var paths = {
         'src/playable.js',
         'src/platform/h5/ticker.js',
         'src/render-context.js',
+        'src/animation/easing.js',
         'src/animation/animation-data-types.js',
         'src/animation/animator.js',
         'src/animation/animation-manager.js',
