@@ -572,6 +572,9 @@ Fire.executeInEditMode = function (constructor, live) {
         Fire.error('[Fire.executeInEditMode] constructor must inherit from Component');
         return;
     }
-    Fire.attr(constructor, 'executeInEditMode', { live: !!live });
+    Fire.attr(constructor, 'executeInEditMode', true);
+    if (live) {
+        Fire.attr(constructor, 'liveInEditMode', true);
+    }
     // @endif
 };
