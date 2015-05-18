@@ -102,6 +102,12 @@
             node = createSkeleton(target, skeletonData, target.entity._ccNodeInScene, false);
             target._renderObjInScene = node;
         }
+
+        // fix skeleton not updated immediate
+        if (!Engine.isPlaying) {
+            Fire._Runtime.animateAfterRender();
+        }
+
         // @endif
     };
 

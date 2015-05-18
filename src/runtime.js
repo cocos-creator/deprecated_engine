@@ -6,7 +6,10 @@ var Runtime = {
         Engine._scene.render(renderContext || Engine._renderContext);
     },
     animate: function () {
-    }
+    },
+    // @ifdef EDITOR
+    tickInEditMode: null
+    // @endif
 };
 
 JS.getset(Runtime, 'RenderContext',

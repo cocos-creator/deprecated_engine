@@ -13,6 +13,10 @@
             Engine._renderContext.sceneView.game.setEnvironment();
             node.resetSystem();
         }
+        if (!Engine.isPlaying) {
+            // fix not cleared immediate
+            Fire._Runtime.animateInNextTick();
+        }
         // @endif
     };
 
