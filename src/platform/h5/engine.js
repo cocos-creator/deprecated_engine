@@ -244,17 +244,21 @@ var Engine = (function () {
             if (updateLogic) {
                 // update logic
                 Engine._scene.update();
-                // @ifdef DEV
-                if (__TESTONLY__.update) {
-                    __TESTONLY__.update(updateLogic);
-                }
-                // @endif
                 FObject._deferredDestroy();
 
                 // update animation
                 Engine._animationManager.update();
+
                 Runtime.animate();
             }
+
+            // @ifdef DEV
+            if (__TESTONLY__.update) {
+                // Here we will tick unit tests
+                __TESTONLY__.update(updateLogic);
+            }
+            // @endif
+
             Runtime.render();
 
             // update interaction context

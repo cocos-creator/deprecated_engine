@@ -806,11 +806,6 @@ var ParticleSystem = (function () {
 
         onLoad: function () {
             ParticleRuntime.initParticleSystem(this);
-            // @ifdef EDITOR
-            if (!Engine.isPlaying) {
-                this.stop();
-            }
-            // @endif
         },
         getWorldSize: function () {
             return ParticleRuntime.getParticleSystemSize(this);

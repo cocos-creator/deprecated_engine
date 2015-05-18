@@ -30,6 +30,8 @@
     var callOnLoadInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onLoad'));
     var callOnStartInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'start'));
     var callOnDestroyInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDestroy'));
+    var callOnFocusInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onFocusInEditMode'));
+    var callOnLostFocusInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onLostFocusInEditMode'));
     // jshint evil: false
 // @endif
 
@@ -418,6 +420,16 @@
                 this._objFlags |= IsOnLoadCalled;
                 if (this.onLoad) {
                     callOnLoadInTryCatch(this);
+
+                    if (!Engine.isPlaying) {
+                        var focused = Editor.Selection.activeEntityId === this.entity.id;
+                        if (focused && this.onFocusInEditMode) {
+                            callOnFocusInTryCatch(this);
+                        }
+                        else if (this.onLostFocusInEditMode) {
+                            callOnLostFocusInTryCatch(this);
+                        }
+                    }
                 }
                 Editor._AssetsWatcher.start(this);
                 //if (this.onHierarchyChanged) {
