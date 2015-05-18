@@ -92,7 +92,7 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this.width_ = value;
-                if (useCustomSize) {
+                if (this._useCustomSize) {
                     Engine._renderContext.updateSpriteSize(this);
                 }
             },
@@ -140,7 +140,7 @@ var SpriteRenderer = Fire.Class({
             },
             set: function (value) {
                 this.height_ = value;
-                if (useCustomSize) {
+                if (this._useCustomSize) {
                     Engine._renderContext.updateSpriteSize(this);
                 }
             },
