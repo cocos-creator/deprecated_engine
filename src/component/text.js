@@ -114,10 +114,10 @@ var Text = (function () {
             // 字体对齐方式
             _align: Fire.TextAlign.Left,
             /**
-             * How lines of text are aligned (left, right, center).
+             * How lines of text are aligned (Left, Right, Center).
              * @property align
              * @type {Fire.TextAlign}
-             * @default Fire.TextAlign.left
+             * @default Fire.TextAlign.Left
              */
             align: {
                 get: function() {
@@ -130,12 +130,12 @@ var Text = (function () {
                 type: Fire.TextAlign
             },
             // 字体锚点
-            _anchor: Fire.TextAnchor.MidCenter,
+            _anchor: Fire.TextAnchor.MiddleCenter,
             /**
              * The anchor point of the text.
              * @property anchor
              * @type {Fire.TextAnchor}
-             * @default Fire.TextAnchor.midCenter
+             * @default Fire.TextAnchor.MiddleCenter
              */
             anchor: {
                 get: function() {
@@ -175,25 +175,25 @@ var Text = (function () {
                 case Fire.TextAnchor.TopRight:
                     anchorOffsetX = -w;
                     break;
-                case Fire.TextAnchor.MidLeft:
+                case Fire.TextAnchor.MiddleLeft:
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.MidCenter:
+                case Fire.TextAnchor.MiddleCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.MidRight:
+                case Fire.TextAnchor.MiddleRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h * 0.5;
                     break;
-                case Fire.TextAnchor.BotLeft:
+                case Fire.TextAnchor.BottomLeft:
                     anchorOffsetY = h;
                     break;
-                case Fire.TextAnchor.BotCenter:
+                case Fire.TextAnchor.BottomCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h;
                     break;
-                case Fire.TextAnchor.BotRight:
+                case Fire.TextAnchor.BottomRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h;
                     break;
