@@ -101,10 +101,10 @@ var BitmapText = (function () {
             _align: Fire.TextAlign.Left,
 
             /**
-             * How lines of text are aligned (left, right, center).
+             * How lines of text are aligned (Left, Right, Center).
              * @property align
              * @type {Fire.TextAlign}
-             * @default Fire.TextAlign.left
+             * @default Fire.TextAlign.Left
              */
             align: {
                 get: function () {
