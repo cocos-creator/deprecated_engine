@@ -39,6 +39,8 @@ function ImageLoader(url, callback, onProgress) {
     return image;
 }
 
+Fire._ImageLoader = ImageLoader;
+
 /**
  * @param {string} [responseType="text"] - the XMLHttpRequestResponseType
  */
