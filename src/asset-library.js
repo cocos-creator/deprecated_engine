@@ -211,6 +211,9 @@ var AssetLibrary = (function () {
 
             if (pendingCount === 0) {
                 callback(null, asset);
+                // _tdInfo 是用来重用临时对象，每次使用后都要重设，这样才对 GC 友好。
+                _tdInfo.reset();
+                return;
             }
 
             /*
