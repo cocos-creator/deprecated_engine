@@ -260,13 +260,13 @@ var AssetLibrary = (function () {
                 var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
                     // create closure manually because its extremely faster than bind
                     return function (error, dependsAsset) {
+                        // @ifdef EDITOR
                         if (error) {
-                            // @ifdef EDITOR
                             if (Editor.AssetDB && Editor.AssetDB.isValidUuid(dependsUuid)) {
                                 Fire.error('[AssetLibrary] Failed to load "%s", %s', dependsUuid, error);
                             }
-                            // @endif
                         }
+                        // @endif
                         //else {
                         //    dependsAsset._uuid = dependsUuid;
                         //}

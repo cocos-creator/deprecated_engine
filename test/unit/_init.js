@@ -58,6 +58,7 @@ var TestEnv = {
     },
     teardown: function () {
         TestOnly.update = null;
+        Engine._launchScene(new Fire._Scene());
         Engine.stop();
         // check error
         Engine._renderContext.checkMatchCurrentScene(true);

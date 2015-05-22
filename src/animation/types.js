@@ -11,10 +11,10 @@ var AnimCurve = Fire.Class({
     /**
      * @method sample
      * @param {number} time
-     * @param {number} offset - The normalized time specified as a number between 0.0 and 1.0 inclusive.
+     * @param {number} ratio - The normalized time specified as a number between 0.0 and 1.0 inclusive.
      * @param {Animator} animator
      */
-    sample: function (time, offset, animator) {}
+    sample: function (time, ratio, animator) {}
 });
 
 /**
@@ -46,24 +46,24 @@ var DynamicAnimCurve = Fire.Class({
          */
         values: [],
         /**
-         * The keyframe offset of the keyframe specified as a number between 0.0 and 1.0 inclusive. (x)
-         * @property offsets
+         * The keyframe ratio of the keyframe specified as a number between 0.0 and 1.0 inclusive. (x)
+         * @property ratios
          * @type {number[]}
          */
-        offsets: []
+        ratios: []
 
         // TODO inTan, outTan
     },
 
-    sample: function (time, offset, animator) {
+    sample: function (time, ratio, animator) {
         var values = this.values;
-        var offsets = this.offsets;
-        var frameCount = offsets.length;
+        var ratios = this.ratios;
+        var frameCount = ratios.length;
         if (frameCount === 0) {
             return;
         }
         var value;
-        var index = Fire.binarySearch(offsets, offset);
+        var index = Fire.binarySearch(ratios, ratio);
         if (index < 0) {
             index = ~index;
             if (index < 0) {
@@ -73,19 +73,19 @@ var DynamicAnimCurve = Fire.Class({
                 value = values[frameCount - 1];
             }
             else {
-                var fromOffset = offsets[index - 1];
-                var toOffset = offsets[index];
-                var ratio = (offset - fromOffset) / (toOffset - fromOffset);
+                var fromRatio = ratios[index - 1];
+                var toRatio = ratios[index];
+                var ratioBetweenFrames = (ratio - fromRatio) / (toRatio - fromRatio);
                 var fromVal = values[index - 1];
                 var toVal = values[index];
                 // try linear lerp
                 if (typeof fromVal === 'number') {
-                    value = fromVal + (toVal - fromVal) * ratio;
+                    value = fromVal + (toVal - fromVal) * ratioBetweenFrames;
                 }
                 else {
                     var lerp = fromVal.lerp;
                     if (lerp) {
-                        value = fromVal.lerp(toVal, ratio);
+                        value = fromVal.lerp(toVal, ratioBetweenFrames);
                     }
                     else {
                         // no linear lerp function, just return last frame
@@ -139,18 +139,38 @@ var PlaybackDirection = Fire.defineEnum({
 
 Fire.PlaybackDirection = PlaybackDirection;
 
+
 /**
- * The collection and instance of AnimClips.
+ * The abstract interface for all playing animation.
+ * @class AnimationNodeBase
+ * @constructor
+ * @extends Playable
+ */
+var AnimationNodeBase = function () {
+    Playable.call(this);
+};
+JS.extend(AnimationNodeBase, Playable);
+
+/**
+ * @method update
+ * @param deltaTime
+ * @private
+ */
+AnimationNodeBase.prototype.update = function (deltaTime) {};
+
+
+/**
+ * The collection and instance of playing animations created by entity.animate.
  * @class AnimationNode
  * @constructor
+ * @extends AnimationNodeBase
  * @param {Animator} animator
  * @param {AnimCurve[]} [curves]
  * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
  */
 var AnimationNode = Fire.Class({
     name: 'Fire.AnimationNode',
-
-    extends: Playable,
+    extends: AnimationNodeBase,
 
     constructor: function () {
 
@@ -160,7 +180,9 @@ var AnimationNode = Fire.Class({
         var curves = arguments[1];
         var timingInput = arguments[2];
 
-        this.curves = curves || this.curves;
+        if (curves) {
+            this.curves = curves;
+        }
         if (timingInput) {
             this.delay = timingInput.delay || this.delay;
             var iterations = timingInput.iterations;
@@ -175,13 +197,19 @@ var AnimationNode = Fire.Class({
             if (typeof playbackRate !== 'undefined') {
                 this.playbackRate = playbackRate;
             }
-            var direction = timingInput.direction;
-            if (typeof direction !== 'undefined') {
-                if (typeof direction === 'number') {
-                    this.direction = direction;
+            // 兼容旧的命名
+            if ('direction' in timingInput) {
+                timingInput.wrapMode = timingInput.direction;
+                Fire.warn('[animate] direction is deprecated, use wrapMode instead please.');
+            }
+            //
+            var wrapMode = timingInput.wrapMode;
+            if (typeof wrapMode !== 'undefined') {
+                if (typeof wrapMode === 'number') {
+                    this.wrapMode = wrapMode;
                 }
                 else {
-                    this.direction = Fire.PlaybackDirection[direction];
+                    this.wrapMode = Fire.PlaybackDirection[wrapMode];
                 }
             }
         }
@@ -282,12 +310,13 @@ var AnimationNode = Fire.Class({
         playbackRate: 1,
 
         /**
-         * The playback direction of the animation as specified by one of the PlaybackDirection enumeration values.
-         * @property direction
+         * !#en Wrapping mode of the playing animation.
+         * !#zh 动画循环方式
+         * @property wrapMode
          * @type {PlaybackDirection}
          * @default: Fire.PlaybackDirection.normal
          */
-        direction: PlaybackDirection.normal
+        wrapMode: PlaybackDirection.normal
     },
 
     update: function (delta) {
@@ -318,53 +347,17 @@ var AnimationNode = Fire.Class({
             this._firstFramePlayed = true;
         }
 
-        // calculate times
+        // sample
 
-        var duration = this.duration;
-
-        var stop = false;
-        var offset = 0;         // computed offset
-        var time = this.time;   // computed time
-
-        var currentIterations = time / duration;
-        if (currentIterations < this.iterations) {
-            // calculate iteration time
-            if (time > duration) {
-                time %= duration;
-            }
-            // calculate directed time
-            if (this.direction !== PlaybackDirection.normal) {
-                time = this._calculateDirectedTime(time, currentIterations);
-            }
-            offset = time / duration;
-        }
-        else {
-            stop = true;
-            offset = this.iterations - (this.iterations | 0);
-            if (currentIterations > 0 && offset === 0) {
-                offset = 1; // 如果播放过，动画不复位
-            }
-            time = offset * duration;
-        }
-
-        // sample animation
-
-        var curves = this.curves;
-        var animator = this.animator;
-        for (var i = 0, len = curves.length; i < len; i++) {
-            var curve = curves[i];
-            curve.sample(time, offset, animator);
-        }
-
-        if (stop) {
+        if (this.sample()) {
             this.stop();
         }
     },
 
     _calculateDirectedTime: function (iterationTime, currentIterations) {
         var duration = this.duration;
-        var direction = this.direction;
-        if (direction === PlaybackDirection.alternate) {
+        var wrapMode = this.wrapMode;
+        if (wrapMode === PlaybackDirection.alternate) {
             var isOddIteration = currentIterations & 1;
             if (isOddIteration) {
                 return duration - iterationTime;
@@ -373,10 +366,10 @@ var AnimationNode = Fire.Class({
                 return iterationTime;
             }
         }
-        else if (direction === PlaybackDirection.reverse) {
+        else if (wrapMode === PlaybackDirection.reverse) {
             return duration - iterationTime;
         }
-        else if (direction === PlaybackDirection['alternate-reverse']) {
+        else if (wrapMode === PlaybackDirection['alternate-reverse']) {
             if (currentIterations & 1) {
                 return iterationTime;
             }
@@ -388,6 +381,47 @@ var AnimationNode = Fire.Class({
             return iterationTime;
         }
     },
+
+    sample: function () {
+
+        // calculate times
+
+        var stopped = false;
+        var duration = this.duration;
+        var ratio = 0;         // computed ratio
+        var time = this.time;   // computed time
+        var currentIterations = time / duration;
+        if (currentIterations < this.iterations) {
+            // calculate iteration time
+            if (time > duration) {
+                time %= duration;
+            }
+            // calculate directed time
+            if (this.wrapMode !== PlaybackDirection.normal) {
+                time = this._calculateDirectedTime(time, currentIterations);
+            }
+            ratio = time / duration;
+        }
+        else {
+            stopped = true;
+            ratio = this.iterations - (this.iterations | 0);
+            if (currentIterations > 0 && ratio === 0) {
+                ratio = 1; // 如果播放过，动画不复位
+            }
+            time = ratio * duration;
+        }
+
+        // sample
+
+        var curves = this.curves;
+        var animator = this.animator;
+        for (var i = 0, len = curves.length; i < len; i++) {
+            var curve = curves[i];
+            curve.sample(time, ratio, animator);
+        }
+
+        return stopped;
+    }
 
     //onPlay: function () {
     //},

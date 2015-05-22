@@ -1,67 +1,14 @@
+// The base of animators
 var Animator = (function () {
     function Animator (target) {
         this.target = target;
-        this.enabled = true;
+        // {AnimationNodeBase}
         this.playingAnims = [];
     }
 
     JS.extend(Animator, Playable);
 
     var prototype = Animator.prototype;
-
-    function computeNullOffsets (keyFrames) {
-        var lastIndex = 0;
-        var lastOffset = 0;
-
-        var len = keyFrames.length;
-        for (var i = 0; i < len; i++) {
-            var frame = keyFrames[i];
-            var offset = frame.offset;
-            if (i === 0 && typeof offset !== "number") {
-                // 如果一开始就没有 offset，则默认从 0 开始
-                frame.computedOffset = offset = 0;
-            }
-            else if (i === len - 1 && typeof offset !== "number") {
-                // 如果最后没有 offset，则设置为 1
-                frame.computedOffset = offset = 1;
-            }
-            if (typeof offset === "number") {
-                if (lastIndex + 1 < i) {
-                    var count = i - lastIndex;
-                    var step = (offset - lastOffset) / count;
-                    for (var j = lastIndex + 1; j < i; j++) {
-                        lastOffset += step;
-                        keyFrames[j].computedOffset = lastOffset;   // 不占用已有变量，这样 keyFrames 才能重用
-                    }
-                }
-                lastIndex = i;
-                lastOffset = offset;
-            }
-        }
-    }
-
-// @ifdef DEV
-    __TESTONLY__.computeNullOffsets = computeNullOffsets;
-// @endif
-
-    /**
-     * @param {object[]} keyFrames
-     * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
-     * @return {AnimationNode}
-     */
-    prototype.animate = function (keyFrames, timingInput) {
-        if (! keyFrames) {
-            Fire.error('[animate] keyFrames must be non-nil');
-            return;
-        }
-        // compute absolute offset of each keyframe with a null offset
-        computeNullOffsets(keyFrames);
-
-        var anim = this._doAnimate(keyFrames, timingInput);
-
-        this.play();
-        return anim;
-    };
 
     // 由 AnimationManager 调用，只有在该 animator 处于播放状态时才会被调用
     prototype.update = function (deltaTime) {
@@ -94,6 +41,7 @@ var Animator = (function () {
     };
 
     prototype.onStop = function () {
+        this.playingAnims.length = 0;
         // @ifdef EDITOR
         if (Engine._isPlaying) {
             Engine._animationManager.removeAnimator(this);
@@ -104,11 +52,10 @@ var Animator = (function () {
         // @endif
     };
 
-    prototype._doAnimate = function () {};
-
     return Animator;
 })();
 
+// The actual animator for Entity
 var EntityAnimator = (function () {
 
     function EntityAnimator (target) {
@@ -117,6 +64,70 @@ var EntityAnimator = (function () {
     JS.extend(EntityAnimator, Animator);
 
     var prototype = EntityAnimator.prototype;
+
+    // 通用逻辑
+
+    function computeNullRatios (keyFrames) {
+        var lastIndex = 0;
+        var lastRatio = 0;
+
+        var len = keyFrames.length;
+        for (var i = 0; i < len; i++) {
+            var frame = keyFrames[i];
+            // 兼容旧的命名
+            if ('offset' in frame) {
+                Fire.warn('[animate] offset is deprecated, use ratio instead please.');
+                frame.ratio = frame.offset;
+            }
+            //
+            var ratio = frame.ratio;
+            if (i === 0 && typeof ratio !== "number") {
+                // 如果一开始就没有 ratio，则默认从 0 开始
+                frame.computedRatio = ratio = 0;
+            }
+            else if (i === len - 1 && typeof ratio !== "number") {
+                // 如果最后没有 ratio，则设置为 1
+                frame.computedRatio = ratio = 1;
+            }
+            if (typeof ratio === "number") {
+                if (lastIndex + 1 < i) {
+                    var count = i - lastIndex;
+                    var step = (ratio - lastRatio) / count;
+                    for (var j = lastIndex + 1; j < i; j++) {
+                        lastRatio += step;
+                        keyFrames[j].computedRatio = lastRatio;   // 不占用已有变量，这样 keyFrames 才能重用
+                    }
+                }
+                lastIndex = i;
+                lastRatio = ratio;
+            }
+        }
+    }
+
+// @ifdef DEV
+    __TESTONLY__.computeNullRatios = computeNullRatios;
+// @endif
+
+    /**
+     * @param {object[]} keyFrames
+     * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
+     * @return {AnimationNode}
+     */
+    prototype.animate = function (keyFrames, timingInput) {
+        if (! keyFrames) {
+            Fire.error('[animate] keyFrames must be non-nil');
+            return null;
+        }
+        // compute absolute ratio of each keyframe with a null ratio
+        computeNullRatios(keyFrames);
+
+        var anim = this._doAnimate(keyFrames, timingInput);
+
+        this.play();
+        return anim;
+    };
+
+    // 具体逻辑
 
     function findCurve (curves, comp, compName, propName) {
         var i = 0, curve;
@@ -145,31 +156,31 @@ var EntityAnimator = (function () {
         var curves = anim.curves;
 
         // create curves
-        var lastOffset = -1;
+        var lastRatio = -1;
         for (var i = 0; i < keyFrames.length; i++) {
             var frame = keyFrames[i];
 
-            // get offset
-            var offset = frame.offset;
-            if (typeof offset !== "number") {
-                offset = frame.computedOffset;
+            // get ratio
+            var ratio = frame.ratio;
+            if (typeof ratio !== "number") {
+                ratio = frame.computedRatio;
             }
-            if (offset < 0) {
-                Fire.error('[animate] offset should >= 0!');
+            if (ratio < 0) {
+                Fire.error('[animate] ratio should >= 0!');
                 continue;
             }
-            if (offset < lastOffset) {
-                Fire.error('[animate] offset should in the order of smallest to largest!');
+            if (ratio < lastRatio) {
+                Fire.error('[animate] ratio should in the order of smallest to largest!');
                 continue;
             }
-            lastOffset = offset;
+            lastRatio = ratio;
 
             // TODO 先遍历每一帧，获得所有曲线
 
             // parse keyframe
             for (var key in frame) {
                 // get component data
-                if (key === 'offset') {
+                if (key === 'ratio' || key === 'offset') {
                     continue;
                 }
                 var compName = key;
@@ -193,7 +204,7 @@ var EntityAnimator = (function () {
                         curve.prop = propName;
                     }
                     curve.values.push(compData[propName]);
-                    curve.offsets.push(offset);
+                    curve.ratios.push(ratio);
                 }
             }
         }
@@ -201,9 +212,9 @@ var EntityAnimator = (function () {
         return anim;
     };
 
+    // @ifdef DEV
+    __TESTONLY__.EntityAnimator = EntityAnimator;
+    // @endif
     return EntityAnimator;
 })();
 
-// @ifdef DEV
-__TESTONLY__.EntityAnimator = EntityAnimator;
-// @endif

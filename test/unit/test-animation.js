@@ -1,44 +1,44 @@
 largeModule('Animation', TestEnv);
 
-test('computeNullOffsets', function () {
-    var computeNullOffsets = TestOnly.computeNullOffsets;
-    var computedOffset;
+test('computeNullRatios', function () {
+    var computeNullRatios = TestOnly.computeNullRatios;
+    var computedRatio;
     var keyFrames;
 
     // smoke tests
-    keyFrames = [ { offset: 0.1 } ];
-    computeNullOffsets([]);
-    computeNullOffsets(keyFrames);
-    strictEqual(keyFrames[0].offset, 0.1, 'should not change exists offset');
-    computedOffset = keyFrames[0].computedOffset;
-    ok(computedOffset === 0.1 || computedOffset === undefined, 'computedOffset should == offset if presented');
+    keyFrames = [ { ratio: 0.1 } ];
+    computeNullRatios([]);
+    computeNullRatios(keyFrames);
+    strictEqual(keyFrames[0].ratio, 0.1, 'should not change exists ratio');
+    computedRatio = keyFrames[0].computedRatio;
+    ok(computedRatio === 0.1 || computedRatio === undefined, 'computedRatio should == ratio if presented');
     //
     keyFrames = [ {} ];
-    computeNullOffsets(keyFrames);
-    strictEqual(keyFrames[0].offset, undefined, 'should not modify keyFrames');
-    strictEqual(keyFrames[0].computedOffset, 0, 'computedOffset should be 0 if only one frame');
+    computeNullRatios(keyFrames);
+    strictEqual(keyFrames[0].ratio, undefined, 'should not modify keyFrames');
+    strictEqual(keyFrames[0].computedRatio, 0, 'computedRatio should be 0 if only one frame');
 
     keyFrames = [ {}, {} ];
-    computeNullOffsets(keyFrames);
-    strictEqual(keyFrames[0].computedOffset, 0, 'computedOffset should be 0 on first frame');
-    strictEqual(keyFrames[1].computedOffset, 1, 'computedOffset should be 1 on last frame');
+    computeNullRatios(keyFrames);
+    strictEqual(keyFrames[0].computedRatio, 0, 'computedRatio should be 0 on first frame');
+    strictEqual(keyFrames[1].computedRatio, 1, 'computedRatio should be 1 on last frame');
 
     keyFrames = [ {}, {}, {}, {} ];
-    computeNullOffsets(keyFrames);
-    strictEqual(keyFrames[1].computedOffset, 1 / 3, 'computedOffset should be 1/3 to make the difference between subsequent keyframe offsets are equal');
-    strictEqual(keyFrames[2].computedOffset, 2 / 3, 'computedOffset should be 2/3 to make the difference between subsequent keyframe offsets are equal');
+    computeNullRatios(keyFrames);
+    strictEqual(keyFrames[1].computedRatio, 1 / 3, 'computedRatio should be 1/3 to make the difference between subsequent keyframe ratios are equal');
+    strictEqual(keyFrames[2].computedRatio, 2 / 3, 'computedRatio should be 2/3 to make the difference between subsequent keyframe ratios are equal');
 
-    keyFrames = [ {offset: 0}, {}, {offset: 0.5} ];
-    computeNullOffsets(keyFrames);
-    strictEqual(keyFrames[1].computedOffset, 0.25, 'computedOffset should be 0.25 to make the difference between subsequent keyframe offsets are equal');
+    keyFrames = [ {ratio: 0}, {}, {ratio: 0.5} ];
+    computeNullRatios(keyFrames);
+    strictEqual(keyFrames[1].computedRatio, 0.25, 'computedRatio should be 0.25 to make the difference between subsequent keyframe ratios are equal');
 });
 
 asyncTest('EntityAnimator.animate', function () {
+    Engine.play();
+
     var EntityAnimator = TestOnly.EntityAnimator;
     var entity = new Entity();
     var renderer = entity.addComponent(Fire.SpriteRenderer);
-
-    Engine.play();
 
     var animator = new EntityAnimator(entity);
     var animation = animator.animate([
@@ -67,9 +67,9 @@ asyncTest('EntityAnimator.animate', function () {
     deepEqual(scaleCurve.values, [10, 20], 'values of scaleCurve should equals keyFrames');
     deepEqual(colorCurve.values, [Color.white, color(1,1,1,0)], 'values of colorCurve should equals keyFrames');
 
-    deepEqual(posCurve.offsets, [0, 1], 'offsets of posCurve should equals keyFrames');
-    deepEqual(scaleCurve.offsets, [0, 1], 'offsets of scaleCurve should equals keyFrames');
-    deepEqual(colorCurve.offsets, [0, 1], 'offsets of colorCurve should equals keyFrames');
+    deepEqual(posCurve.ratios, [0, 1], 'ratios of posCurve should equals keyFrames');
+    deepEqual(scaleCurve.ratios, [0, 1], 'ratios of scaleCurve should equals keyFrames');
+    deepEqual(colorCurve.ratios, [0, 1], 'ratios of colorCurve should equals keyFrames');
 
     ok(! entity.transform.position.equals(v2(50, 100)), 'first frame should play until the end of this frame');
 
@@ -87,6 +87,8 @@ asyncTest('EntityAnimator.animate', function () {
 });
 
 test('AnimationNode', function () {
+    Engine.play();
+
     var entity = new Entity();
     entity.transform.position = v2(321, 891);
     var renderer = entity.addComponent(Fire.SpriteRenderer);
@@ -128,7 +130,9 @@ test('AnimationNode', function () {
     deepEqual(renderer.color, color(1, 1, 1, 0.75), 'should not animate if stopped');
 });
 
-test('direction', function () {
+test('wrapMode', function () {
+    Engine.play();
+
     var entity = new Entity();
 
     var animation = entity.animate([
@@ -142,7 +146,7 @@ test('direction', function () {
         delay: 0.3,
         duration: 1.3,
         playbackRate: 0.5,
-        direction: Fire.PlaybackDirection.reverse,
+        wrapMode: Fire.PlaybackDirection.reverse,
         iterations: Infinity
     });
 
@@ -152,7 +156,7 @@ test('direction', function () {
     animation.update(actualDuration / 4);
     strictEqual(entity.transform.x, 75 + 10, 'should play reversed animation');
 
-    animation.direction = Fire.PlaybackDirection.alternate;
+    animation.wrapMode = Fire.PlaybackDirection.alternate;
     animation.time = 0;
     animation.update(actualDuration / 4);
     strictEqual(entity.transform.x, 25 + 10, 'should play animation as specified in 0 iteration');

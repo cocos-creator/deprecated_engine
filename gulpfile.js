@@ -39,10 +39,14 @@ var paths = {
         'src/playable.js',
         'src/platform/h5/ticker.js',
         'src/render-context.js',
+
         'src/animation/easing.js',
-        'src/animation/animation-data-types.js',
-        'src/animation/animator.js',
+        'src/animation/types.js',
+        'src/animation/animators.js',
         'src/animation/animation-manager.js',
+        'src/animation/animation-state.js',
+        'src/animation/animation-animator.js',
+
         'src/platform/h5/loaders.js',
         'src/platform/h5/engine.js',
         'src/platform/h5/timer.js',
@@ -244,6 +248,36 @@ gulp.task('js-editor-core', function() {
         ;
 });
 
+gulp.task('js-test-dev', function() {
+    return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
+        .pipe(jshint({
+            multistr: true,
+            smarttabs: false,
+            loopfunc: true,
+        }))
+        .pipe(jshint.reporter(stylish))
+        .pipe(concat(paths.engine_dev))
+        .pipe(fb.wrapModule(paths.index))
+        .pipe(preprocess({context: { DEBUG: true, DEV: true }}))
+        .pipe(gulp.dest(paths.output_dev))
+        ;
+});
+
+gulp.task('js-test-min', function() {
+    return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
+        .pipe(concat(paths.engine_min))
+        .pipe(fb.wrapModule(paths.index))
+        .pipe(preprocess({context: { DEV: true }}))
+        .pipe(uglify({
+            compress: {
+                dead_code: false,
+                unused: false
+            }
+        }))
+        .pipe(gulp.dest(paths.output_min))
+        ;
+});
+
 gulp.task('js-all', ['js-dev', 'js-min', 'js-player-dev', 'js-player', 'js-editor-core']);
 
 /////////////////////////////////////////////////////////////////////////////
@@ -265,7 +299,7 @@ gulp.task('unit-runner', function() {
                ;
 });
 
-gulp.task('test', ['cp-core', 'js-min', 'js-dev', 'unit-runner'], function() {
+gulp.task('test', ['cp-core', 'js-test-min', 'js-test-dev', 'unit-runner'], function() {
     gutil.log("please run " + gutil.colors.green("'bower install'") + " before running this task.");
     var timeOutInSeconds = 5;
     return gulp.src('test/unit/runner.html', { read: false })

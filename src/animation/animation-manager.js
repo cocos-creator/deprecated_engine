@@ -42,7 +42,7 @@
                 this.animators.splice(index, 1);
             }
             else {
-                Fire.error('animator already removed');
+                Fire.error('animator not added or already removed');
             }
         },
         // internal

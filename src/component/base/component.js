@@ -111,18 +111,11 @@
         };
     };
 
-    var compCtor;
-// @ifdef EDITOR
-    compCtor = function () {
-        Editor._AssetsWatcher.initComponent(this);
-    };
-// @endif
-
     /**
      * Base class for everything attached to Entity.
      *
      * NOTE: Not allowed to use construction parameters for Component's subclasses,
-     *         because Component is created by the engine.
+     *       because Component is created by the engine.
      *
      * @class Component
      * @extends HashObject
@@ -132,7 +125,12 @@
 
         name: 'Fire.Component',
         extends: HashObject,
-        constructor: compCtor,
+// @ifdef EDITOR
+        constructor: function () {
+            // 我们并不在构造函数中给 entity 赋值，因为那样到了反序列化时，子类的构造函数就还是会拿不到 entity。
+            Editor._AssetsWatcher.initComponent(this);
+        },
+// @endif
 
         properties: {
             /**
@@ -243,7 +241,9 @@
             }
         },
 
-        // callback functions
+        // Lifecycle Methods
+        // Fireball provides lifecycle methods that you can specify to hook into this process.
+        // We provide Pre methods, which are called right before something happens, and Post methods which are called right after something happens.
 
         /**
          * Update is called every frame, if the Component is enabled.
