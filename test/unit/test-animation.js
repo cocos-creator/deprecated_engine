@@ -46,6 +46,9 @@ asyncTest('EntityAnimator.animate', function () {
             'Fire.Transform': { position: v2(50, 100), scaleX: 10 },
             'Fire.SpriteRenderer': { color: Color.white }
         },
+        //{
+        //    'Fire.Transform': { position: v2(100, 75) },
+        //},
         {
             'Fire.Transform': { position: v2(100, 50), scaleX: 20 },
             'Fire.SpriteRenderer': { color: color(1, 1, 1, 0) }
@@ -166,4 +169,124 @@ test('wrapMode', function () {
     animation.time = 0;
     animation.update(actualDuration / 4 + actualDuration);
     strictEqual(entity.transform.x, 75 + 10, 'should played in the reverse direction in odd iterations');
+});
+
+test('createBatchedProperty', function () {
+    var createBatchedProperty = TestOnly.createBatchedProperty;
+
+    function test (path, mainValue, animValue) {
+        return createBatchedProperty(path, path.indexOf('.'), mainValue, animValue);
+    }
+
+    var pos = v2(123, 456);
+    var actual = test('position.y', pos, 321);
+    ok(actual !== pos, 'should clone a new value');
+    deepEqual(actual, v2(123, 321), 'checking value x');
+
+    actual = test('p.x', pos, 321);
+    deepEqual(actual, v2(321, 456), 'checking value y');
+
+    var MyValue = Fire.Class({
+        extends: Fire.ValueType,
+        constructor: function (gh) {
+            this.abc = {
+                def: {
+                    gh: gh
+                }
+            };
+        },
+        clone: function () {
+            return new MyValue(this.abc.def.gh);
+        }
+    });
+    var myValue = new MyValue(520);
+    actual = test('myValue.abc.def.gh', myValue, 521);
+    strictEqual(actual.abc.def.gh, 521, 'checking value gh');
+});
+
+test('initClipData', function () {
+    var initClipData = TestOnly.initClipData;
+
+    var entity = new Entity();
+    var renderer = entity.addComponent(Fire.SpriteRenderer);
+
+    var clip = new Fire.AnimationClip();
+    var state = new Fire.AnimationState(clip);
+    initClipData(entity, state);
+    strictEqual(state.curves.length, 0, 'should create empty animation');
+
+    clip = new Fire.AnimationClip();
+    clip._length = 10 / clip.frameRate;
+    clip.curveData = [
+        {
+            component: 'Fire.Transform',
+            property: 'position',
+            keys: [
+                {
+                    frame: 0,
+                    value: v2(50, 100)
+                },
+                {
+                    frame: 5,
+                    value: v2(100, 75)
+                },
+                {
+                    frame: 10,
+                    value: v2(100, 50)
+                },
+            ]
+        },
+        {
+            component: 'Fire.Transform',
+            property: 'scale.x',
+            keys: [
+                {
+                    frame: 0,
+                    value: 10
+                },
+                {
+                    frame: 10,
+                    value: 20
+                }
+            ]
+        },
+        {
+            component: 'Fire.SpriteRenderer',
+            property: 'color.a',
+            keys: [
+                {
+                    frame: 0,
+                    value: 1
+                },
+                {
+                    frame: 10,
+                    value: 0
+                }
+            ]
+        }
+    ];
+    state = new Fire.AnimationState(clip);
+    initClipData(entity, state);
+    var posCurve = state.curves[0];
+    var scaleCurve = state.curves[1];
+    var colorCurve = state.curves[2];
+    strictEqual(state.curves.length, 3, 'should create 3 curve');
+    strictEqual(posCurve.target, entity.transform, 'target of posCurve should be transform');
+    strictEqual(posCurve.prop, 'position', 'propName of posCurve should be position');
+    strictEqual(scaleCurve.target, entity.transform, 'target of scaleCurve should be transform');
+    strictEqual(scaleCurve.prop, 'scale', 'propName of scaleCurve should be scale');
+    strictEqual(colorCurve.target, renderer, 'target of colorCurve should be sprite renderer');
+    strictEqual(colorCurve.prop, 'color', 'propName of colorCurve should be color');
+
+    deepEqual(posCurve.values, [v2(50, 100), v2(100, 75), v2(100, 50)], 'values of posCurve should equals keyFrames');
+
+    var scaleY = entity.transform.scaleY;
+    deepEqual(scaleCurve.values, [v2(10, scaleY), v2(20, scaleY)], 'values of scaleCurve should equals keyFrames');
+
+    var color = renderer.color;
+    deepEqual(colorCurve.values, [color.clone().setA(1), color.clone().setA(0)], 'values of colorCurve should equals keyFrames');
+
+    deepEqual(posCurve.ratios, [0, 0.5, 1], 'ratios of posCurve should equals keyFrames');
+    deepEqual(scaleCurve.ratios, [0, 1], 'ratios of scaleCurve should equals keyFrames');
+    deepEqual(colorCurve.ratios, [0, 1], 'ratios of colorCurve should equals keyFrames');
 });

@@ -15,6 +15,8 @@ var AnimationState = (function () {
      * @param {string} [name]
      */
     function AnimationState (clip, name) {
+        AnimationNodeBase.call(this);
+
         this._name = name || clip.name;
         this._clip = clip;
 

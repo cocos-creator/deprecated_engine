@@ -7,6 +7,7 @@
     var FObject = Fire.FObject;
     var HashObject = Fire.HashObject;
     var Asset = Fire.Asset;
+    var ValueType = Fire.ValueType;
     var Vec2 = Fire.Vec2;
     var v2 = Fire.v2;
     var Matrix23 = Fire.Matrix23;
