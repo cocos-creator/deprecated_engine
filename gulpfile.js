@@ -101,11 +101,11 @@ var paths = {
         runner: 'test/lib/runner.html',
         lib_dev: [
             'ext/fire-core/bin/dev/core.js',
-            'bin/dev/engine.js',
+            'bin/engine.test.dev.js',
         ],
         lib_min: [
             'ext/fire-core/bin/min/core.js',
-            'bin/min/engine.js',
+            'bin/engine.test.min.js',
         ],
     },
 
@@ -117,6 +117,8 @@ var paths = {
     engine_min: 'engine.js',
     engine_player_dev: 'engine.player.dev.js',
     engine_player: 'engine.player.js',
+    engine_test_dev: 'engine.test.dev.js',
+    engine_test_min: 'engine.test.min.js',
     engine_editor_core: 'engine.editor-core.js',
 
     // references
@@ -256,16 +258,16 @@ gulp.task('js-test-dev', function() {
             loopfunc: true,
         }))
         .pipe(jshint.reporter(stylish))
-        .pipe(concat(paths.engine_dev))
+        .pipe(concat(paths.engine_test_dev))
         .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { DEBUG: true, DEV: true }}))
-        .pipe(gulp.dest(paths.output_dev))
+        .pipe(gulp.dest(paths.output))
         ;
 });
 
 gulp.task('js-test-min', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
-        .pipe(concat(paths.engine_min))
+        .pipe(concat(paths.engine_test_min))
         .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { DEV: true }}))
         .pipe(uglify({
@@ -274,7 +276,7 @@ gulp.task('js-test-min', function() {
                 unused: false
             }
         }))
-        .pipe(gulp.dest(paths.output_min))
+        .pipe(gulp.dest(paths.output))
         ;
 });
 

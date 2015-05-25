@@ -14,6 +14,10 @@ var Animation = Fire.Class({
         // The actual implement for Animation
         this._animator = null;
         this._nameToState = {};
+
+        // @ifdef EDITOR
+        this._bindedOnClipChanged = this._onClipChanged.bind(this);
+        // @endif
     },
 
     properties: {
@@ -108,6 +112,9 @@ var Animation = Fire.Class({
         var state = this.getAnimationState(name || this.defaultClip.name);
         if (state) {
             this._playState(state);
+            // @ifdef EDITOR
+            Fire.AssetLibrary.assetListener.add(state.clip._uuid, this.onClipChanged);
+            // @endif
         }
         return state;
     },
@@ -165,6 +172,9 @@ var Animation = Fire.Class({
             }
             else {
                 JS.Array.remove(this._clips, oldState.clip);
+                // @ifdef EDITOR
+                this._unwatchClip(oldState.clip);
+                // @endif
             }
         }
         // replace state
@@ -274,7 +284,24 @@ var Animation = Fire.Class({
     _playState: function (state) {
         this._init();
         this._animator.playState(state);
+    },
+
+    // @ifdef EDITOR
+    _watchClip: function (clip) {
+        Fire.AssetLibrary.assetListener.add(clip._uuid, this._bindedOnClipChanged);
+    },
+    _unwatchClip: function (clip) {
+        Fire.AssetLibrary.assetListener.remove(clip._uuid, this._bindedOnClipChanged);
+    },
+    _onClipChanged: function (clip) {
+        for (var name in this._nameToState) {
+            var state = this._nameToState[name];
+            if (state.clip === clip) {
+                this._animator.reloadClip(state);
+            }
+        }
     }
+    // @endif
 });
 
 Fire.addComponentMenu(Animation, 'Animation');

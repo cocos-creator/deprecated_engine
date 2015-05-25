@@ -15,11 +15,11 @@ var AnimationAnimator = (function () {
             return;
         }
         var curves = state.curves;
-        var curveInitialized = curves.length > 0;
-        if (!curveInitialized) {
+        if (!state.curveLoaded) {
             initClipData(this.target, state);
         }
         this.playingAnims.push(state);
+        state.play();
         this.play();
     };
 
@@ -36,6 +36,17 @@ var AnimationAnimator = (function () {
             state.stop();
         }
     };
+
+    // @ifdef EDITOR
+    p.reloadClip = function (state) {
+        if (state.isPlaying) {
+            initClipData(this.target, state);
+        }
+        else {
+            state.curveLoaded = false;
+        }
+    };
+    // @endif
 
     function createBatchedProperty (propPath, firstDotIndex, mainValue, animValue) {
         mainValue = mainValue.clone();
@@ -63,6 +74,7 @@ var AnimationAnimator = (function () {
     function initClipData (target, state) {
         var clip = state.clip;
         var curves = state.curves;
+        curves.length = 0;
         var length = clip.length;
         var frameCount = length * clip.frameRate;
         if (frameCount === 0) {

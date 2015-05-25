@@ -40,14 +40,14 @@
 // @ifdef EDITOR
         if ( enable ) {
             if ( !(self._objFlags & IsEditorOnEnabledCalled) ) {
-                self._objFlags |= IsEditorOnEnabledCalled;
                 editorCallback.onComponentEnabled(self);
+                self._objFlags |= IsEditorOnEnabledCalled;
             }
         }
         else {
             if ( self._objFlags & IsEditorOnEnabledCalled ) {
-                self._objFlags &= ~IsEditorOnEnabledCalled;
                 editorCallback.onComponentDisabled(self);
+                self._objFlags &= ~IsEditorOnEnabledCalled;
             }
         }
         if ( !(Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
@@ -56,7 +56,6 @@
 // @endif
         if ( enable ) {
             if ( !(self._objFlags & IsOnEnableCalled) ) {
-                self._objFlags |= IsOnEnableCalled;
                 if ( self.onEnable ) {
 // @ifdef EDITOR
                     callOnEnableInTryCatch(self);
@@ -65,12 +64,12 @@
                     self.onEnable();
 // @endif
                 }
+                self._objFlags |= IsOnEnableCalled;
             }
 
         }
         else {
             if ( self._objFlags & IsOnEnableCalled ) {
-                self._objFlags &= ~IsOnEnableCalled;
                 if ( self.onDisable ) {
 // @ifdef EDITOR
                     callOnDisableInTryCatch(self);
@@ -79,6 +78,7 @@
                     self.onDisable();
 // @endif
                 }
+                self._objFlags &= ~IsOnEnableCalled;
             }
         }
     }
@@ -417,9 +417,9 @@
         _onEntityActivated: function (active) {
             // @ifdef EDITOR
             if (!(this._objFlags & IsOnLoadCalled) && (Engine.isPlaying || Fire.attr(this, 'executeInEditMode'))) {
-                this._objFlags |= IsOnLoadCalled;
                 if (this.onLoad) {
                     callOnLoadInTryCatch(this);
+                    this._objFlags |= IsOnLoadCalled;
 
                     if (!Engine.isPlaying) {
                         var focused = Editor.Selection.activeEntityId === this.entity.id;
@@ -431,6 +431,9 @@
                         }
                     }
                 }
+                else {
+                    this._objFlags |= IsOnLoadCalled;
+                }
                 Editor._AssetsWatcher.start(this);
                 //if (this.onHierarchyChanged) {
                 //    this.entity.transform._addListener(this);
@@ -439,10 +442,10 @@
             // @endif
             // @ifndef EDITOR
             if (!(this._objFlags & IsOnLoadCalled)) {
-                this._objFlags |= IsOnLoadCalled;
                 if (this.onLoad) {
                     this.onLoad();
                 }
+                this._objFlags |= IsOnLoadCalled;
                 //if (this.onHierarchyChanged) {
                 //    this.entity.transform._addListener(this);
                 //}
@@ -467,7 +470,6 @@
                     for (; c < countBefore; ++c) {
                         comp = entity._components[c];
                         if (!(comp._objFlags & IsOnStartCalled)) {
-                            comp._objFlags |= IsOnStartCalled;
                             if (comp.start) {
                                 // @ifdef EDITOR
                                 callOnStartInTryCatch(comp);
@@ -476,6 +478,7 @@
                                 comp.start();
                                 // @endif
                             }
+                            comp._objFlags |= IsOnStartCalled;
                         }
                     }
                     // @ifdef EDITOR
@@ -484,10 +487,10 @@
                     for (; c < countBefore; ++c) {
                         comp = entity._components[c];
                         if (!(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
-                            comp._objFlags |= IsOnStartCalled;
                             if (comp.start) {
                                 callOnStartInTryCatch(comp);
                             }
+                            comp._objFlags |= IsOnStartCalled;
                         }
                     }
                 }

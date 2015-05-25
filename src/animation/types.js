@@ -1,55 +1,55 @@
-/**
- * 动画数据类，相当于 AnimationClip。
- * 虽然叫做 AnimCurve，但除了曲线，可以保存任何类型的值。
- *
- * @class AnimCurve
- * @constructor
- */
+//
+// 动画数据类，相当于 AnimationClip。
+// 虽然叫做 AnimCurve，但除了曲线，可以保存任何类型的值。
+//
+// @class AnimCurve
+// @constructor
+//
 var AnimCurve = Fire.Class({
     name: 'Fire.AnimCurve',
 
-    /**
-     * @method sample
-     * @param {number} time
-     * @param {number} ratio - The normalized time specified as a number between 0.0 and 1.0 inclusive.
-     * @param {Animator} animator
-     */
+    //
+    // @method sample
+    // @param {number} time
+    // @param {number} ratio - The normalized time specified as a number between 0.0 and 1.0 inclusive.
+    // @param {Animator} animator
+    //
     sample: function (time, ratio, animator) {}
 });
 
-/**
- * 区别于 SampledAnimCurve。
- *
- * @class DynamicAnimCurve
- * @constructor
- * @extends AnimCurve
- */
+///
+// 区别于 SampledAnimCurve。
+//
+// @class DynamicAnimCurve
+// @constructor
+// @extends AnimCurve
+//
 var DynamicAnimCurve = Fire.Class({
     name: 'Fire.DynamicAnimCurve',
     properties: {
-        /**
-         * The object being animated.
-         * @property target
-         * @type {object}
-         */
+        //
+        // The object being animated.
+        // @property target
+        // @type {object}
+        //
         target: null,
-        /**
-         * The name of the property being animated.
-         * @property prop
-         * @type {string}
-         */
+        //
+        // The name of the property being animated.
+        // @property prop
+        // @type {string}
+        //
         prop: "",
-        /**
-         * The values of the keyframes. (y)
-         * @property values
-         * @type {any[]}
-         */
+        //
+        // The values of the keyframes. (y)
+        // @property values
+        // @type {any[]}
+        //
         values: [],
-        /**
-         * The keyframe ratio of the keyframe specified as a number between 0.0 and 1.0 inclusive. (x)
-         * @property ratios
-         * @type {number[]}
-         */
+        //
+        // The keyframe ratio of the keyframe specified as a number between 0.0 and 1.0 inclusive. (x)
+        // @property ratios
+        // @type {number[]}
+        //
         ratios: []
 
         // TODO inTan, outTan
@@ -66,7 +66,7 @@ var DynamicAnimCurve = Fire.Class({
         var index = Fire.binarySearch(ratios, ratio);
         if (index < 0) {
             index = ~index;
-            if (index < 0) {
+            if (index <= 0) {
                 value = values[0];
             }
             else if (index >= frameCount) {
@@ -100,6 +100,10 @@ var DynamicAnimCurve = Fire.Class({
         this.target[this.prop] = value;
     }
 });
+
+// @ifdef DEV
+__TESTONLY__.DynamicAnimCurve = DynamicAnimCurve;
+// @endif
 
 /**
  * Animate play direction

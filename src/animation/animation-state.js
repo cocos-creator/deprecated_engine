@@ -47,7 +47,7 @@ var AnimationState = (function () {
     }
     JS.extend(AnimationState, AnimationNodeBase);
 
-    var p = AnimationState.prototype;
+    var state = AnimationState.prototype;
 
     /**
      * The clip that is being played by this animation state.
@@ -55,7 +55,7 @@ var AnimationState = (function () {
      * @type {AnimationClip}
      * @readOnly
      */
-    JS.get(p, 'clip', function () {
+    JS.get(state, 'clip', function () {
         return this._clip;
     });
 
@@ -65,7 +65,7 @@ var AnimationState = (function () {
      * @type {string}
      * @readOnly
      */
-    JS.get(p, 'name', function () {
+    JS.get(state, 'name', function () {
         return this._name;
     });
 
@@ -75,7 +75,7 @@ var AnimationState = (function () {
      * @type {number}
      * @readOnly
      */
-    JS.get(p, 'length', function () {
+    JS.get(state, 'length', function () {
         return this._clip.length;
         //var curveDataArray = this._clip.frames;
         //if (curveDataArray.length > 0) {
@@ -88,7 +88,7 @@ var AnimationState = (function () {
         //return 0;
     });
 
-    JS.getset(p, 'playbackRate',
+    JS.getset(state, 'playbackRate',
         function () {
             return this._animNode.playbackRate;
         },
@@ -97,7 +97,7 @@ var AnimationState = (function () {
         }
     );
 
-    JS.getset(p, 'time',
+    JS.getset(state, 'time',
         function () {
             return this._animNode.time;
         },
@@ -107,7 +107,7 @@ var AnimationState = (function () {
     );
 
     var SpeedWarning = '[AnimationState] Use playbackRate instead of speed please.';
-    JS.getset(p, 'speed',
+    JS.getset(state, 'speed',
         function () {
             Fire.warn(SpeedWarning);
             return this.playbackRate;
@@ -118,7 +118,7 @@ var AnimationState = (function () {
         }
     );
 
-    JS.getset(p, 'curves',
+    JS.getset(state, 'curves',
         function () {
             return this._animNode.curves;
         },
@@ -127,7 +127,19 @@ var AnimationState = (function () {
         }
     );
 
-    p.sample = function () {
+    JS.getset(state, 'curveLoaded',
+        function () {
+            return this.curves.length > 0;
+        },
+        function (value) {
+            this.curves.length = 0;
+        }
+    );
+
+    state.update = function (delta) {
+        this._animNode.update(delta);
+    };
+    state.sample = function () {
         this._animNode.sample();
     };
 

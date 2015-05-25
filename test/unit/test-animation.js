@@ -89,6 +89,21 @@ asyncTest('EntityAnimator.animate', function () {
     };
 });
 
+test('DynamicAnimCurve', function () {
+    var DynamicAnimCurve = TestOnly.DynamicAnimCurve;
+    var anim = new DynamicAnimCurve();
+    var target = {
+        height: 1
+    };
+    anim.target = target;
+    anim.prop = 'height';
+    anim.values = [10, 100];
+    anim.ratios = [0.5, 1.0];
+    anim.sample(null, 0.1, null);
+
+    strictEqual(target.height, 10, 'The keyframe value whose ratio is out of ranges should just clamped');
+});
+
 test('AnimationNode', function () {
     Engine.play();
 
