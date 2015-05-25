@@ -1,4 +1,118 @@
-﻿var Input = (function () {
+/**
+ * Key codes returned by Event.keyCode. These map directly to a physical key on the keyboard.
+ * @enum Fire.KeyCode
+ */
+Fire.KeyCode = Fire.defineEnum({
+  /**
+  * @property {number} Digit0 - The '0' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit1 - The '1' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit2 - The '2' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit3 - The '3' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit4 - The '4' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit5 - The '5' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit6 - The '6' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit7 - The '7' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit8 - The '8' key on the top of the alphanumeric keyboard.
+  * @property {number} Digit9 - The '9' key on the top of the alphanumeric keyboard.
+  * @property {number} A - 'a' key.
+  */
+  Digit1: 49,
+  Digit2: 50,
+  Digit3: 51,
+  Digit4: 52,
+  Digit5: 53,
+  Digit6: 54,
+  Digit7: 55,
+  Digit8: 56,
+  Digit9: 57,
+  Digit0: 48,
+  A: 65,
+  B: 66,
+  C: 67,
+  D: 68,
+  E: 69,
+  F: 70,
+  G: 71,
+  H: 72,
+  I: 73,
+  J: 74,
+  K: 75,
+  L: 76,
+  M: 77,
+  N: 78,
+  O: 79,
+  P: 80,
+  Q: 81,
+  R: 82,
+  S: 83,
+  T: 84,
+  U: 85,
+  V: 86,
+  W: 87,
+  X: 88,
+  Y: 89,
+  Z: 90,
+  /**
+  * @property {number} Comma - Comma ',' key.
+  * @property {number} Period - Period '.' key.
+  * @property {number} Semicolon - Semicolon ';' key.
+  * @property {number} Quote - Quote key '.
+  * @property {number} BracketLeft - Left square bracket key '['.
+  * @property {number} BracketRight - Right square bracket key '['.
+  * @property {number} Backquote - Back quote key '`'.
+  * @property {number} Backslash - Backslash key '\'.
+  * @property {number} Minus - Minus '-' key.
+  * @property {number} Equal - Equal '=' key.
+  * @property {number} Alt - Alt key.
+  * @property {number} Control - Control key.
+  * @property {number} Shift - Shift key.
+  */
+  Comma: 188,
+  Period: 190,
+  Semicolon: 186,
+  Quote: 222,
+  BracketLeft: 219,
+  BracketRight: 221,
+  Backquote: 192,
+  Backslash: 220,
+  Minus: 189,
+  Equals: 187,
+  Alt: 18,
+  Control: 17,
+  Shift: 16,
+  /**
+  * @property {number} Enter - Enter key.
+  * @property {number} Space - Space key.
+  * @property {number} Tab - Tab key.
+  * @property {number} Delete - Delete key.
+  * @property {number} End - End key.
+  * @property {number} Home - Home key.
+  * @property {number} Insert - Insert key.
+  * @property {number} PageDown - PageDown key.
+  * @property {number} PageUp - PageUp key.
+  * @property {number} ArrowLeft - ArrowLeft key.
+  * @property {number} ArrowRight - ArrowRight key.
+  * @property {number} ArrowUp - ArrowUp key.
+  * @property {number} ArrowDown - ArrowDown key.
+  * @property {number} Escape - Escape key.
+  */
+  Enter: 13,
+  Space: 32,
+  Tab: 9,
+  Delete: 46,
+  End: 35,
+  Home: 36,
+  Insert: 45,
+  PageDown: 34,
+  PageUp: 33,
+  ArrowDown: 40,
+  ArrowLeft: 37,
+  ArrowRight: 39,
+  ArrowUp: 38,
+  Escape: 27
+});
+
+var Input = (function () {
 
     /**
      * Interface into the Input system.
