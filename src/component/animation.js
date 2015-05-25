@@ -13,9 +13,12 @@ var Animation = Fire.Class({
     constructor: function () {
         // The actual implement for Animation
         this._animator = null;
+
         this._nameToState = {};
+        this._didInit = false;
 
         // @ifdef EDITOR
+        this._watchingClipUuids = {};
         this._bindedOnClipChanged = this._onClipChanged.bind(this);
         // @endif
     },
@@ -89,7 +92,7 @@ var Animation = Fire.Class({
     start: function () {
         if (/*this.enabled && */this.playAutomatically && this.defaultClip) {
             var state = this.getAnimationState(this.defaultClip.name);
-            this._playState(state);
+            this._animator.playState(state);
         }
     },
 
@@ -111,9 +114,12 @@ var Animation = Fire.Class({
         this._init();
         var state = this.getAnimationState(name || this.defaultClip.name);
         if (state) {
-            this._playState(state);
+            if (state.isPlaying) {
+                this._animator.stopState(state);
+            }
+            this._animator.playState(state);
             // @ifdef EDITOR
-            Fire.AssetLibrary.assetListener.add(state.clip._uuid, this.onClipChanged);
+            this._updateWatchingClips(state.clip);
             // @endif
         }
         return state;
@@ -126,13 +132,13 @@ var Animation = Fire.Class({
      * @param {string} [name] - The animation to stop, if not supplied then stops all playing animations.
      */
     stop: function (name) {
-        if (!this.isOnLoadCalled) {
+        if (!this._didInit) {
             return;
         }
         if (name) {
             var state = this._nameToState[name];
             if (state) {
-                this._animator.stopState(name);
+                this._animator.stopState(state);
             }
         }
         else {
@@ -158,6 +164,10 @@ var Animation = Fire.Class({
      * @return {AnimationState} - The AnimationState which gives full control over the animation clip.
      */
     addClip: function (clip, newName) {
+        if (!clip) {
+            Fire.warn('Invalid clip to add');
+            return;
+        }
         this._init();
         // add clip
         if (!JS.Array.contains(this._clips, clip)) {
@@ -172,14 +182,14 @@ var Animation = Fire.Class({
             }
             else {
                 JS.Array.remove(this._clips, oldState.clip);
-                // @ifdef EDITOR
-                this._unwatchClip(oldState.clip);
-                // @endif
             }
         }
         // replace state
         var newState = new AnimationState(clip, newName);
         this._nameToState[newName] = newState;
+        // @ifdef EDITOR
+        this._updateWatchingClips();
+        // @endif
         return newState;
     },
 
@@ -192,33 +202,40 @@ var Animation = Fire.Class({
     /**
      * Remove clip from the animation list. This will remove the clip and any animation states based on it.
      * @method removeClip
-     * @param {AnimationClip|string} clipOrName
+     * @param {AnimationClip} clip
      */
-    removeClip: function (clipOrName) {
+    removeClip: function (clip) {
+        if (!clip) {
+            Fire.warn('Invalid clip to remove');
+            return;
+        }
         this._init();
         var state;
-        if (typeof clipOrName === 'string') {
-            //if (clipOrName === this.defaultClip.name) {
-            //    // can not remove default clip
-            //    return;
-            //}
-            state = this._nameToState[clipOrName];
-            if (state) {
-                JS.Array.remove(this._clips, state.clip);
-                this._removeStateIfNotUsed(state);
-                return;
-            }
-        }
-        else {
-            JS.Array.remove(this._clips, clipOrName);
+        //if (typeof clip === 'string') {
+        //    //if (clipOrName === this.defaultClip.name) {
+        //    //    // can not remove default clip
+        //    //    return;
+        //    //}
+        //    state = this._nameToState[clip];
+        //    if (state) {
+        //        this._removeStateIfNotUsed(state);
+        //        return;
+        //    }
+        //}
+        //else {
+            this._clips = this._clips.filter(function (item) {
+                return item !== clip;
+            });
             for (var name in this._nameToState) {
                 state = this._nameToState[name];
-                if (state.clip === clipOrName) {
+                if (state.clip === clip) {
                     this._removeStateIfNotUsed(state);
-                    return;
                 }
             }
-        }
+        //}
+        // @ifdef EDITOR
+        this._updateWatchingClips(state.clip);
+        // @endif
         Fire.error('Not exists clip to remove');
     },
 
@@ -233,12 +250,15 @@ var Animation = Fire.Class({
     },
 
     // reload all animation clips
-    _reload: function () {
-        if (this.isOnLoadCalled) {
-            this.stop();
-            // TODO: reload
-        }
-    },
+    //_reload: function () {
+    //    if (this._didInit) {
+    //        //this.stop();
+    //        for (var name in this._nameToState) {
+    //            var state = this._nameToState[name];
+    //            this._animator.reloadClip(state);
+    //        }
+    //    }
+    //},
 
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -249,11 +269,15 @@ var Animation = Fire.Class({
     // Just invoking _init by onLoad is not enough because onLoad is called only if the entity is active.
 
     _init: function () {
-        if (this.isOnLoadCalled) {
+        if (this._didInit) {
             return;
         }
+        this._didInit = true;
         this._animator = new AnimationAnimator(this.entity, this);
         this._createStates();
+        // @ifdef EDITOR
+        this._updateWatchingClips();
+        // @endif
     },
 
     _createStates: function() {
@@ -276,29 +300,58 @@ var Animation = Fire.Class({
         }
     },
 
-    /**
-     * Plays an animation state.
-     * @method _playState
-     * @param {AnimationState} state
-     */
-    _playState: function (state) {
-        this._init();
-        this._animator.playState(state);
-    },
-
     // @ifdef EDITOR
-    _watchClip: function (clip) {
-        Fire.AssetLibrary.assetListener.add(clip._uuid, this._bindedOnClipChanged);
-    },
-    _unwatchClip: function (clip) {
-        Fire.AssetLibrary.assetListener.remove(clip._uuid, this._bindedOnClipChanged);
+    //_watchClip: function (clip) {
+    //    var uuid = clip._uuid;
+    //    if (uuid in this._watchingClipUuids) {
+    //        return;
+    //    }
+    //    this._watchingClipUuids[uuid] = true;
+    //    Fire.AssetLibrary.assetListener.add(uuid, this._bindedOnClipChanged);
+    //},
+    //_unwatchClip: function (clip) {
+    //    var uuid = clip._uuid;
+    //    if (uuid in this._watchingClipUuids) {
+    //        Fire.AssetLibrary.assetListener.remove(uuid, this._bindedOnClipChanged);
+    //        delete this._watchingClipUuids[uuid];
+    //    }
+    //},
+    _updateWatchingClips: function () {
+        var uuid;
+        for (uuid in this._watchingClipUuids) {
+            Fire.AssetLibrary.assetListener.remove(uuid, this._bindedOnClipChanged);
+        }
+        this._watchingClipUuids = {};
+
+        if (this.defaultClip) {
+            uuid = this.defaultClip._uuid;
+            this._watchingClipUuids[uuid] = true;
+            Fire.AssetLibrary.assetListener.add(uuid, this._bindedOnClipChanged);
+        }
+        for (var i = 0; i < this._clips.length; i++) {
+            var clip = this._clips[i];
+            if (clip) {
+                uuid = clip._uuid;
+                if (!this._watchingClipUuids[uuid]) {
+                    this._watchingClipUuids[uuid] = true;
+                    Fire.AssetLibrary.assetListener.add(uuid, this._bindedOnClipChanged);
+                }
+            }
+        }
     },
     _onClipChanged: function (clip) {
+        var needReSample = false;
         for (var name in this._nameToState) {
             var state = this._nameToState[name];
             if (state.clip === clip) {
                 this._animator.reloadClip(state);
+                if (state.isPlaying) {
+                    needReSample = true;
+                }
             }
+        }
+        if (needReSample) {
+            this.sample();
         }
     }
     // @endif

@@ -44,6 +44,14 @@ var AnimationState = (function () {
             duration: this.length
             //wrapMode:
         });
+
+        var self = this;
+        this._animNode.on('stop', function () {
+            self.stop();
+        });
+        this.on('play', function () {
+            self._animNode.play();
+        });
     }
     JS.extend(AnimationState, AnimationNodeBase);
 
@@ -135,6 +143,11 @@ var AnimationState = (function () {
             this.curves.length = 0;
         }
     );
+
+    state.onPlay = function () {
+        // replay
+        this.time = 0;
+    };
 
     state.update = function (delta) {
         this._animNode.update(delta);
