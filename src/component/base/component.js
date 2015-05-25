@@ -168,7 +168,8 @@
                     }
                 },
                 displayName: 'Script',
-                type: Fire._ScriptUuid
+                type: Fire._ScriptUuid,
+                visible: true
             },
             // @endif
 
