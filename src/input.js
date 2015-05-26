@@ -66,6 +66,8 @@ Fire.KeyCode = Fire.defineEnum({
   * @property {number} Alt - Alt key.
   * @property {number} Control - Control key.
   * @property {number} Shift - Shift key.
+  * @property {number} Command - Command key.
+  * @property {number} Slash - Slash key.
   */
   Comma: 188,
   Period: 190,
@@ -80,6 +82,8 @@ Fire.KeyCode = Fire.defineEnum({
   Alt: 18,
   Control: 17,
   Shift: 16,
+  Command: 91,
+  Slash: 191,
   /**
   * @property {number} Enter - Enter key.
   * @property {number} Space - Space key.

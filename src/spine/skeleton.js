@@ -178,6 +178,7 @@ var Skeleton = (function () {
          * @param {string} toAnimation
          * @param {number} duration
          * @beta
+         * @example {@link examples/Fire/Component/Spine/skeleton-setMix.js}
          */
         setMix: function (fromAnimation, toAnimation, duration) {
             SpineRuntime.setMix(this, fromAnimation, toAnimation, duration);
@@ -191,6 +192,7 @@ var Skeleton = (function () {
          * @param {boolean} loop
          * @return {spine.TrackEntry|null}
          * @beta
+         * @example {@link examples/Fire/Component/Spine/skeleton-setAnimation.js}
          */
         setAnimation: function (trackIndex, name, loop) {
             SpineRuntime.setAnimation(this, trackIndex, name, loop);
@@ -217,11 +219,12 @@ var Skeleton = (function () {
         },
 
         /**
-         * Returns track entry by trackIndex.
+         * Returns track entry by trackIndex. spine.TrackEntry is a spine runtime object. Check the [source code](https://github.com/EsotericSoftware/spine-runtimes/blob/master/spine-js/spine.js#L1507-L1515) for details.
          * @method getCurrent
          * @param trackIndex
          * @return {spine.TrackEntry|null}
          * @beta
+         * @example {@link examples/Fire/Component/Spine/trackEntry.js}
          */
         getCurrent: function (trackIndex) {
             return SpineRuntime.getCurrent(this, trackIndex);

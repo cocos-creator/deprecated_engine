@@ -4,6 +4,7 @@
 
     var AnimEvents = [];
     /**
+     * @module Fire.Spine
      * @class Skeleton
      */
     /*
