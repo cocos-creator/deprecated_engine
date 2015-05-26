@@ -176,7 +176,9 @@ var LoadManager = (function () {
 
 // @ifdef EDITOR
         reset: function () {
+            var audio = this._rawTypes.audio;
             this._rawTypes = getBuiltinRawTypes();
+            this._rawTypes.audio = audio;
         },
 
         isLoading: function (url, alsoCheckRaw) {
