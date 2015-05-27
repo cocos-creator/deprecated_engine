@@ -119,8 +119,7 @@ var InputField = (function () {
                 set: function (value) {
                     this._placeHolder = value;
                     Engine._renderContext.setPlaceHolder(this);
-                },
-                multiline: true
+                }
             },
 
             _text: '',
