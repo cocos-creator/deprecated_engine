@@ -48,6 +48,7 @@ var AnimationAnimator = (function () {
     };
     // @endif
 
+    // 这个方法应该是 SampledAnimCurve 才能用
     function createBatchedProperty (propPath, firstDotIndex, mainValue, animValue) {
         mainValue = mainValue.clone();
         var nextValue = mainValue;
@@ -70,6 +71,13 @@ var AnimationAnimator = (function () {
     // @ifdef DEV
     __TESTONLY__.createBatchedProperty = createBatchedProperty;
     // @endif
+
+    function splitPropPath (propPath) {
+        var array = propPath.split('.');
+        array.shift();
+        //array = array.filter(function (item) { return !!item; });
+        return array.length > 0 ? array : null;
+    }
 
     function initClipData (target, state) {
         state._animNode.duration = state.length;
@@ -117,6 +125,9 @@ var AnimationAnimator = (function () {
             }
 
             curve.prop = propName;
+
+            curve.subProps = splitPropPath(propPath);
+
             // for each keyframes
             var keyframes = propData.keys;
             for (var j = 0, l = keyframes.length; j < l; j++) {
@@ -125,9 +136,9 @@ var AnimationAnimator = (function () {
                 curve.ratios.push(ratio);
 
                 var curveValue = keyframe.value;
-                if (hasSubProp) {
-                    curveValue = createBatchedProperty(propPath, dotIndex, propValue, curveValue);
-                }
+                //if (hasSubProp) {
+                //    curveValue = createBatchedProperty(propPath, dotIndex, propValue, curveValue);
+                //}
                 curve.values.push(curveValue);
             }
         }

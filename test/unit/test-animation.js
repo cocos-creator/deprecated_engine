@@ -93,7 +93,11 @@ test('DynamicAnimCurve', function () {
     var DynamicAnimCurve = TestOnly.DynamicAnimCurve;
     var anim = new DynamicAnimCurve();
     var target = {
-        height: 1
+        height: 1,
+        position: v2(123, 456),
+        foo: {
+            bar: color(0.5, 0.5, 0.5, 0.5),
+        }
     };
     anim.target = target;
     anim.prop = 'height';
@@ -102,6 +106,23 @@ test('DynamicAnimCurve', function () {
     anim.sample(null, 0.1, null);
 
     strictEqual(target.height, 10, 'The keyframe value whose ratio is out of ranges should just clamped');
+
+    anim.prop = 'position';
+    anim.subProps = ['x'];
+    anim.values = [50, 100];
+    anim.ratios = [0.0, 1.0];
+    anim.sample(null, 0.1, null);
+
+    deepEqual(target.position, v2(55, 456), 'The composed position should animated');
+
+    anim.target = target;
+    anim.prop = 'foo';
+    anim.subProps = ['bar', 'a'];
+    anim.values = [0.5, 1.0];
+    anim.ratios = [0.0, 1.0];
+    anim.sample(null, 0.1, null);
+
+    deepEqual(target.foo, { bar: color(0.5, 0.5, 0.5, 0.55) }, 'The composed color should animated');
 });
 
 test('AnimationNode', function () {
@@ -266,6 +287,24 @@ test('initClipData', function () {
             ]
         },
         {
+            component: 'Fire.Transform',
+            property: 'scale.y',
+            keys: [
+                {
+                    frame: 0,
+                    value: 10
+                },
+                {
+                    frame: 5,
+                    value: 12
+                },
+                {
+                    frame: 10,
+                    value: 20
+                }
+            ]
+        },
+        {
             component: 'Fire.SpriteRenderer',
             property: 'color.a',
             keys: [
@@ -283,25 +322,23 @@ test('initClipData', function () {
     state = new Fire.AnimationState(clip);
     initClipData(entity, state);
     var posCurve = state.curves[0];
-    var scaleCurve = state.curves[1];
-    var colorCurve = state.curves[2];
-    strictEqual(state.curves.length, 3, 'should create 3 curve');
+    var scaleCurveX = state.curves[1];
+    var scaleCurveY = state.curves[2];
+    var colorCurve = state.curves[3];
+    strictEqual(state.curves.length, 4, 'should create 3 curve');
     strictEqual(posCurve.target, entity.transform, 'target of posCurve should be transform');
     strictEqual(posCurve.prop, 'position', 'propName of posCurve should be position');
-    strictEqual(scaleCurve.target, entity.transform, 'target of scaleCurve should be transform');
-    strictEqual(scaleCurve.prop, 'scale', 'propName of scaleCurve should be scale');
+    strictEqual(scaleCurveX.target, entity.transform, 'target of scaleCurve should be transform');
+    strictEqual(scaleCurveX.prop, 'scale', 'propName of scaleCurve should be scale');
     strictEqual(colorCurve.target, renderer, 'target of colorCurve should be sprite renderer');
     strictEqual(colorCurve.prop, 'color', 'propName of colorCurve should be color');
 
     deepEqual(posCurve.values, [v2(50, 100), v2(100, 75), v2(100, 50)], 'values of posCurve should equals keyFrames');
 
-    var scaleY = entity.transform.scaleY;
-    deepEqual(scaleCurve.values, [v2(10, scaleY), v2(20, scaleY)], 'values of scaleCurve should equals keyFrames');
+    deepEqual(scaleCurveY.values, [10, 12, 20], 'values of scaleCurve should equals keyFrames');
 
-    var color = renderer.color;
-    deepEqual(colorCurve.values, [color.clone().setA(1), color.clone().setA(0)], 'values of colorCurve should equals keyFrames');
+    deepEqual(colorCurve.values, [1, 0], 'values of colorCurve should equals keyFrames');
 
     deepEqual(posCurve.ratios, [0, 0.5, 1], 'ratios of posCurve should equals keyFrames');
-    deepEqual(scaleCurve.ratios, [0, 1], 'ratios of scaleCurve should equals keyFrames');
     deepEqual(colorCurve.ratios, [0, 1], 'ratios of colorCurve should equals keyFrames');
 });

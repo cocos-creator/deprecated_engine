@@ -17,7 +17,7 @@ var AnimCurve = Fire.Class({
     sample: function (time, ratio, animator) {}
 });
 
-///
+//
 // 区别于 SampledAnimCurve。
 //
 // @class DynamicAnimCurve
@@ -50,7 +50,10 @@ var DynamicAnimCurve = Fire.Class({
         // @property ratios
         // @type {number[]}
         //
-        ratios: []
+        ratios: [],
+
+        // @property {string[]} subProps - The path of sub property being animated.
+        subProps: null
 
         // TODO inTan, outTan
     },
@@ -62,6 +65,7 @@ var DynamicAnimCurve = Fire.Class({
         if (frameCount === 0) {
             return;
         }
+        // evaluate value
         var value;
         var index = Fire.binarySearch(ratios, ratio);
         if (index < 0) {
@@ -97,6 +101,30 @@ var DynamicAnimCurve = Fire.Class({
         else {
             value = values[index];
         }
+        var subProps = this.subProps;
+        if (subProps) {
+            // create batched value dynamically
+            var mainProp = this.target[this.prop];
+            var subProp = mainProp;
+            for (var i = 0; i < subProps.length - 1; i++) {
+                var subPropName = subProps[i];
+                if (subProp) {
+                    subProp = subProp[subPropName];
+                }
+                else {
+                    return;
+                }
+            }
+            var propName = subProps[subProps.length - 1];
+            if (subProp) {
+                subProp[propName] = value;
+            }
+            else {
+                return;
+            }
+            value = mainProp;
+        }
+        // apply value
         this.target[this.prop] = value;
     }
 });
