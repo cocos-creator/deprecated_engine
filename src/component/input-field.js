@@ -111,7 +111,19 @@ var InputField = (function () {
                 },
                 type: FontFlagType
             },
-            _text: 'Enter text...',
+            _placeHolder: 'Enter text...',
+            placeHolder: {
+                get: function () {
+                    return this._placeHolder;
+                },
+                set: function (value) {
+                    this._placeHolder = value;
+                    Engine._renderContext.setPlaceHolder(this);
+                },
+                multiline: true
+            },
+
+            _text: '',
             /**
              * The text of input field.
              * @property text
