@@ -351,7 +351,7 @@ var ParticleSystem = (function () {
             /**
              * !#en Particles movement type: Free | Grouped.
              * !#zh 位置类型
-             * @property startSpin
+             * @property positionType
              * @type {Fire.ParticleSystem.PositionType}
              * @default Free
              */
@@ -369,7 +369,7 @@ var ParticleSystem = (function () {
             /**
              * !#en Variation of source position.
              * !#zh 位置波动值
-             * @property startSpin
+             * @property positionVar
              * @type {Vec2}
              * @default Fire.Vec2(0, 0)
              */
@@ -412,10 +412,10 @@ var ParticleSystem = (function () {
              */
             startSpinVar: {
                 get: function() {
-                    return this._startSpin;
+                    return this._startSpinVar;
                 },
                 set: function (value) {
-                    this._startSpin = value;
+                    this._startSpinVar = value;
                     ParticleRuntime.setOther(this);
                 }
             },
@@ -488,7 +488,7 @@ var ParticleSystem = (function () {
                     return this._gravity;
                 },
                 set: function (value) {
-                    this._duration = value;
+                    this._gravity = value;
                     ParticleRuntime.setGravityMode(this);
                 },
                 watch: {
