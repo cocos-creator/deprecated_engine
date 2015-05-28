@@ -143,9 +143,9 @@ var AnimationNode = Fire.Class({
                 this.duration = duration;
             }
 
-            var playbackRate = timingInput.playbackRate;
-            if (typeof playbackRate !== 'undefined') {
-                this.playbackRate = playbackRate;
+            var speed = timingInput.speed;
+            if (typeof speed !== 'undefined') {
+                this.speed = speed;
             }
 
             // 兼容旧的命名
@@ -261,13 +261,13 @@ var AnimationNode = Fire.Class({
         duration: 1,
 
         /**
-         * !#en The animation's playback rate property. (speed)
+         * !#en The animation's playback speed.
          * !#zh 播放速率
-         * @property playbackRate
+         * @property speed
          * @type {number}
          * @default: 1.0
          */
-        playbackRate: 1,
+        speed: 1,
 
         /**
          * !#en Wrapping mode of the playing animation.
@@ -302,7 +302,7 @@ var AnimationNode = Fire.Class({
 
         //var playPerfectFirstFrame = (this.time === 0);
         if (this._firstFramePlayed) {
-            this.time += (delta * this.playbackRate);
+            this.time += (delta * this.speed);
         }
         else {
             this._firstFramePlayed = true;

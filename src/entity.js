@@ -661,7 +661,7 @@ var Entity = Fire.Class({
      * for specifying the timing properties of an Animation in bulk.
      * @param {number} [timingInput.delay] delay in seconds before start the animation
      * @param {number} [timingInput.repeatCount] how many times should the animation goes
-     * @param {number} [timingInput.playbackRate=1] the play speed of animation
+     * @param {number} [timingInput.speed=1] the play speed of animation
      * @param {Fire.WrapMode} [timingInput.wrapMode] animation should play towards which Fire.WrapMode
      * @return {AnimationNode}
      * @example {@link examples/Fire/Entity/animate.js}

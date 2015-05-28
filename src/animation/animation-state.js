@@ -33,7 +33,7 @@ var AnimationState = (function () {
         // * @type {number}
         // * @default 1.0
         // */
-        //this.playbackRate = 1;
+        //this.speed = 1;
 
         // the current time of the playing animation in seconds
         //this.time = 0;
@@ -95,12 +95,12 @@ var AnimationState = (function () {
         //return 0;
     });
 
-    JS.getset(state, 'playbackRate',
+    JS.getset(state, 'speed',
         function () {
-            return this._animNode.playbackRate;
+            return this._animNode.speed;
         },
         function (value) {
-            this._animNode.playbackRate = value;
+            this._animNode.speed = value;
         }
     );
 
@@ -110,18 +110,6 @@ var AnimationState = (function () {
         },
         function (value) {
             this._animNode.time = value;
-        }
-    );
-
-    var SpeedWarning = '[AnimationState] Use playbackRate instead of speed please.';
-    JS.getset(state, 'speed',
-        function () {
-            Fire.warn(SpeedWarning);
-            return this.playbackRate;
-        },
-        function (value) {
-            Fire.warn(SpeedWarning);
-            this.playbackRate = value;
         }
     );
 

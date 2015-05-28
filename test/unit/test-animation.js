@@ -144,7 +144,7 @@ test('AnimationNode', function () {
     ], {
         delay: 0.3,
         duration: 1.3,
-        playbackRate: 0.5,
+        speed: 0.5,
         repeatCount: 1.25
     });
 
@@ -154,7 +154,7 @@ test('AnimationNode', function () {
     animation.update(0.2);
     deepEqual(entity.transform.position, v2(50, 100), 'should play first key frame after delay');
 
-    var actualDuration = animation.duration / animation.playbackRate;
+    var actualDuration = animation.duration / animation.speed;
     animation.update(actualDuration / 2);
     deepEqual(entity.transform.scale, v2(1.5, 1.5), 'should play second key frame');
 
@@ -184,14 +184,14 @@ test('wrapMode', function () {
     ], {
         delay: 0.3,
         duration: 1.3,
-        playbackRate: 0.5,
+        speed: 0.5,
         wrapMode: Fire.WrapMode.Reverse,
         repeatCount: Infinity
     });
 
     animation.update(0.3);
 
-    var actualDuration = animation.duration / animation.playbackRate;
+    var actualDuration = animation.duration / animation.speed;
     animation.update(actualDuration / 4);
     strictEqual(entity.transform.x, 75 + 10, 'should play reversed animation');
 
