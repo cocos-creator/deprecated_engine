@@ -47,6 +47,7 @@ var bezier = (function () {
             return Math.pow(v, 1 / 3);
         }
     }
+
     //function align (curve, line) {
     //    var tx = line.p1.x,
     //        ty = line.p1.y,

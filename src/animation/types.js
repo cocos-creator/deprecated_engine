@@ -1,41 +1,96 @@
+
+var WrapModeMask = Fire.defineEnum({
+    _Normal : 1 << 0,
+    Loop    : 1 << 1,
+    PingPong: 1 << 2,
+    Reverse : 1 << 3
+});
+WrapModeMask.PingPong |= WrapModeMask.Loop;
+WrapModeMask.ShouldWrap = (WrapModeMask.PingPong | WrapModeMask.Reverse) & ~WrapModeMask.Loop;
+
 /**
- * Animate play direction
- * @enum PlaybackDirection
+ * Specifies how time is treated when it is outside of the keyframe range of an Animation.
+ * @enum WrapMode
  */
-var PlaybackDirection = Fire.defineEnum({
+var WrapMode = Fire.defineEnum({
 
     /**
-     * All iterations are played as specified.
-     * @property normal
+     * !#en Reads the default wrap mode set higher up.
+     * !#zh 向 Animation Component 或者 AnimationClip 查找 wrapMode
+     *
+     * @property Default
      * @type {number}
      */
-    normal: -1,
-    /**
-     * All iterations are played in the reverse direction from the way they are specified.
-     * @property reverse
-     * @type {number}
-     */
-    reverse: -1,
+    Default: 0,
 
     /**
-     * Even iterations are played as specified, odd iterations are played in the reverse direction from the way they
-     * are specified. (PingPong)
-     * @property alternate
+     * !#en All iterations are played as specified.
+     * !#zh 动画只播放一遍
+     *
+     * @property Normal
      * @type {number}
      */
-    alternate: -1,
+    Normal: 1,
 
     /**
-     * Even iterations are played in the reverse direction from the way they are specified, odd iterations are played
+     * !#en All iterations are played in the reverse direction from the way they are specified.
+     * !#zh 从最后一帧或结束位置开始反向播放，到第一帧或开始位置停止
+     *
+     * @property Reverse
+     * @type {number}
+     */
+    Reverse: WrapModeMask.Reverse,
+
+    /**
+     * !#en When time reaches the end of the animation, time will continue at the beginning.
+     * !#zh 循环播放
+     *
+     * @property Loop
+     * @type {number}
+     */
+    Loop: WrapModeMask.Loop,
+
+    /**
+     * !#en All iterations are played in the reverse direction from the way they are specified.
+     * And when time reaches the start of the animation, time will continue at the ending.
+     * !#zh 反向循环播放
+     *
+     * @property LoopReverse
+     * @type {number}
+     */
+    LoopReverse: WrapModeMask.Loop | WrapModeMask.Reverse,
+
+    /**
+     * !#en Even iterations are played as specified, odd iterations are played in the reverse direction from the way they
+     * are specified.
+     * !#zh 从第一帧播放到最后一帧，然后反向播放回第一帧，到第一帧后再正向播放，如此循环
+     *
+     * @property PingPong
+     * @type {number}
+     */
+    PingPong: WrapModeMask.PingPong,
+
+    /**
+     * !#en Even iterations are played in the reverse direction from the way they are specified, odd iterations are played
      * as specified.
-     * @property alternate-reverse
+     * !#zh 从最后一帧开始反向播放，其他同 PingPong
+     *
+     * @property PingPongReverse
      * @type {number}
      */
-    'alternate-reverse': -1
+    PingPongReverse: WrapModeMask.PingPong | WrapModeMask.Reverse
 });
 
-Fire.PlaybackDirection = PlaybackDirection;
+JS.obsoletes(WrapMode, 'Fire.WrapMode', {
+    alternate: 'PingPong',
+    'alternate-reverse': 'PingPongReverse',
+    normal: 'Normal',
+    reverse: 'Reverse'
+});
 
+Fire.WrapMode = WrapMode;
+
+JS.obsolete(Fire, 'Fire.PlaybackDirection', 'WrapMode');
 
 /**
  * The abstract interface for all playing animation.
@@ -82,18 +137,17 @@ var AnimationNode = Fire.Class({
         }
         if (timingInput) {
             this.delay = timingInput.delay || this.delay;
-            var iterations = timingInput.iterations;
-            if (typeof iterations !== 'undefined') {
-                this.iterations = iterations;
-            }
+
             var duration = timingInput.duration;
             if (typeof duration !== 'undefined') {
                 this.duration = duration;
             }
+
             var playbackRate = timingInput.playbackRate;
             if (typeof playbackRate !== 'undefined') {
                 this.playbackRate = playbackRate;
             }
+
             // 兼容旧的命名
             if ('direction' in timingInput) {
                 timingInput.wrapMode = timingInput.direction;
@@ -102,12 +156,21 @@ var AnimationNode = Fire.Class({
             //
             var wrapMode = timingInput.wrapMode;
             if (typeof wrapMode !== 'undefined') {
-                if (typeof wrapMode === 'number') {
+                var isEnum = typeof wrapMode === 'number';
+                if (isEnum) {
                     this.wrapMode = wrapMode;
                 }
                 else {
-                    this.wrapMode = Fire.PlaybackDirection[wrapMode];
+                    this.wrapMode = Fire.WrapMode[wrapMode];
                 }
+            }
+
+            var repeatCount = timingInput.repeatCount;
+            if (typeof repeatCount !== 'undefined') {
+                this.repeatCount = repeatCount;
+            }
+            else if (this.wrapMode & WrapModeMask.Loop) {
+                this.repeatCount = Infinity;
             }
         }
 
@@ -182,11 +245,11 @@ var AnimationNode = Fire.Class({
          *
          * !#zh 迭代次数, 指动画播放多少次后结束, normalize time. 如 2.5 ( 2次半 )
          *
-         * @property iterations
+         * @property repeatCount
          * @type {number}
          * @default 1
          */
-        iterations: 1,
+        repeatCount: 1,
 
         /**
          * !#en The iteration duration of this animation in seconds. (length)
@@ -209,11 +272,12 @@ var AnimationNode = Fire.Class({
         /**
          * !#en Wrapping mode of the playing animation.
          * !#zh 动画循环方式
+         *
          * @property wrapMode
-         * @type {PlaybackDirection}
-         * @default: Fire.PlaybackDirection.normal
+         * @type {WrapMode}
+         * @default: Fire.WrapMode.Normal
          */
-        wrapMode: PlaybackDirection.normal
+        wrapMode: WrapMode.Normal
     },
 
     update: function (delta) {
@@ -251,32 +315,19 @@ var AnimationNode = Fire.Class({
         }
     },
 
-    _calculateDirectedTime: function (iterationTime, currentIterations) {
+    _calculateWrappedTime: function (iterationTime, currentIterations) {
         var duration = this.duration;
         var wrapMode = this.wrapMode;
-        if (wrapMode === PlaybackDirection.alternate) {
+        if (wrapMode & WrapModeMask.PingPong) {
             var isOddIteration = currentIterations & 1;
             if (isOddIteration) {
-                return duration - iterationTime;
-            }
-            else {
-                return iterationTime;
+                iterationTime = duration - iterationTime;
             }
         }
-        else if (wrapMode === PlaybackDirection.reverse) {
-            return duration - iterationTime;
+        if (wrapMode & WrapModeMask.Reverse) {
+            iterationTime = duration - iterationTime;
         }
-        else if (wrapMode === PlaybackDirection['alternate-reverse']) {
-            if (currentIterations & 1) {
-                return iterationTime;
-            }
-            else {
-                return duration - iterationTime;
-            }
-        }
-        else {
-            return iterationTime;
-        }
+        return iterationTime;
     },
 
     sample: function () {
@@ -288,20 +339,20 @@ var AnimationNode = Fire.Class({
         var ratio = 0;         // computed ratio
         var time = this.time;   // computed time
         var currentIterations = time / duration;
-        if (currentIterations < this.iterations) {
+        if (currentIterations < this.repeatCount) {
             // calculate iteration time
             if (time > duration) {
                 time %= duration;
             }
-            // calculate directed time
-            if (this.wrapMode !== PlaybackDirection.normal) {
-                time = this._calculateDirectedTime(time, currentIterations);
+            // calculate wrapped time
+            if (this.wrapMode & WrapModeMask.ShouldWrap) {
+                time = this._calculateWrappedTime(time, currentIterations);
             }
             ratio = time / duration;
         }
         else {
             stopped = true;
-            ratio = this.iterations - (this.iterations | 0);
+            ratio = this.repeatCount - (this.repeatCount | 0);
             if (currentIterations > 0 && ratio === 0) {
                 ratio = 1; // 如果播放过，动画不复位
             }

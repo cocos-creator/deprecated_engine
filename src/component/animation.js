@@ -55,8 +55,8 @@ var Animation = Fire.Class({
          * The value should be specified by one of the WrapMode enumeration values.
          */
         wrapMode: {
-            default: Fire.PlaybackDirection.normal,
-            type: Fire.PlaybackDirection
+            default: Fire.WrapMode.Default,
+            type: Fire.WrapMode
         },
 
         /**

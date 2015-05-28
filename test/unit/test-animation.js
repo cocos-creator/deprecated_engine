@@ -145,7 +145,7 @@ test('AnimationNode', function () {
         delay: 0.3,
         duration: 1.3,
         playbackRate: 0.5,
-        iterations: 1.25
+        repeatCount: 1.25
     });
 
     animation.update(0.2);
@@ -185,8 +185,8 @@ test('wrapMode', function () {
         delay: 0.3,
         duration: 1.3,
         playbackRate: 0.5,
-        wrapMode: Fire.PlaybackDirection.reverse,
-        iterations: Infinity
+        wrapMode: Fire.WrapMode.Reverse,
+        repeatCount: Infinity
     });
 
     animation.update(0.3);
@@ -195,7 +195,7 @@ test('wrapMode', function () {
     animation.update(actualDuration / 4);
     strictEqual(entity.transform.x, 75 + 10, 'should play reversed animation');
 
-    animation.wrapMode = Fire.PlaybackDirection.alternate;
+    animation.wrapMode = Fire.WrapMode.PingPong;
     animation.time = 0;
     animation.update(actualDuration / 4);
     strictEqual(entity.transform.x, 25 + 10, 'should play animation as specified in 0 iteration');

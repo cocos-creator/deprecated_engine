@@ -40,7 +40,6 @@ var AnimationState = (function () {
 
 
         this._animNode = new AnimationNode(null, null, {
-            iterations: 1,
             duration: this.length
             //wrapMode:
         });
