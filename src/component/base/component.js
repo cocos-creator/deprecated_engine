@@ -405,7 +405,7 @@
             }
         },
 
-        hasInvoke: function (methodName) {
+        isInvoking: function (methodName) {
             var key = this.id + '.' + methodName;
             return Timer.hasTimeoutKey(key);
         },

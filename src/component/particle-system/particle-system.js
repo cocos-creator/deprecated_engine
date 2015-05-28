@@ -123,7 +123,8 @@ var ParticleSystem = (function () {
                     return this._duration;
                 },
                 set: function (value) {
-                    if (value < 0 && this._duration === value){
+                    value = Math.max(0.1, value);
+                    if (this._duration === value) {
                         return;
                     }
                     this._duration = value;
@@ -131,7 +132,7 @@ var ParticleSystem = (function () {
                 },
                 watch: {
                     '_loop': function (obj, propEL) {
-                        propEL.disabled = obj._loop === true;
+                        propEL.disabled = !!obj._loop;
                     }
                 }
             },
@@ -817,18 +818,12 @@ var ParticleSystem = (function () {
         },
 
         /**
-         * !#en reset emission rate
-         * !#zh 重置每秒喷发的粒子数目
-         * @method play
+         * !#en calculate emission rate
+         * !#zh 自动计算每秒喷发的粒子数目
+         * @method calculateEmissionRate
          */
-        resetEmissionRate: function (maxParticles, life) {
-            if (maxParticles === 'undefined') {
-                maxParticles = this._maxParticles;
-            }
-            if (life === 'undefined') {
-                life = this._life;
-            }
-            this.emissionRate = maxParticles / life;
+        calculateEmissionRate: function () {
+            this.emissionRate = this._maxParticles / this._life;
         },
 
         /**
@@ -878,22 +873,22 @@ var ParticleSystem = (function () {
         },
 
         // @ifdef EDITOR
-        checkingParticle: function () {
+        attemptToReplay: function () {
             if (ParticleRuntime.getParticleCount(this) === 0) {
-                if (!this.hasInvoke('play')) {
-                    this.invoke('play', 0.1);
+                if (!this.isInvoking('play')) {
+                    this.invoke('play', 0.5);
                 }
             }
         },
 
         onFocusInEditMode: function () {
             this.play();
-            this.repeat('checkingParticle', 0.1);
+            this.repeat('attemptToReplay', 0.1);
         },
         onLostFocusInEditMode: function () {
             this.play();
             this.stop();
-            this.cancelRepeat('checkingParticle');
+            this.cancelRepeat('attemptToReplay');
         }
         // @endif
     });
