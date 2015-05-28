@@ -161,7 +161,8 @@
     ParticleRuntime.updateDuration = function (target) {
         var node = target._renderObj;
         Engine._renderContext.game.setEnvironment();
-        node.setDuration(target.duration);
+        var duration = target.loop ? -1 : target.duration;
+        node.setDuration(duration);
         //  @ifdef EDITOR
         if (! Fire.Engine.isPlaying) {
             node.resetSystem();
@@ -169,7 +170,7 @@
         node = target._renderObjInScene;
         if (node) {
             Engine._renderContext.sceneView.game.setEnvironment();
-            node.setDuration(target.duration);
+            node.setDuration(duration);
             if (! Fire.Engine.isPlaying) {
                 node.resetSystem();
             }
@@ -182,7 +183,8 @@
         // 纹理
         emitter.setTexture(this.getTexture(target.baseSprite));
         // 发射器生存时间
-        emitter.setDuration(target.duration);
+        var duration = target.loop ? -1 : target.duration;
+        emitter.setDuration(duration);
         // 每秒喷发的粒子数目
         emitter.setEmissionRate(target.emissionRate);
         // 粒子的生存时间
@@ -256,6 +258,13 @@
         // 粒子结束时是否自动删除
         emitter.setAutoRemoveOnFinish(target.isAutoRemoveOnFinish);
     };
+
+    // 判断粒子是否播放完成
+    ParticleRuntime.getParticleCount = function (target) {
+        var node = target._renderObj || target._renderObjInScene;
+        return node ? node.getParticleCount() : 0;
+    };
+
     // 初始化
     ParticleRuntime.initParticleSystem = function (target) {
         var rc = Engine._renderContext;
@@ -274,6 +283,7 @@
         }
         // @endif
     };
+
     ParticleRuntime.getParticleSystemSize = function (target) {
         var inGame = !(target.entity._objFlags & HideInGame);
         var size = null;
