@@ -140,6 +140,21 @@ var AnimationAnimator = (function () {
                 //    curveValue = createBatchedProperty(propPath, dotIndex, propValue, curveValue);
                 //}
                 curve.values.push(curveValue);
+
+                var curveTypes = keyframe.curve;
+                if (curveTypes) {
+                    if (Array.isArray(curveTypes)) {
+                        if (curveTypes[0] === curveTypes[1] &&
+                            curveTypes[2] === curveTypes[3]) {
+                            curve.types.push(DynamicAnimCurve.Linear);
+                        }
+                        else {
+                            curve.types.push(DynamicAnimCurve.Bezier(curveTypes));
+                        }
+                        continue;
+                    }
+                }
+                curve.types.push(DynamicAnimCurve.Linear);
             }
         }
     }

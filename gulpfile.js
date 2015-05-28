@@ -40,8 +40,10 @@ var paths = {
         'src/platform/h5/ticker.js',
         'src/render-context.js',
 
-        'src/animation/easing.js',
+        //'src/animation/easing.js',
+        'src/animation/bezier.js',
         'src/animation/types.js',
+        'src/animation/animation-curves.js',
         'src/animation/animators.js',
         'src/animation/animation-manager.js',
         'src/animation/animation-state.js',
