@@ -40,7 +40,7 @@ var AnimationState = (function () {
 
 
         this._animNode = new AnimationNode(null, null, {
-            duration: this.length
+            duration: this.duration
             //wrapMode:
         });
 
@@ -78,22 +78,15 @@ var AnimationState = (function () {
 
     /**
      * The length of the sprite animation in seconds with speed = 1.0f
-     * @property length
+     * @property duration
      * @type {number}
      * @readOnly
      */
-    JS.get(state, 'length', function () {
+    JS.get(state, 'duration', function () {
         return this._clip.length;
-        //var curveDataArray = this._clip.frames;
-        //if (curveDataArray.length > 0) {
-        //    var curveData = curveDataArray[0];
-        //    var keys = curveData.keys;
-        //    if (keys.length > 0) {
-        //        return keys[keys.length - 1].frame / this._clip.frameRate;
-        //    }
-        //}
-        //return 0;
     });
+
+    JS.obsolete(state, 'AnimationState.length', 'duration');
 
     JS.getset(state, 'speed',
         function () {

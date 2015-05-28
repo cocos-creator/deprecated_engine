@@ -363,8 +363,8 @@ gulp.task('watch', function() {
 });
 
 // tasks
-gulp.task('min', ['js-min', 'js-player-dev', 'js-player', 'js-editor-core']);
-gulp.task('dev', ['js-dev', 'js-player-dev', 'js-player', 'js-editor-core']);
+gulp.task('min', ['js-min', 'js-player-dev', 'js-player', 'js-editor-core', 'js-test-min']);
+gulp.task('dev', ['js-dev', 'js-player-dev', 'js-player', 'js-editor-core', 'js-test-dev']);
 gulp.task('all', ['dev', 'test', 'ref'] );
 gulp.task('ci', ['test'] );
 gulp.task('default', ['dev', 'min']);

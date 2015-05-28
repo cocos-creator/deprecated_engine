@@ -80,7 +80,7 @@ var AnimationAnimator = (function () {
     }
 
     function initClipData (target, state) {
-        state._animNode.duration = state.length;
+        state._animNode.duration = state.duration;
         var clip = state.clip;
         var curves = state.curves;
         curves.length = 0;
