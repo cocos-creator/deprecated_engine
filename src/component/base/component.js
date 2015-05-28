@@ -405,6 +405,11 @@
             }
         },
 
+        hasInvoke: function (methodName) {
+            var key = this.id + '.' + methodName;
+            return Timer.hasTimeoutKey(key);
+        },
+
         // overrides
 
         destroy: function () {

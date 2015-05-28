@@ -121,6 +121,10 @@ var Timer = (function () {
     Timer.clearTimeoutByKey = createClearMethod(Timer.timeoutIds, Timer.clearTimeout);
     Timer.clearIntervalByKey = createClearMethod(Timer.intervalIds, Timer.clearInterval);
 
+    Timer.hasTimeoutKey = function (key) {
+        return key in Timer.timeoutIds;
+    };
+
     Engine.on('stop', function () {
         Timer.clearAll();
     });

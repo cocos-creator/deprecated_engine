@@ -75,6 +75,24 @@ var ParticleSystem = (function () {
                 },
                 type: Fire.Sprite
             },
+            _maxParticles: 100,
+            /**
+             * !#en Maximum particles of the system.
+             * !#zh 粒子总颗粒
+             * @property maxParticles
+             * @type {number}
+             * @default 100
+             */
+            maxParticles: {
+                get: function () {
+                    return this._maxParticles;
+                },
+                set: function (value) {
+                    this._maxParticles = value;
+                    ParticleRuntime.setMain(this);
+                },
+                type: Fire.Integer
+            },
             _loop: true,
             /**
              * !#en If set to true, the particle system will loop play.
@@ -89,25 +107,8 @@ var ParticleSystem = (function () {
                 },
                 set: function(value) {
                     this._loop = value;
+                    ParticleRuntime.updateDuration(this);
                 }
-            },
-            _totalParticles: 100,
-            /**
-             * !#en Maximum particles of the system.
-             * !#zh 粒子总颗粒
-             * @property totalParticles
-             * @type {number}
-             * @default 100
-             */
-            totalParticles: {
-                get: function () {
-                    return this._totalParticles;
-                },
-                set: function (value) {
-                    this._totalParticles = value;
-                    ParticleRuntime.setMain(this);
-                },
-                type: Fire.Integer
             },
             _duration: -1,
             /**
@@ -122,14 +123,19 @@ var ParticleSystem = (function () {
                     return this._duration;
                 },
                 set: function (value) {
-                    if (value === 0 && this._duration === value){
+                    if (value < 0 && this._duration === value){
                         return;
                     }
                     this._duration = value;
                     ParticleRuntime.updateDuration(this);
+                },
+                watch: {
+                    '_loop': function (obj, propEL) {
+                        propEL.disabled = obj._loop === true;
+                    }
                 }
             },
-            _emissionRate: -1,
+            _emissionRate: 10,
             /**
              * !#en Emission rate of the particles.
              * !#zh 每秒喷发的粒子数目
@@ -139,9 +145,6 @@ var ParticleSystem = (function () {
              */
             emissionRate: {
                 get: function () {
-                    if (this._emissionRate === -1){
-                        return this._totalParticles / this._life;
-                    }
                     return  this._emissionRate;
                 },
                 set: function (value) {
@@ -814,8 +817,23 @@ var ParticleSystem = (function () {
         },
 
         /**
+         * !#en reset emission rate
+         * !#zh 重置每秒喷发的粒子数目
+         * @method play
+         */
+        resetEmissionRate: function (maxParticles, life) {
+            if (maxParticles === 'undefined') {
+                maxParticles = this._maxParticles;
+            }
+            if (life === 'undefined') {
+                life = this._life;
+            }
+            this.emissionRate = maxParticles / life;
+        },
+
+        /**
          * !#en play the particle system
-         * !#zh 重置粒子系统
+         * !#zh 重新播放粒子系统
          * @method play
          */
         play: function () {
@@ -833,9 +851,11 @@ var ParticleSystem = (function () {
 
         onLoad: function () {
             ParticleRuntime.initParticleSystem(this);
-            this.stop();
             if (this.playOnLoad) {
                 this.play();
+            }
+            else {
+                this.stop();
             }
         },
         getWorldSize: function () {
@@ -857,16 +877,18 @@ var ParticleSystem = (function () {
             out.ty = anchorOffsetY;
         },
 
+        // @ifdef EDITOR
         checkingParticle: function () {
-            if (this._loop && ParticleRuntime.getParticleCount(this) === 0) {
-                this.play();
+            if (ParticleRuntime.getParticleCount(this) === 0) {
+                if (!this.hasInvoke('play')) {
+                    this.invoke('play', 0.1);
+                }
             }
         },
 
-        // @ifdef EDITOR
         onFocusInEditMode: function () {
             this.play();
-            this.repeat('checkingParticle', 1);
+            this.repeat('checkingParticle', 0.1);
         },
         onLostFocusInEditMode: function () {
             this.play();
