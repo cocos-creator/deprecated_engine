@@ -256,6 +256,19 @@
         // 粒子结束时是否自动删除
         emitter.setAutoRemoveOnFinish(target.isAutoRemoveOnFinish);
     };
+
+    // 判断粒子是否播放完成
+    ParticleRuntime.getParticleCount = function (target) {
+        var inGame = !(target.entity._objFlags & HideInGame);
+        if (inGame && target._renderObj) {
+            return target._renderObj.getParticleCount();
+        }
+        // @ifdef EDITOR
+        else if (target._renderObjInScene) {
+            return target._renderObjInScene.getParticleCount();
+        }
+    },
+
     // 初始化
     ParticleRuntime.initParticleSystem = function (target) {
         var rc = Engine._renderContext;

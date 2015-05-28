@@ -75,6 +75,22 @@ var ParticleSystem = (function () {
                 },
                 type: Fire.Sprite
             },
+            _loop: true,
+            /**
+             * !#en If set to true, the particle system will loop play.
+             * !#zh 粒子循环播放
+             * @property loop
+             * @type {boolean}
+             * @default true
+             */
+            loop: {
+                get: function() {
+                    return this._loop;
+                },
+                set: function(value) {
+                    this._loop = value;
+                }
+            },
             _totalParticles: 100,
             /**
              * !#en Maximum particles of the system.
@@ -113,7 +129,7 @@ var ParticleSystem = (function () {
                     ParticleRuntime.updateDuration(this);
                 }
             },
-            _emissionRate: 10,
+            _emissionRate: -1,
             /**
              * !#en Emission rate of the particles.
              * !#zh 每秒喷发的粒子数目
@@ -123,7 +139,10 @@ var ParticleSystem = (function () {
              */
             emissionRate: {
                 get: function () {
-                    return this._emissionRate;
+                    if (this._emissionRate === -1){
+                        return this._totalParticles / this._life;
+                    }
+                    return  this._emissionRate;
                 },
                 set: function (value) {
                     this._emissionRate = value;
@@ -783,15 +802,23 @@ var ParticleSystem = (function () {
                     this._isAutoRemoveOnFinish = value;
                     ParticleRuntime.setMain(this);
                 }
-            }
+            },
+            /**
+             * !#en If set to true, the particle system will automatically start playing on onLoad.
+             * !#zh 如果设置为true 运行时会自动发射粒子
+             * @property playOnLoad
+             * @type {boolean}
+             * @default true
+             */
+            playOnLoad: true
         },
 
         /**
-         * !#en reset the particle system
+         * !#en play the particle system
          * !#zh 重置粒子系统
-         * @method reset
+         * @method play
          */
-        reset: function () {
+        play: function () {
             ParticleRuntime.reset(this);
         },
 
@@ -806,6 +833,10 @@ var ParticleSystem = (function () {
 
         onLoad: function () {
             ParticleRuntime.initParticleSystem(this);
+            this.stop();
+            if (this.playOnLoad) {
+                this.play();
+            }
         },
         getWorldSize: function () {
             return ParticleRuntime.getParticleSystemSize(this);
@@ -825,13 +856,22 @@ var ParticleSystem = (function () {
             out.tx = anchorOffsetX;
             out.ty = anchorOffsetY;
         },
+
+        checkingParticle: function () {
+            if (this._loop && ParticleRuntime.getParticleCount(this) === 0) {
+                this.play();
+            }
+        },
+
         // @ifdef EDITOR
         onFocusInEditMode: function () {
-            this.reset();
+            this.play();
+            this.repeat('checkingParticle', 1);
         },
         onLostFocusInEditMode: function () {
-            this.reset();
+            this.play();
             this.stop();
+            this.cancelRepeat('checkingParticle');
         }
         // @endif
     });
