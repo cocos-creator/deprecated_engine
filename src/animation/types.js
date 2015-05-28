@@ -114,171 +114,151 @@ AnimationNodeBase.prototype.update = function (deltaTime) {};
 /**
  * The collection and instance of playing animations created by entity.animate.
  * @class AnimationNode
- * @constructor
  * @extends AnimationNodeBase
+ * @constructor
  * @param {Animator} animator
  * @param {AnimCurve[]} [curves]
  * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
  */
-var AnimationNode = Fire.Class({
-    name: 'Fire.AnimationNode',
-    extends: AnimationNodeBase,
+function AnimationNode (animator, curves, timingInput) {
+    AnimationNodeBase.call(this);
 
-    constructor: function () {
+    this.animator = animator;
 
-        // parse arguments
+    /**
+     * @property curves
+     * @type {AnimCurve[]}
+     */
+    this.curves = curves || [];
 
-        this.animator = arguments[0];
-        var curves = arguments[1];
-        var timingInput = arguments[2];
+    // http://www.w3.org/TR/web-animations/#idl-def-AnimationTiming
 
-        if (curves) {
-            this.curves = curves;
+    /**
+     * !#en The start delay which represents the number of seconds from an animation's start time to the start of
+     * the active interval.
+     * !#zh 延迟多少秒播放
+     *
+     * @property delay
+     * @type {number}
+     * @default 0
+     */
+    this.delay = 0;
+
+    /**
+     * !#en The animation's iteration count property.
+     *
+     * A real number greater than or equal to zero (including positive infinity) representing the number of times
+     * to repeat the animation node.
+     *
+     * Values less than zero and NaN values are treated as the value 1.0 for the purpose of timing model
+     * calculations.
+     *
+     * !#zh 迭代次数, 指动画播放多少次后结束, normalize time. 如 2.5 ( 2次半 )
+     *
+     * @property repeatCount
+     * @type {number}
+     * @default 1
+     */
+    this.repeatCount = 1;
+
+    /**
+     * !#en The iteration duration of this animation in seconds. (length)
+     * !#zh 单次动画的持续时间, 秒
+     *
+     * @property duration
+     * @type {number}
+     * @readOnly
+     */
+    this.duration = 1;
+
+    /**
+     * !#en The animation's playback speed. 1 is normal playback speed.
+     * !#zh 播放速率
+     * @property speed
+     * @type {number}
+     * @default: 1.0
+     */
+    this.speed = 1;
+
+    /**
+     * !#en Wrapping mode of the playing animation.
+     * !#zh 动画循环方式
+     *
+     * @property wrapMode
+     * @type {WrapMode}
+     * @default: Fire.WrapMode.Normal
+     */
+    this.wrapMode = WrapMode.Normal;
+
+    if (timingInput) {
+        this.delay = timingInput.delay || this.delay;
+
+        var duration = timingInput.duration;
+        if (typeof duration !== 'undefined') {
+            this.duration = duration;
         }
-        if (timingInput) {
-            this.delay = timingInput.delay || this.delay;
 
-            var duration = timingInput.duration;
-            if (typeof duration !== 'undefined') {
-                this.duration = duration;
-            }
+        var speed = timingInput.speed;
+        if (typeof speed !== 'undefined') {
+            this.speed = speed;
+        }
 
-            var speed = timingInput.speed;
-            if (typeof speed !== 'undefined') {
-                this.speed = speed;
+        // 兼容旧的命名
+        if ('direction' in timingInput) {
+            timingInput.wrapMode = timingInput.direction;
+            Fire.warn('[animate] direction is deprecated, use wrapMode instead please.');
+        }
+        //
+        var wrapMode = timingInput.wrapMode;
+        if (typeof wrapMode !== 'undefined') {
+            var isEnum = typeof wrapMode === 'number';
+            if (isEnum) {
+                this.wrapMode = wrapMode;
             }
-
-            // 兼容旧的命名
-            if ('direction' in timingInput) {
-                timingInput.wrapMode = timingInput.direction;
-                Fire.warn('[animate] direction is deprecated, use wrapMode instead please.');
-            }
-            //
-            var wrapMode = timingInput.wrapMode;
-            if (typeof wrapMode !== 'undefined') {
-                var isEnum = typeof wrapMode === 'number';
-                if (isEnum) {
-                    this.wrapMode = wrapMode;
-                }
-                else {
-                    this.wrapMode = Fire.WrapMode[wrapMode];
-                }
-            }
-
-            var repeatCount = timingInput.repeatCount;
-            if (typeof repeatCount !== 'undefined') {
-                this.repeatCount = repeatCount;
-            }
-            else if (this.wrapMode & WrapModeMask.Loop) {
-                this.repeatCount = Infinity;
+            else {
+                this.wrapMode = Fire.WrapMode[wrapMode];
             }
         }
 
-        // member variables
-
-        /**
-         * The active time of this animation, not include delay.
-         * @property time
-         * @type {number}
-         * @default 0
-         * @readOnly
-         */
-        this.time = 0;
-
-        /**
-         * The local time, just used for delay
-         * @property _timeNoScale
-         * @type {number}
-         * @default 0
-         * @readOnly
-         * @private
-         */
-        this._timeNoScale = 0;
-
-        this._firstFramePlayed = false;
-
-        ///**
-        // * The current iteration index beginning with zero for the first iteration.
-        // * @property currentIterations
-        // * @type {number}
-        // * @default 0
-        // * @readOnly
-        // */
-        //this.currentIterations = 0.0;
-
-        // play
-
-        if (this.delay > 0) {
-            this.pause();
+        var repeatCount = timingInput.repeatCount;
+        if (typeof repeatCount !== 'undefined') {
+            this.repeatCount = repeatCount;
         }
-        this.play();
-    },
+        else if (this.wrapMode & WrapModeMask.Loop) {
+            this.repeatCount = Infinity;
+        }
+    }
 
-    properties: {
-        /**
-         * @property curves
-         * @type {AnimCurve[]}
-         */
-        curves: [],
+    /**
+     * The current time of this animation in seconds.
+     * @property time
+     * @type {number}
+     * @default 0
+     */
+    this.time = 0;
 
-        // http://www.w3.org/TR/web-animations/#idl-def-AnimationTiming
+    this._timeNoScale = 0;
+    this._firstFramePlayed = false;
 
-        /**
-         * !#en The start delay which represents the number of seconds from an animation's start time to the start of
-         * the active interval.
-         * !#zh 延迟多少秒播放
-         *
-         * @property delay
-         * @type {number}
-         * @default 0
-         */
-        delay: 0,
+    ///**
+    // * The current iteration index beginning with zero for the first iteration.
+    // * @property currentIterations
+    // * @type {number}
+    // * @default 0
+    // * @readOnly
+    // */
+    //this.currentIterations = 0.0;
 
-        /**
-         * !#en The animation's iteration count property.
-         *
-         * A real number greater than or equal to zero (including positive infinity) representing the number of times
-         * to repeat the animation node.
-         *
-         * Values less than zero and NaN values are treated as the value 1.0 for the purpose of timing model
-         * calculations.
-         *
-         * !#zh 迭代次数, 指动画播放多少次后结束, normalize time. 如 2.5 ( 2次半 )
-         *
-         * @property repeatCount
-         * @type {number}
-         * @default 1
-         */
-        repeatCount: 1,
+    // play
 
-        /**
-         * !#en The iteration duration of this animation in seconds. (length)
-         * !#zh 单次动画的持续时间, 秒
-         *
-         * @property duration
-         * @type {number}
-         */
-        duration: 1,
+    if (this.delay > 0) {
+        this.pause();
+    }
+    this.play();
+}
+JS.extend(AnimationNode, AnimationNodeBase);
 
-        /**
-         * !#en The animation's playback speed.
-         * !#zh 播放速率
-         * @property speed
-         * @type {number}
-         * @default: 1.0
-         */
-        speed: 1,
-
-        /**
-         * !#en Wrapping mode of the playing animation.
-         * !#zh 动画循环方式
-         *
-         * @property wrapMode
-         * @type {WrapMode}
-         * @default: Fire.WrapMode.Normal
-         */
-        wrapMode: WrapMode.Normal
-    },
+JS.mixin(AnimationNode.prototype, {
 
     update: function (delta) {
 
