@@ -56,7 +56,8 @@ var Animation = Fire.Class({
          */
         wrapMode: {
             default: Fire.WrapMode.Default,
-            type: Fire.WrapMode
+            type: Fire.WrapMode,
+            visible: false
         },
 
         /**
@@ -145,7 +146,7 @@ var Animation = Fire.Class({
             this._animator.stop();
         }
     },
-    
+
     /**
      * Returns the animation state named name. If no animation with the specified name, the function will return null.
      * @method getAnimationState
