@@ -12,9 +12,9 @@
 
     // implements a fake texture loader to load texture asset
     var TextureLoader = Fire.Class({
-        /**
-         * @param {string} atlasUrl
-         */
+        ///**
+        // * @param {string} atlasUrl
+        // */
         constructor: function () {
             /**
              * @property {Texture[]} textures - the loaded texture array

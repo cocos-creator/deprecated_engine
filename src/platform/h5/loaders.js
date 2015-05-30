@@ -41,9 +41,9 @@ function ImageLoader(url, callback, onProgress) {
 
 Fire._ImageLoader = ImageLoader;
 
-/**
- * @param {string} [responseType="text"] - the XMLHttpRequestResponseType
- */
+///**
+// * @param {string} [responseType="text"] - the XMLHttpRequestResponseType
+// */
 function _LoadFromXHR(url, callback, onProgress, responseType) {
     var xhr = new XMLHttpRequest();
     //xhr.withCredentials = true;   // INVALID_STATE_ERR: DOM Exception 11 in phantomjs

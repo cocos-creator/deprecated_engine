@@ -463,10 +463,10 @@
         },
 
         statics: {
-            /**
-             * invoke starts on entities
-             * @param {Entity} entity
-             */
+            ///**
+            // * invoke starts on entities
+            // * @param {Entity} entity
+            // */
             _invokeStarts: function (entity) {
                 var countBefore = entity._components.length;
                 var c = 0, comp = null;

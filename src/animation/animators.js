@@ -108,11 +108,11 @@ var EntityAnimator = (function () {
     __TESTONLY__.computeNullRatios = computeNullRatios;
 // @endif
 
-    /**
-     * @param {object[]} keyFrames
-     * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
-     * @return {AnimationNode}
-     */
+    ///**
+    // * @param {object[]} keyFrames
+    // * @param {object} [timingInput] - This dictionary is used as a convenience for specifying the timing properties of an Animation in bulk.
+    // * @return {AnimationNode}
+    // */
     prototype.animate = function (keyFrames, timingInput) {
         if (! keyFrames) {
             Fire.error('[animate] keyFrames must be non-nil');

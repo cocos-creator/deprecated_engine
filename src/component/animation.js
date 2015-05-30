@@ -53,6 +53,9 @@ var Animation = Fire.Class({
         /**
          * How should time beyond the playback range of the clip be treated?
          * The value should be specified by one of the WrapMode enumeration values.
+         * @property wrapMode
+         * @type {WrapMode}
+         * @default Fire.WrapMode.Default
          */
         wrapMode: {
             default: Fire.WrapMode.Default,

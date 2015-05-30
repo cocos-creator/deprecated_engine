@@ -47,10 +47,10 @@ var Browser = (function () {
         browserType = "safari";
     }
 
-    /**
-     * Indicate the running browser type
-     * @type {string}
-     */
+    ///**
+    // * Indicate the running browser type
+    // * @type {string}
+    // */
     Browser.type = browserType;
 
     return Browser;

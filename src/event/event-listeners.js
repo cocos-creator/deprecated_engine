@@ -1,16 +1,11 @@
 ﻿var EventListeners = (function () {
 
-    /**
-     * Extends Fire._CallbacksHandler to handle and invoke event callbacks.
-     */
+    // Extends Fire._CallbacksHandler to handle and invoke event callbacks.
     function EventListeners () {
         Fire._CallbacksHandler.call(this);
     }
     JS.extend(EventListeners, Fire._CallbacksHandler);
 
-    /**
-     * @param {Event} event
-     */
     EventListeners.prototype.invoke = function (event) {
         var list = this._callbackTable[event.type];
         if (list && list.length > 0) {

@@ -16,9 +16,7 @@
         this.events.length = 0;
     };
 
-    /**
-     * http://www.quirksmode.org/dom/events/index.html
-     */
+    // http://www.quirksmode.org/dom/events/index.html
     var InputContext = function (renderContext) {
         var canvas = renderContext.canvas;
         canvas.tabIndex = canvas.tabIndex || 0;     // make key event receivable

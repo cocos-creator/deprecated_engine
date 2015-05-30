@@ -1,7 +1,7 @@
-/**
- * The InteractionContext contains all the entities which can be interact with.
- * @private
- */
+///**
+// * The InteractionContext contains all the entities which can be interact with.
+// * @private
+// */
 var InteractionContext = (function () {
 
     var aabbMap = {};   // all axis aligned bounding boxes in current frame, indexed by id
@@ -15,11 +15,11 @@ var InteractionContext = (function () {
         this.entities.length = 0;
     };
 
-    /**
-     * Pick the top most entity, using their oriented bounding boxes.
-     * @param {Vec2} worldPosition
-     * @return {Entity}
-     */
+    ///**
+    // * Pick the top most entity, using their oriented bounding boxes.
+    // * @param {Vec2} worldPosition
+    // * @return {Entity}
+    // */
     InteractionContext.prototype.pick = function (worldPosition) {
         for (var i = this.entities.length - 1; i >= 0; --i) {
             var entity = this.entities[i];

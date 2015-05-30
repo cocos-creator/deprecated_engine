@@ -91,75 +91,75 @@ Fire.JS.mixin(RenderContext.prototype, {
     onSceneLoaded: function (scene) { },
     onSceneLaunched: function (scene) { },
 
-    /**
-     * @param {Entity} entity
-     * @param {number} oldIndex
-     * @param {number} newIndex
-     */
+    ///**
+    // * @param {Entity} entity
+    // * @param {number} oldIndex
+    // * @param {number} newIndex
+    // */
     onEntityIndexChanged: function (entity, oldIndex, newIndex) { },
 
-    /**
-     * @param {Entity} entity
-     * @param {Entity} oldParent
-     */
+    ///**
+    // * @param {Entity} entity
+    // * @param {Entity} oldParent
+    // */
     onEntityParentChanged: function (entity, oldParent) {},
 
-    /**
-     * removes a entity and all its children from scene
-     * @param {Entity} entity
-     */
+    ///**
+    // * removes a entity and all its children from scene
+    // * @param {Entity} entity
+    // */
     onEntityRemoved: function (entity) { },
 
-    /**
-     * @param {Entity} entity
-     */
+    ///**
+    // * @param {Entity} entity
+    // */
     onRootEntityCreated: function (entity) { },
 
-    /**
-     * create pixi nodes recursively
-     * @param {Entity} entity
-     * @param {boolean} addToScene - add to pixi stage now if entity is root
-     */
+    ///**
+    // * create pixi nodes recursively
+    // * @param {Entity} entity
+    // * @param {boolean} addToScene - add to pixi stage now if entity is root
+    // */
     onEntityCreated: function (entity, addToScene) {},
 
-    /**
-     * @param {SpriteRenderer} target
-     */
+    ///**
+    // * @param {SpriteRenderer} target
+    // */
     addSprite: function (target) {},
 
-    /**
-     * @param {SpriteRenderer} target
-     * @param {boolean} show
-     */
+    ///**
+    // * @param {SpriteRenderer} target
+    // * @param {boolean} show
+    // */
     show: function (target, show) {},
 
-    /**
-     * @param target {SpriteRenderer}
-     * @param show {boolean}
-     */
+    ///**
+    // * @param target {SpriteRenderer}
+    // * @param show {boolean}
+    // */
     remove: function (target) {},
 
     onPreRender: function () {},
     render: function () {},
 
-    /**
-     * Set the final transform to render
-     * @param {SpriteRenderer} target
-     * @param {Matrix23} matrix - the matrix to render (Read Only)
-     */
+    ///**
+    // * Set the final transform to render
+    // * @param {SpriteRenderer} target
+    // * @param {Matrix23} matrix - the matrix to render (Read Only)
+    // */
     updateTransform: function (target, matrix) {},
 
     updateColor: function (target) {},
 
-    /**
-     * @param target {SpriteRenderer}
-     */
+    ///**
+    // * @param target {SpriteRenderer}
+    // */
     updateMaterial: function (target) {},
 
-    /**
-     * The debugging method that checks whether the render context matches the current scene or not.
-     * @throws {string} error info
-     */
+    ///**
+    // * The debugging method that checks whether the render context matches the current scene or not.
+    // * @throws {string} error info
+    // */
     checkMatchCurrentScene: function () {}
 });
 

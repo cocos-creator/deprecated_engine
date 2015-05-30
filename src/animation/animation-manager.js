@@ -27,15 +27,15 @@
 
         // for animator
 
-        /**
-         * @param {Animator} animator
-         */
+        ///**
+        // * @param {Animator} animator
+        // */
         addAnimator: function (animator) {
             this.animators.push(animator);
         },
-        /**
-         * @param {Animator} animator
-         */
+        ///**
+        // * @param {Animator} animator
+        // */
         removeAnimator: function (animator) {
             var index = this.animators.indexOf(animator);
             if (index >= 0) {

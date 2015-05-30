@@ -92,10 +92,10 @@ var Scene = (function () {
         }
     };
 
-    /**
-     * The default scene rendering operation invoked by runtime.
-     * @param {_Runtime.RenderContext} renderContext
-     */
+    ///**
+    // * The default scene rendering operation invoked by runtime.
+    // * @param {_Runtime.RenderContext} renderContext
+    // */
     Scene.prototype.render = function (renderContext) {
         Engine._curRenderContext = renderContext;
 

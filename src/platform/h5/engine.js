@@ -386,7 +386,7 @@ var Engine = (function () {
             if (error) {
                 error = 'Failed to load scene: ' + error;
                 // @ifdef EDITOR
-                console.assert(false, '[test] Failed to load scene');
+                console.assert(false, error);
                 // @endif
             }
             else if (!(scene instanceof Fire._Scene)) {
