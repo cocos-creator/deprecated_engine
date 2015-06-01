@@ -14,6 +14,9 @@ var Screen = {
     devicePixelRatio: (Fire.isRetinaEnabled && window.devicePixelRatio) || 1
 };
 
+EventTarget.call(Screen);
+JS.mixin(Screen, EventTarget.prototype);
+
 /**
  * The current size of the screen window in pixels
  * @property size
@@ -88,5 +91,11 @@ JS.get(Screen, '_frameSize', function () {
 //        this._resolutionPolicy = value;
 //    }
 //});
+
+/**
+ * This event is triggered when the browser window size changes
+ * @event resize
+ */
+//Fire.Screen.on('resize', function () {} );
 
 Fire.Screen = Screen;
