@@ -331,7 +331,11 @@
     return Transform;
 })();
 
+Fire.executeInEditMode(Transform);
+
 Fire.Transform = Transform;
+
+var transform = Transform.prototype;
 
 /**
  * The local x position in its parent's coordinate system
@@ -339,7 +343,7 @@ Fire.Transform = Transform;
  * @type {number}
  * @default 0
  */
-JS.getset(Transform.prototype, 'x',
+JS.getset(transform, 'x',
     function () {
         return this._position.x;
     },
@@ -354,7 +358,8 @@ JS.getset(Transform.prototype, 'x',
         else {
             Fire.error(ERR_NaN, 'new x');
         }
-    });
+    }
+);
 
 /**
  * The local y position in its parent's coordinate system
@@ -362,7 +367,7 @@ JS.getset(Transform.prototype, 'x',
  * @type {number}
  * @default 0
  */
-JS.getset(Transform.prototype, 'y',
+JS.getset(transform, 'y',
     function () {
         return this._position.y;
     },
@@ -377,7 +382,8 @@ JS.getset(Transform.prototype, 'y',
         else {
             Fire.error(ERR_NaN, 'new y');
         }
-    });
+    }
+);
 
 /**
  * The position of the transform in world space
@@ -385,7 +391,7 @@ JS.getset(Transform.prototype, 'y',
  * @type {Vec2}
  * @default new Vec2(0, 0)
  */
-JS.getset(Transform.prototype, 'worldPosition',
+JS.getset(transform, 'worldPosition',
     function () {
         var l2w = this.getLocalToWorldMatrix();
         return new Vec2(l2w.tx, l2w.ty);
@@ -405,7 +411,8 @@ JS.getset(Transform.prototype, 'worldPosition',
         else {
             Fire.error(ERR_NaN, 'xy of new worldPosition');
         }
-    });
+    }
+);
 
 /**
  * The x position of the transform in world space
@@ -413,7 +420,7 @@ JS.getset(Transform.prototype, 'worldPosition',
  * @type {number}
  * @default 0
  */
-JS.getset(Transform.prototype, 'worldX',
+JS.getset(transform, 'worldX',
     function () {
         return this.worldPosition.x;
     },
@@ -445,7 +452,8 @@ JS.getset(Transform.prototype, 'worldX',
         else {
             Fire.error(ERR_NaN, 'new worldX');
         }
-    });
+    }
+);
 
 /**
  * The y position of the transform in world space
@@ -453,7 +461,7 @@ JS.getset(Transform.prototype, 'worldX',
  * @type {number}
  * @default 0
  */
-JS.getset(Transform.prototype, 'worldY',
+JS.getset(transform, 'worldY',
     function () {
         return this.worldPosition.y;
     },
@@ -479,7 +487,8 @@ JS.getset(Transform.prototype, 'worldY',
         else {
             Fire.error(ERR_NaN, 'new worldY');
         }
-    });
+    }
+);
 
 /**
  * The counterclockwise degrees of rotation in world space
@@ -487,7 +496,7 @@ JS.getset(Transform.prototype, 'worldY',
  * @type {number}
  * @default 0
  */
-JS.getset(Transform.prototype, 'worldRotation',
+JS.getset(transform, 'worldRotation',
     function () {
         if ( this._parent ) {
             return this.rotation + this._parent.worldRotation;
@@ -508,7 +517,8 @@ JS.getset(Transform.prototype, 'worldRotation',
         else {
             Fire.error(ERR_NaN, 'new worldRotation');
         }
-    });
+    }
+);
 
 /**
  * The local x scale factor relative to the parent
@@ -516,7 +526,7 @@ JS.getset(Transform.prototype, 'worldRotation',
  * @type {number}
  * @default 1
  */
-JS.getset(Transform.prototype, 'scaleX',
+JS.getset(transform, 'scaleX',
     function () {
         return this._scale.x;
     },
@@ -531,7 +541,8 @@ JS.getset(Transform.prototype, 'scaleX',
         else {
             Fire.error(ERR_NaN, 'new scaleX');
         }
-    });
+    }
+);
 
 /**
  * The local y scale factor relative to the parent
@@ -539,7 +550,7 @@ JS.getset(Transform.prototype, 'scaleX',
  * @type {number}
  * @default 1
  */
-JS.getset(Transform.prototype, 'scaleY',
+JS.getset(transform, 'scaleY',
     function () {
         return this._scale.y;
     },
@@ -554,7 +565,8 @@ JS.getset(Transform.prototype, 'scaleY',
         else {
             Fire.error(ERR_NaN, 'new scaleY');
         }
-    });
+    }
+);
 
 /**
  * The lossy scale of the transform in world space (Read Only)
@@ -563,18 +575,19 @@ JS.getset(Transform.prototype, 'scaleY',
  * @default new Vec2(1, 1)
  * @readOnly
  */
-JS.get(Transform.prototype, 'worldScale',
+JS.get(transform, 'worldScale',
     function () {
         var l2w = this.getLocalToWorldMatrix();
         return l2w.getScale();
-    });
+    }
+);
 
 /**
  * up direction in world space, point to the y(green) axis
  * @property up
  * @type {Vec2}
  */
-JS.getset(Transform.prototype, 'up',
+JS.getset(transform, 'up',
     function () {
         return (new Vec2(0.0, 1.0)).rotateSelf(Math.deg2rad(this.worldRotation));
     },
@@ -585,14 +598,15 @@ JS.getset(Transform.prototype, 'up',
         }
         var radians = Math.atan2(value.y, value.x) - Math.HALF_PI;
         this.worldRotation = Math.rad2deg(radians);
-    });
+    }
+);
 
 /**
  * right direction in world space, point to the x(red) axis
  * @property right
  * @type {Vec2}
  */
-JS.getset(Transform.prototype, 'right',
+JS.getset(transform, 'right',
     function () {
         return (new Vec2(1.0, 0.0)).rotateSelf(Math.deg2rad(this.worldRotation));
     },
@@ -603,4 +617,5 @@ JS.getset(Transform.prototype, 'right',
         }
         var radians = Math.atan2(value.y, value.x);
         this.worldRotation = Math.rad2deg(radians);
-    });
+    }
+);
