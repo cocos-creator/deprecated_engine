@@ -75,6 +75,7 @@ Object.defineProperty(Screen, 'height', {
  * Size of parent node that contains container and _canvas
  * @property _frameSize
  * @type {Vec2}
+ * @readOnly
  * @private
  */
 JS.get(Screen, '_frameSize', function () {

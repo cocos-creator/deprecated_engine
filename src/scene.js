@@ -57,7 +57,7 @@ var Scene = (function () {
             Fire._throw(e);
         }
     }
-    visitFunctionTmpl = "(function () {" +
+    visitFunctionTmpl = "(function(){" +
                             execInTryCatch +
                             "return " + visitFunctionTmpl +
                         "})()";
