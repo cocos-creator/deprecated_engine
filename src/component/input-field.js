@@ -122,7 +122,6 @@ var InputField = (function () {
                 }
             },
 
-            _text: '',
             /**
              * The text of input field.
              * @property text
@@ -131,11 +130,10 @@ var InputField = (function () {
              */
             text: {
                 get: function () {
-                    return this._text;
+                    return Engine._renderContext.getInputText(this);
                 },
                 set: function (value) {
-                    this._text = value;
-                    Engine._renderContext.setInputText(this);
+                    Engine._renderContext.setInputText(this, value);
                 },
                 multiline: true
             },
