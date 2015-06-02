@@ -131,8 +131,7 @@ var InputField = (function () {
              */
             text: {
                 get: function () {
-                    var contentText = Engine._renderContext.getInputText(this);
-                    return contentText ? contentText : this._text;
+                    return this._text;
                 },
                 set: function (value) {
                     this._text = value;
@@ -156,12 +155,12 @@ var InputField = (function () {
                     Engine._renderContext.setFontSize(this);
                 }
             },
-            _maxLength: 10,
+            _maxLength: 50,
             /**
              * The maxLength of input text.
              * @property maxLength
              * @type {number}
-             * @default 10
+             * @default 50
              */
             maxLength:{
                 get: function () {
