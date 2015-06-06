@@ -254,6 +254,10 @@ var Resources = {
     /**
      * Loads asset with path from resources asynchronously.
      *
+     * wildcard:
+     * - 如果路径以 &#42;&#42;&#47;&#42; 作为结尾，则该路径下的所有资源都会被加载，含子文件夹。
+     *   此时 callback 的第二参数将返回数组，如果文件夹下没有资源，数组长度将会是 0。如果加载出错，数组内的元素将不全。
+     *
      * Note:
      * All asset paths in Fireball use forward slashes, paths using backslashes will not work.
      *
@@ -293,7 +297,7 @@ var Resources = {
                 return callback(null, []);
             }
             else {
-                return callback('Path:' + path + ' not exists', null);
+                return callback('Path: "' + path + '" not exists', null);
             }
         }
     }
