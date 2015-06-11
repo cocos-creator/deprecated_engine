@@ -778,18 +778,6 @@ var Entity = Fire.Class({
 ////////////////////////////////////////////////////////////////////
 
 /**
- * The temp property that indicates the current creating entity should
- * binded with supplied object flags. This property only used in editor.
- *
- * @property _defaultFlags
- * @type {number}
- * @default 0
- * @static
- * @private
- */
-Entity._defaultFlags = 0;
-
-/**
  * Finds an entity by hierarchy path, the path is case-sensitive, and must start with a '/' character.
  * It will traverse the hierarchy by splitting the path using '/' character.
  * It is recommended to not use this function every frame instead cache the result at startup.
