@@ -1,6 +1,7 @@
 ﻿/**
  * Class of all entities in scenes.
  * @class Entity
+ * @extends EventTarget
  * @constructor
  * @param {string} name - the name of the entity
  */

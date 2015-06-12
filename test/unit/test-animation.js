@@ -224,10 +224,10 @@ test('createBatchedProperty', function () {
 
     var MyValue = Fire.Class({
         extends: Fire.ValueType,
-        constructor: function (gh) {
+        constructor: function () {
             this.abc = {
                 def: {
-                    gh: gh
+                    gh: arguments[0]
                 }
             };
         },

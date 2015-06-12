@@ -2,7 +2,7 @@
 var Engine = (function () {
 
     /**
-     * !#zh 这个静态模块提供引擎运行时的一些全局接口和状态状态。
+     * !#zh 这个静态模块提供引擎运行时的一些全局接口和状态。
      * !#en Access to engine runtime data.
      * This class contains static methods for looking up information about and controlling the runtime data.
      *
